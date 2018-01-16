@@ -1,5 +1,5 @@
 <?php
-namespace PhilKra\Tests;
+namespace PhilKra\Tests\Instrumentation;
 
 use \PhilKra\Instrumentation\Timer;
 use \PHPUnit\Framework\TestCase;

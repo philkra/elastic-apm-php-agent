@@ -1,5 +1,5 @@
 <?php
-namespace PhilKra\Tests;
+namespace PhilKra\Tests\Transaction;
 
 use \PhilKra\Transaction\Store;
 use \PhilKra\Transaction\ITransaction;

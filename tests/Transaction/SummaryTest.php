@@ -1,5 +1,5 @@
 <?php
-namespace PhilKra\Tests;
+namespace PhilKra\Tests\Transaction;
 
 use \PhilKra\Transaction\Summary;
 use \PhilKra\Instrumentation\Timer;
