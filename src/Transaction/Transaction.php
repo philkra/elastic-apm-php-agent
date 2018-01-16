@@ -84,4 +84,17 @@ class Transaction implements ITransaction {
     return $this->name;
   }
 
+  /**
+   * Get the Summary of this Transaction
+   *
+   * <i>
+   *  Watch out, as the case that Summary isn't created yet is not covered.
+   * </i>
+   *
+   * @return \PhilKra\Transaction\Summary
+   */
+  public function getSummary() : Summary {
+    return $this->summary;
+  }
+
 }

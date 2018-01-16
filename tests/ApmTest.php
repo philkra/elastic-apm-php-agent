@@ -2,6 +2,7 @@
 namespace PhilKra\Tests;
 
 use \PhilKra\Apm;
+use \PhilKra\Transaction\Summary;
 use \PHPUnit\Framework\TestCase;
 
 /**
@@ -59,6 +60,57 @@ final class ApmTest extends TestCase {
     foreach( $init as $key => $value ) {
         $this->assertEquals( $config[$key], $init[$key], 'key: ' . $key );
     }
+  }
+
+  /**
+   * @depends testControlInjectedConfig
+   *
+   * @covers \PhilKra\Apm::__construct
+   * @covers \PhilKra\Apm::startTransaction
+   * @covers \PhilKra\Apm::stopTransaction
+   */
+  public function testStartAndStopATransaction() {
+    $agent = new Apm( [ 'appName' => 'phpunit_1' ] );
+
+    // Create a Transaction, wait and Stop it
+    $name = 'trx';
+    $agent->startTransaction( $name );
+    usleep( 10 );
+    $agent->stopTransaction( $name );
+
+    // Transaction Summary must be populated
+    $summary = $agent->getTransactionSummary( $name );
+    $this->assertNotNull( $summary );
+    $this->assertGreaterThanOrEqual( $summary->getDuration(), 0.0001 );
+    $this->assertNotEmpty( $summary->getBacktrace() );
+  }
+
+  /**
+   * @depends testStartAndStopATransaction
+   *
+   * @expectedException \PhilKra\Exception\Transaction\UnknownTransactionException
+   *
+   * @covers \PhilKra\Apm::__construct
+   * @covers \PhilKra\Apm::stopTransaction
+   */
+  public function testForceErrorOnUnstartedTransaction() {
+    $agent = new Apm( [ 'appName' => 'phpunit_2' ] );
+
+    // Stop an unstarted Transaction and let it go boom!
+    $agent->stopTransaction( 'unknown' );
+  }
+
+  /**
+   * @depends testForceErrorOnUnstartedTransaction
+   *
+   * @covers \PhilKra\Apm::__construct
+   * @covers \PhilKra\Apm::getTransactionSummary
+   */
+  public function testForceErrorOnSummaryOfUnstartedTransaction() {
+    $agent = new Apm( [ 'appName' => 'phpunit_3' ] );
+
+    $summary = $agent->getTransactionSummary( 'unknown' );
+    $this->assertNull( $summary );
   }
 
 }

@@ -6,6 +6,7 @@ use \PhilKra\Transaction\Factory;
 use \PhilKra\Transaction\ITransaction;
 use \PhilKra\Exception\MissingAppNameException;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
+use \PhilKra\Exception\Transaction\UnknownTransactionException;
 
 /**
  * APM Agent
@@ -66,6 +67,37 @@ class Apm {
 
     // Start the Transaction
     $this->transactions->fetch( $name )->start();
+  }
+
+  /**
+   * Stop the Transaction
+   *
+   * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
+   *
+   * @param string $name
+   *
+   * @return void
+   */
+  public function stopTransaction( string $name ) {
+    // Does this Transaction even exist ?
+    if( $this->transactions->fetch( $name ) === null ) {
+      throw new UnknownTransactionException( $name );
+    }
+
+    // Now, we're safe to stop it!
+    $this->transactions->fetch( $name )->stop();
+  }
+
+  /**
+   * Get the Summary of a traced Transaction
+   *
+   * @param string $name
+   *
+   * @return mixed: \PhilKra\Transaction\Summary | null
+   */
+  public function getTransactionSummary( string $name ) {
+    $trx = $this->transactions->fetch( $name );
+    return ( $trx === null ) ? null : $trx->getSummary();
   }
 
   /**

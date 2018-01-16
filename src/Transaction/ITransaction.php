@@ -1,6 +1,8 @@
 <?php
 namespace PhilKra\Transaction;
 
+use \PhilKra\Transaction\Summary;
+
 /**
  * Interface for Transactions
  */
@@ -35,5 +37,12 @@ interface ITransaction {
    * @return string
    */
   public function getTransactionName() : string;
+
+  /**
+   * Get the Transaction's Summary
+   *
+   * @return \PhilKra\Transaction\Summary
+   */
+  public function getSummary() : Summary;
 
 }
