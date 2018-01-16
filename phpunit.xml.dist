@@ -1,4 +1,4 @@
-<phpunit bootstrap="./bootstrap.php"
+<phpunit bootstrap="./tests/bootstrap.php"
   stopOnFailure="true"
   stopOnError="true"
   colors="false"
@@ -9,12 +9,12 @@
   beStrictAboutTestsThatDoNotTestAnything="true">
     <testsuites>
         <testsuite name="lib">
-            <directory suffix="Test.php">.</directory>
+            <directory suffix="Test.php">./tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory>./../src/</directory>
+            <directory>./src/</directory>
         </whitelist>
     </filter>
 </phpunit>
