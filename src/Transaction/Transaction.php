@@ -44,7 +44,6 @@ class Transaction implements ITransaction {
    */
   public function __construct( string $name ) {
     $this->setTransactionName( $name );
-
     $this->timer = new Timer();
   }
 
