@@ -3,7 +3,7 @@ namespace PhilKra\Tests;
 
 use \PhilKra\Transaction\Store;
 use \PhilKra\Transaction\ITransaction;
-use \PhilKra\Transaction\Transaction;
+use \PhilKra\Transaction\Factory;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ final class StoreTest extends TestCase {
   public function testTransactionRegistrationAndFetch() {
     $store = new Store();
     $name  = 'test';
-    $trx   = new Transaction( $name );
+    $trx   = Factory::create( $name );
 
     // Store the Transaction and fetch it then
     $store->register( $trx );
@@ -40,7 +40,7 @@ final class StoreTest extends TestCase {
   public function testDuplicateTransactionRegistration() {
     $store = new Store();
     $name  = 'test';
-    $trx   = new Transaction( $name );
+    $trx   = Factory::create( $name );
 
     // Store the Transaction again to force an Exception
     $store->register( $trx );
