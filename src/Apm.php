@@ -1,10 +1,14 @@
 <?php
-namespace PhilKra\ElasticApmAgent;
+namespace PhilKra;
 
-use \PhilKra\Instrumentation\Timer;
+use \PhilKra\Transaction\Store;
+use \PhilKra\Transaction\Factory;
+use \PhilKra\Transaction\ITransaction;
+use \PhilKra\Exception\MissingAppNameException;
+use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 
 /**
- *
+ * APM Agent
  */
 class Apm {
 
@@ -13,21 +17,14 @@ class Apm {
    *
    * @var array
    */
-  private array $config = [];
+  private $config = [];
 
   /**
-   * Capturing started bit
+   * Transactions Store
    *
-   * @var bool
+   * @var \PhilKra\Transaction\Store
    */
-  private bool $started = false;
-
-  /**
-   * Process Timer
-   *
-   * @var \PhilKra\Instrumentation\Timer
-   */
-  private final Timer $timer;
+  private $transactions;
 
   /**
    * Setup the APM Agent
@@ -36,9 +33,13 @@ class Apm {
    *
    * @return void
    */
-  public function __construct( array $config = [] ) : void {
+  public function __construct( array $config ) {
+    if( isset( $config['appName'] ) === false ) {
+      throw new MissingAppNameException();
+    }
+
+    $this->transactions = new Store();
     $this->config = array_merge( $this->getDefaultConfig(), $config );
-    $this->timer  = new Timer();
   }
 
   /**
@@ -51,13 +52,20 @@ class Apm {
   }
 
   /**
-   * Start the Agent capturing
+   * Start the Transaction capturing
+   *
+   * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
+   *
+   * @param string $name
    *
    * @return void
    */
-  public function start() : void {
-    $this->started = true;
-    $this->timer->start();
+  public function startTransaction( string $name ) {
+    // Create and Store Transaction
+    $this->transactions->register( Factory::create( $name ) );
+
+    // Start the Transaction
+    $this->transactions->fetch( $name )->start();
   }
 
   /**
@@ -67,9 +75,10 @@ class Apm {
    */
   private function getDefaultConfig() : array {
     return [
-      'appName'     => getenv( 'HTTP_HOST' ),
       'secretToken' => null,
-      'serverUrl'   => 'http://127.0.0.1:8200'
+      'serverUrl'   => 'http://127.0.0.1:8200',
+      'hostname'    => gethostname(),
+      'timeout'     => 5,
     ];
   }
 
