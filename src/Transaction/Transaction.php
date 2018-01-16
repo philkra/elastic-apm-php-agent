@@ -97,4 +97,13 @@ class Transaction implements ITransaction {
     return $this->summary;
   }
 
+  /**
+   * Commit the Transaction trace to the APM Server
+   *
+   * @return bool
+   */
+  public function send() : bool {
+
+  }
+
 }
