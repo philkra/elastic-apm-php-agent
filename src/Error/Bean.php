@@ -16,9 +16,9 @@ class Bean {
   /**
    * Error occurred on Timestamp
    *
-   * @var int
+   * @var string
    */
-  private $occurredOn;
+  private $timestamp;
 
   /**
    * Error/Exception
@@ -33,7 +33,7 @@ class Bean {
    */
   public function __construct( float $occurredAfter, Throwable $error ) {
     $this->occurredAfter = $occurredAfter;
-    $this->occurredOn    = time();
+    $this->timestamp     = date( 'YYYY-MM-DDTHH:mm:ss.sssZ' );
     $this->error         = $error;
   }
 

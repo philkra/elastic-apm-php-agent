@@ -30,6 +30,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'timeout', $config );
     $this->assertArrayHasKey( 'apmVersion', $config );
     $this->assertArrayHasKey( 'appVersion', $config );
+    $this->assertArrayHasKey( 'backtraceDepth', $config );
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
@@ -37,6 +38,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertEquals( $config['timeout'], 5 );
     $this->assertEquals( $config['apmVersion'], 'v1' );
+    $this->assertEquals( $config['backtraceDepth'], 25 );
   }
 
   /**

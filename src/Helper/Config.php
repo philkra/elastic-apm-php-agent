@@ -56,11 +56,13 @@ class Config {
    */
   private function getDefaultConfig() : array {
     return [
-      'secretToken' => null,
-      'serverUrl'   => 'http://127.0.0.1:8200',
-      'hostname'    => gethostname(),
-      'timeout'     => 5,
-      'apmVersion'  => 'v1',
+      'secretToken'    => null,
+      'serverUrl'      => 'http://127.0.0.1:8200',
+      'appVersion'     => '',
+      'hostname'       => gethostname(),
+      'timeout'        => 5,
+      'apmVersion'     => 'v1',
+      'backtraceDepth' => 25,
     ];
   }
 

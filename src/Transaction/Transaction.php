@@ -38,6 +38,13 @@ class Transaction implements ITransaction {
   private $running = false;
 
   /**
+   * Transaction Done Timestamp
+   *
+   * @var string
+   */
+  private $timestamp;
+
+  /**
    * Create the Transaction
    *
    * @param final string $name
@@ -53,6 +60,7 @@ class Transaction implements ITransaction {
   public function start() {
     $this->timer->start();
     $this->running = true;
+    $this->timestamp = date( 'YYYY-MM-DDTHH:mm:ss.sssZ' );
   }
 
   /**
