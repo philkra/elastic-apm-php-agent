@@ -34,7 +34,7 @@ class Connector {
   public function pushTransactions( string $json ) {
     $request = new Request(
       'POST',
-      $this->config['serverUrl'],
+      $this->getEndpoint( 'transactions' ),
       $this->getRequestHeaders(),
       $json
     );
@@ -50,9 +50,25 @@ class Connector {
   public function pushErrors( string $json ) {
     $request = new Request(
       'POST',
-      $this->config['serverUrl'],
+      $this->getEndpoint( 'errors' ),
       $this->getRequestHeaders(),
       $json
+    );
+  }
+
+  /**
+   * Get the Endpoint URI of the APM Server
+   *
+   * @param string $endpoint
+   *
+   * @return string
+   */
+  private function getEndpoint( string $endpoint ) : string {
+    return sprintf(
+      '%s/%s/%s',
+      $this->config['serverUrl'],
+      $this->config['apmVersion'],
+      $endpoint
     );
   }
 

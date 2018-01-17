@@ -27,12 +27,14 @@ final class AgentTest extends TestCase {
     $this->assertArrayHasKey( 'serverUrl', $config );
     $this->assertArrayHasKey( 'hostname', $config );
     $this->assertArrayHasKey( 'timeout', $config );
+    $this->assertArrayHasKey( 'apmVersion', $config );
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
     $this->assertEquals( $config['serverUrl'], 'http://127.0.0.1:8200' );
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertEquals( $config['timeout'], 5 );
+    $this->assertEquals( $config['apmVersion'], 'v1' );
   }
 
   /**

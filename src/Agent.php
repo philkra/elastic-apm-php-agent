@@ -168,6 +168,7 @@ class Agent {
       'serverUrl'   => 'http://127.0.0.1:8200',
       'hostname'    => gethostname(),
       'timeout'     => 5,
+      'apmVersion'  => 'v1',
     ];
   }
 
