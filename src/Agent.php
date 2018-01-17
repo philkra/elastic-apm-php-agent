@@ -147,7 +147,7 @@ class Agent {
   /**
    * Get the Agent Config
    *
-   * @return PhilKraHelperConfig
+   * @return \PhilKra\Helper\Config
    */
   public function getConfig() : \PhilKra\Helper\Config {
     return $this->config;
