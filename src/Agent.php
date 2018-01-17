@@ -11,7 +11,11 @@ use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
 
 /**
+ * 
  * APM Agent
+ *
+ * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
+ *
  */
 class Agent {
 
@@ -21,6 +25,13 @@ class Agent {
    * @var string
    */
   const VERSION = '0.1.0';
+
+  /**
+   * Agent Name
+   *
+   * @var string
+   */
+  const NAME = 'php';
 
   /**
    * Config Store
