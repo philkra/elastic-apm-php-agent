@@ -81,7 +81,7 @@ final class ApmTest extends TestCase {
     // Transaction Summary must be populated
     $summary = $agent->getTransactionSummary( $name );
     $this->assertNotNull( $summary );
-    $this->assertGreaterThanOrEqual( $summary->getDuration(), 0.0001 );
+    $this->assertGreaterThanOrEqual( 10, $summary->getDuration() );
     $this->assertNotEmpty( $summary->getBacktrace() );
   }
 

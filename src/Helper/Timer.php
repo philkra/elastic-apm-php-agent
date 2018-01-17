@@ -59,7 +59,35 @@ class Timer {
       throw new NotStoppedException();
     }
 
-    return $this->stoppedOn - $this->startedOn;
+    return $this->toMicro( $this->stoppedOn - $this->startedOn );
+  }
+
+  /**
+   * Get the current elapsed Interval of the Timer
+   *
+   * @throws \PhilKra\Exception\Timer\NotStartedException
+   *
+   * @return float
+   */
+  public function getElapsed() : float {
+    if( $this->startedOn === null ) {
+      throw new NotStartedException();
+    }
+
+    return ( $this->stoppedOn === null )
+      ? $this->toMicro( microtime( true ) - $this->startedOn )
+      : $this->getDuration();
+  }
+
+  /**
+   * Convert the Duration from Seconds to Micro-Seconds
+   *
+   * @param  float $num
+   *
+   * @return float
+   */
+  private function toMicro( float $num ) : float {
+    return $num * 1000000;
   }
 
 }

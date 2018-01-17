@@ -48,7 +48,11 @@ class Apm {
     }
 
     $this->transactions = new Store();
+    $this->timer        = new Timer();
+
     $this->config = array_merge( $this->getDefaultConfig(), $config );
+
+    $this->timer->start();
   }
 
   /**
