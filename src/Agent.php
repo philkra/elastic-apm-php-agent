@@ -11,7 +11,7 @@ use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
 
 /**
- * 
+ *
  * APM Agent
  *
  * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
