@@ -1,6 +1,8 @@
 # Elastic APM: PHP Agent
 
-This is a PHP agent for Elastic.co's APM product: (https://www.elastic.co/solutions/apm).
+[![Build Status](https://travis-ci.org/philkra/elastic-apm-agent-php.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-agent-php)
+
+This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
