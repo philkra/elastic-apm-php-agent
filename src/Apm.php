@@ -38,7 +38,7 @@ class Apm {
   /**
    * Setup the APM Agent
    *
-   * @param array $config, Default: []
+   * @param array $config
    *
    * @return void
    */
