@@ -2,7 +2,8 @@
 	"require" : {
 		"monolog/monolog" : "~1.0",
 		"guzzlehttp/guzzle": "6.*",
-		"ext-curl" : "*"
+		"ext-curl" : "*",
+		"ramsey/uuid": "^3.7"
 	},
 	"require-dev" : {
 		"php" : ">= 7.0",
