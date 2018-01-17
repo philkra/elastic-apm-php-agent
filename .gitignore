@@ -1,2 +1,5 @@
 composer.lock
-vendor
+vendor/
+phpunit.xml
+composer.phar
+.DS_STORE
