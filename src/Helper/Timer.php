@@ -1,5 +1,5 @@
 <?php
-namespace PhilKra\Instrumentation;
+namespace PhilKra\Helper;
 
 use \PhilKra\Exception\Timer\NotStartedException;
 use \PhilKra\Exception\Timer\NotStoppedException;

@@ -4,6 +4,7 @@ namespace PhilKra;
 use \PhilKra\Transaction\Store;
 use \PhilKra\Transaction\Factory;
 use \PhilKra\Transaction\ITransaction;
+use \PhilKra\Helper\Timer;
 use \PhilKra\Exception\MissingAppNameException;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
@@ -26,6 +27,13 @@ class Apm {
    * @var \PhilKra\Transaction\Store
    */
   private $transactions;
+
+  /**
+   * Apm Timer
+   *
+   * @var \PhilKra\Helper\Timer
+   */
+  private $timer;
 
   /**
    * Setup the APM Agent

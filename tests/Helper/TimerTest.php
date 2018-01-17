@@ -1,18 +1,18 @@
 <?php
-namespace PhilKra\Tests\Instrumentation;
+namespace PhilKra\Tests\Helper;
 
-use \PhilKra\Instrumentation\Timer;
+use \PhilKra\Helper\Timer;
 use \PHPUnit\Framework\TestCase;
 
 /**
- * Test Case for @see \PhilKra\Instrumentation\Timer
+ * Test Case for @see \PhilKra\Helper\Timer
  */
 final class TimerTest extends TestCase {
 
   /**
-   * @covers \PhilKra\Instrumentation\Timer::start
-   * @covers \PhilKra\Instrumentation\Timer::stop
-   * @covers \PhilKra\Instrumentation\Timer::getDuration
+   * @covers \PhilKra\Helper\Timer::start
+   * @covers \PhilKra\Helper\Timer::stop
+   * @covers \PhilKra\Helper\Timer::getDuration
    */
   public function testCanBeStartedAndStoppedWithDuration() {
     $timer = new Timer();
@@ -30,8 +30,8 @@ final class TimerTest extends TestCase {
    *
    * @expectedException \PhilKra\Exception\Timer\NotStoppedException
    *
-   * @covers \PhilKra\Instrumentation\Timer::start
-   * @covers \PhilKra\Instrumentation\Timer::getDuration
+   * @covers \PhilKra\Helper\Timer::start
+   * @covers \PhilKra\Helper\Timer::getDuration
    */
   public function testCanBeStartedWithForcingDurationException() {
     $timer = new Timer();
@@ -44,7 +44,7 @@ final class TimerTest extends TestCase {
    *
    * @expectedException \PhilKra\Exception\Timer\NotStartedException
    *
-   * @covers \PhilKra\Instrumentation\Timer::stop
+   * @covers \PhilKra\Helper\Timer::stop
    */
   public function testCannotBeStoppedWithoutStart() {
     $timer = new Timer();

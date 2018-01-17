@@ -1,7 +1,7 @@
 <?php
 namespace PhilKra\Transaction;
 
-use \PhilKra\Instrumentation\Timer;
+use \PhilKra\Helper\Timer;
 use \PhilKra\Transaction\Summary;
 
 /**
@@ -19,7 +19,7 @@ class Transaction implements ITransaction {
   /**
    * Transaction Timer
    *
-   * @var \PhilKra\Instrumentation\Timer
+   * @var \PhilKra\Helper\Timer
    */
   private $timer;
 

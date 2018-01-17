@@ -2,7 +2,7 @@
 namespace PhilKra\Tests\Transaction;
 
 use \PhilKra\Transaction\Summary;
-use \PhilKra\Instrumentation\Timer;
+use \PhilKra\Helper\Timer;
 use \PHPUnit\Framework\TestCase;
 
 /**
