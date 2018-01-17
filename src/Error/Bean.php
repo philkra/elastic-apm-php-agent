@@ -32,7 +32,7 @@ class Bean {
    * @param Throwable $error
    */
   public function __construct( float $occurredAfter, Throwable $error ) {
-    $this->occurredAfter = $occurredAfter
+    $this->occurredAfter = $occurredAfter;
     $this->occurredOn    = time();
     $this->error         = $error;
   }

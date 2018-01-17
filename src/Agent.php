@@ -5,8 +5,8 @@ use \PhilKra\Transaction\Store;
 use \PhilKra\Transaction\Factory;
 use \PhilKra\Transaction\ITransaction;
 use \PhilKra\Helper\Timer;
+use \PhilKra\Helper\Config;
 use \PhilKra\Error\Errors;
-use \PhilKra\Exception\MissingAppNameException;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
 
@@ -36,9 +36,9 @@ class Agent {
   /**
    * Config Store
    *
-   * @var array
+   * @var \PhilKra\Helper\Config
    */
-  private $config = [];
+  private $config;
 
   /**
    * Transactions Store
@@ -69,31 +69,18 @@ class Agent {
    * @return void
    */
   public function __construct( array $config ) {
-    if( isset( $config['appName'] ) === false ) {
-      throw new MissingAppNameException();
-    }
-
-    // Register Merged Config
-    $this->config = array_merge( $this->getDefaultConfig(), $config );
+    // Init Agent Config
+    $this->config = new Config( $config );
 
     // Prepare Transactions DataStore
     $this->transactions = new Store();
 
+    // Initialize the Error Registry
+    $this->errors = new Errors();
+
     // Start Global Agent Timer
     $this->timer = new Timer();
     $this->timer->start();
-
-    // Initialize the Error Registry
-    $this->errors = new Errors();
-  }
-
-  /**
-   * Get the Config
-   *
-   * @return array
-   */
-  public function getConfig() : array {
-    return $this->config;
   }
 
   /**
@@ -158,18 +145,12 @@ class Agent {
   }
 
   /**
-   * Get the Default Config of the Agent
+   * Get the Agent Config
    *
-   * @return array
+   * @return PhilKraHelperConfig
    */
-  private function getDefaultConfig() : array {
-    return [
-      'secretToken' => null,
-      'serverUrl'   => 'http://127.0.0.1:8200',
-      'hostname'    => gethostname(),
-      'timeout'     => 5,
-      'apmVersion'  => 'v1',
-    ];
+  public function getConfig() : \PhilKra\Helper\Config {
+    return $this->config;
   }
 
 }

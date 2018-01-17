@@ -13,14 +13,14 @@ class Connector {
   /**
    * Agent Config
    *
-   * @var array
+   * @var \PhilKra\Helper\Config
    */
   private $config;
 
   /**
-   * @param array $config
+   * @param \PhilKra\Helper\Config $config
    */
-  public function __construct( array $config ) {
+  public function __construct( \PhilKra\Helper\Config $config ) {
     $this->config = $config;
   }
 
@@ -66,8 +66,8 @@ class Connector {
   private function getEndpoint( string $endpoint ) : string {
     return sprintf(
       '%s/%s/%s',
-      $this->config['serverUrl'],
-      $this->config['apmVersion'],
+      $this->config->get( 'serverUrl' ),
+      $this->config->get( 'apmVersion' ),
       $endpoint
     );
   }
@@ -84,7 +84,7 @@ class Connector {
     ];
 
     // Add Secret Token to Header
-    if( $this->config['secretToken'] !== null ) {
+    if( $this->config->get( 'secretToken' ) !== null ) {
 //      $headers['SECRET'] = $this->config['secretToken'];
     }
 
