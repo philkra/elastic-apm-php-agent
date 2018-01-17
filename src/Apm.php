@@ -5,6 +5,7 @@ use \PhilKra\Transaction\Store;
 use \PhilKra\Transaction\Factory;
 use \PhilKra\Transaction\ITransaction;
 use \PhilKra\Helper\Timer;
+use \PhilKra\Error\Errors;
 use \PhilKra\Exception\MissingAppNameException;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
@@ -36,6 +37,13 @@ class Apm {
   private $timer;
 
   /**
+   * Errors Registry
+   *
+   * @var \PhilKra\Error\Errors
+   */
+  private $errors;
+
+  /**
    * Setup the APM Agent
    *
    * @param array $config
@@ -56,6 +64,9 @@ class Apm {
     // Start Global Agent Timer
     $this->timer = new Timer();
     $this->timer->start();
+
+    // Initialize the Error Registry
+    $this->errors = new Errors();
   }
 
   /**
@@ -113,6 +124,19 @@ class Apm {
   public function getTransactionSummary( string $name ) {
     $trx = $this->transactions->fetch( $name );
     return ( $trx === null ) ? null : $trx->getSummary();
+  }
+
+  /**
+   * Register a Thrown Error/Exception
+   *
+   * @link http://php.net/manual/en/class.throwable.php
+   *
+   * @param Throwable $exception
+   *
+   * @return void
+   */
+  public function captureException( Throwable $exception ) {
+    $this->errors->register( $this->timer->getElapsed(), $exception );
   }
 
   /**
