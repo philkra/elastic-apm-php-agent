@@ -47,10 +47,13 @@ class Apm {
       throw new MissingAppNameException();
     }
 
-    $this->transactions = new Store();
-
+    // Register Merged Config
     $this->config = array_merge( $this->getDefaultConfig(), $config );
 
+    // Prepare Transactions DataStore
+    $this->transactions = new Store();
+
+    // Start Global Agent Timer
     $this->timer = new Timer();
     $this->timer->start();
   }
