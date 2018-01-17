@@ -29,6 +29,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'hostname', $config );
     $this->assertArrayHasKey( 'timeout', $config );
     $this->assertArrayHasKey( 'apmVersion', $config );
+    $this->assertArrayHasKey( 'appVersion', $config );
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
