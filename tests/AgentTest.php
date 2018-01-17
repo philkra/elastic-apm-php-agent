@@ -26,9 +26,12 @@ final class AgentTest extends TestCase {
 
     // Transaction Summary must be populated
     $summary = $agent->getTransactionSummary( $name );
-    $this->assertNotNull( $summary );
-    $this->assertGreaterThanOrEqual( 10, $summary->getDuration() );
-    $this->assertNotEmpty( $summary->getBacktrace() );
+
+    $this->assertArrayHasKey( 'duration', $summary );
+    $this->assertArrayHasKey( 'backtrace', $summary );
+
+    $this->assertGreaterThanOrEqual( 10, $summary['duration'] );
+    $this->assertNotEmpty( $summary['backtrace'] );
   }
 
   /**

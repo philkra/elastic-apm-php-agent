@@ -1,18 +1,20 @@
 <?php
-namespace PhilKra\Transaction;
+namespace PhilKra\Stores;
 
-use \PhilKra\Transaction\ITransaction;
+use \PhilKra\Events\Transaction;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 
 /**
- * Store for the Transactions
+ *
+ * Store for the Transaction Events
+ *
  */
-class Store {
+class TransactionsStore {
 
   /**
    * HashMap of Transactions
    *
-   * @var array of \PhilKra\Transaction\ITransaction
+   * @var array of \PhilKra\Events\Transaction
    */
   private $store = [];
 
@@ -21,11 +23,11 @@ class Store {
    *
    * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
    *
-   * @param \PhilKra\Transaction\ITransaction $transaction
+   * @param \PhilKra\Events\Transaction $transaction
    *
    * @return void
    */
-  public function register( ITransaction $transaction ) {
+  public function register( Transaction $transaction ) {
     $name = $transaction->getTransactionName();
 
     // Do not override the
@@ -42,7 +44,7 @@ class Store {
    *
    * @param final string $name
    *
-   * @return mixed: \PhilKra\Transaction\ITransaction | null
+   * @return mixed: \PhilKra\Events\Transaction | null
    */
   public function fetch( string $name ) {
     return $this->store[$name] ?? null;

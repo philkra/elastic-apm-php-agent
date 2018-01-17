@@ -1,25 +1,24 @@
 <?php
-namespace PhilKra\Tests\Transaction;
+namespace PhilKra\Tests\Stores;
 
-use \PhilKra\Transaction\Store;
-use \PhilKra\Transaction\ITransaction;
-use \PhilKra\Transaction\Factory;
+use \PhilKra\Stores\TransactionsStore;
+use \PhilKra\Events\Transaction;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PHPUnit\Framework\TestCase;
 
 /**
- * Test Case for @see \PhilKra\Transaction\Store
+ * Test Case for @see \PhilKra\Stores\TransactionsStore
  */
-final class StoreTest extends TestCase {
+final class TransactionsStoreTest extends TestCase {
 
   /**
-   * @covers \PhilKra\Transaction\Store::register
-   * @covers \PhilKra\Transaction\Store::get
+   * @covers \PhilKra\Stores\TransactionsStore::register
+   * @covers \PhilKra\Stores\TransactionsStore::get
    */
   public function testTransactionRegistrationAndFetch() {
-    $store = new Store();
+    $store = new TransactionsStore();
     $name  = 'test';
-    $trx   = Factory::create( $name );
+    $trx   = new Transaction( $name );
 
     // Store the Transaction and fetch it then
     $store->register( $trx );
@@ -35,12 +34,12 @@ final class StoreTest extends TestCase {
    *
    * @expectedException \PhilKra\Exception\Transaction\DuplicateTransactionNameException
    *
-   * @covers \PhilKra\Transaction\Store::register
+   * @covers \PhilKra\Stores\TransactionsStore::register
    */
   public function testDuplicateTransactionRegistration() {
-    $store = new Store();
+    $store = new TransactionsStore();
     $name  = 'test';
-    $trx   = Factory::create( $name );
+    $trx   = new Transaction( $name );
 
     // Store the Transaction again to force an Exception
     $store->register( $trx );
@@ -50,10 +49,10 @@ final class StoreTest extends TestCase {
   /**
    * @depends testTransactionRegistrationAndFetch
    *
-   * @covers \PhilKra\Transaction\Store::get
+   * @covers \PhilKra\Stores\TransactionsStore::get
    */
   public function testFetchUnknownTransaction() {
-    $store = new Store();
+    $store = new TransactionsStore();
     $this->assertNull( $store->fetch( 'unknown' ) );
   }
 

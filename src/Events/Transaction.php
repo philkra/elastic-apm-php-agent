@@ -1,13 +1,14 @@
 <?php
-namespace PhilKra\Transaction;
+namespace PhilKra\Events;
 
 use \PhilKra\Helper\Timer;
-use \PhilKra\Transaction\Summary;
 
 /**
+ *
  * Abstract Transaction class for all inheriting Transactions
+ *
  */
-class Transaction implements ITransaction {
+class Transaction extends EventBean {
 
   /**
    * Transaction Name
@@ -26,9 +27,12 @@ class Transaction implements ITransaction {
   /**
    * Summary of this Transaction
    *
-   * @var \PhilKra\Transaction\Summary
+   * @var array
    */
-  private $summary;
+  private $summary = [
+    'duration'  => 0.0,
+    'backtrace' => null,
+  ];
 
   /**
    * Is the Transaction running ?
@@ -38,33 +42,30 @@ class Transaction implements ITransaction {
   private $running = false;
 
   /**
-   * Transaction Done Timestamp
-   *
-   * @var string
-   */
-  private $timestamp;
-
-  /**
    * Create the Transaction
    *
    * @param final string $name
    */
   public function __construct( string $name ) {
+    parent::__construct();
     $this->setTransactionName( $name );
     $this->timer = new Timer();
   }
 
   /**
-   * @see \PhilKra\Transaction|ITransaction::start
+   * Start the Transaction
+   *
+   * @return void
    */
   public function start() {
     $this->timer->start();
     $this->running = true;
-    $this->timestamp = date( 'YYYY-MM-DDTHH:mm:ss.sssZ' );
   }
 
   /**
-   * @see \PhilKra\Transaction|ITransaction::stop
+   * Stop the Transaction
+   *
+   * @return void
    */
   public function stop() {
     // Stop the Timer & Set the Status to not running
@@ -72,21 +73,25 @@ class Transaction implements ITransaction {
     $this->running = false;
 
     // Store Summary
-    $this->summary = new Summary(
-      $this->timer->getDuration(),
-      debug_backtrace()
-    );
+    $this->summary['duration']  = $this->timer->getDuration();
+    $this->summary['backtrace'] = debug_backtrace();
   }
 
   /**
-   * @see \PhilKra\Transaction|ITransaction::setTransactionName
+   * Set the Transaction Name
+   *
+   * @param string $name
+   *
+   * @return void
    */
   public function setTransactionName( string $name ) {
     $this->name = $name;
   }
 
   /**
-   * @see \PhilKra\Transaction|ITransaction::getTransactionName
+   * Get the Transaction Name
+   *
+   * @return string
    */
   public function getTransactionName() : string {
     return $this->name;
@@ -95,23 +100,10 @@ class Transaction implements ITransaction {
   /**
    * Get the Summary of this Transaction
    *
-   * <i>
-   *  Watch out, as the case that Summary isn't created yet is not covered.
-   * </i>
-   *
-   * @return \PhilKra\Transaction\Summary
+   * @return array
    */
-  public function getSummary() : Summary {
+  public function getSummary() : array {
     return $this->summary;
-  }
-
-  /**
-   * Commit the Transaction trace to the APM Server
-   *
-   * @return bool
-   */
-  public function send() : bool {
-
   }
 
 }
