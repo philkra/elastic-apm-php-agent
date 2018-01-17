@@ -1,23 +1,23 @@
 <?php
 namespace PhilKra\Tests;
 
-use \PhilKra\Apm;
+use \PhilKra\Agent;
 use \PhilKra\Transaction\Summary;
 use \PHPUnit\Framework\TestCase;
 
 /**
- * Test Case for @see \PhilKra\Apm
+ * Test Case for @see \PhilKra\Agent
  */
-final class ApmTest extends TestCase {
+final class AgentTest extends TestCase {
 
   /**
-   * @covers \PhilKra\Apm::__construct
-   * @covers \PhilKra\Apm::getConfig
-   * @covers \PhilKra\Apm::getDefaultConfig
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::getConfig
+   * @covers \PhilKra\Agent::getDefaultConfig
    */
   public function testControlDefaultConfig() {
     $appName = sprintf( 'app_name_%d', rand( 10, 99 ) );
-    $agent = new Apm( [ 'appName' => $appName ] );
+    $agent = new Agent( [ 'appName' => $appName ] );
 
     // Control Default Config
     $config = $agent->getConfig();
@@ -38,9 +38,9 @@ final class ApmTest extends TestCase {
   /**
    * @depends testControlDefaultConfig
    *
-   * @covers \PhilKra\Apm::__construct
-   * @covers \PhilKra\Apm::getConfig
-   * @covers \PhilKra\Apm::getDefaultConfig
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::getConfig
+   * @covers \PhilKra\Agent::getDefaultConfig
    */
   public function testControlInjectedConfig() {
     $init = [
@@ -53,7 +53,7 @@ final class ApmTest extends TestCase {
       'hostname'      => sprintf( 'host_%d', rand( 0, 9 ) ),
     ];
 
-    $agent = new Apm( $init );
+    $agent = new Agent( $init );
 
     // Control Default Config
     $config = $agent->getConfig();
@@ -65,12 +65,12 @@ final class ApmTest extends TestCase {
   /**
    * @depends testControlInjectedConfig
    *
-   * @covers \PhilKra\Apm::__construct
-   * @covers \PhilKra\Apm::startTransaction
-   * @covers \PhilKra\Apm::stopTransaction
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::startTransaction
+   * @covers \PhilKra\Agent::stopTransaction
    */
   public function testStartAndStopATransaction() {
-    $agent = new Apm( [ 'appName' => 'phpunit_1' ] );
+    $agent = new Agent( [ 'appName' => 'phpunit_1' ] );
 
     // Create a Transaction, wait and Stop it
     $name = 'trx';
@@ -90,11 +90,11 @@ final class ApmTest extends TestCase {
    *
    * @expectedException \PhilKra\Exception\Transaction\UnknownTransactionException
    *
-   * @covers \PhilKra\Apm::__construct
-   * @covers \PhilKra\Apm::stopTransaction
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::stopTransaction
    */
   public function testForceErrorOnUnstartedTransaction() {
-    $agent = new Apm( [ 'appName' => 'phpunit_2' ] );
+    $agent = new Agent( [ 'appName' => 'phpunit_2' ] );
 
     // Stop an unstarted Transaction and let it go boom!
     $agent->stopTransaction( 'unknown' );
@@ -103,11 +103,11 @@ final class ApmTest extends TestCase {
   /**
    * @depends testForceErrorOnUnstartedTransaction
    *
-   * @covers \PhilKra\Apm::__construct
-   * @covers \PhilKra\Apm::getTransactionSummary
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::getTransactionSummary
    */
   public function testForceErrorOnSummaryOfUnstartedTransaction() {
-    $agent = new Apm( [ 'appName' => 'phpunit_3' ] );
+    $agent = new Agent( [ 'appName' => 'phpunit_3' ] );
 
     $summary = $agent->getTransactionSummary( 'unknown' );
     $this->assertNull( $summary );

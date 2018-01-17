@@ -13,7 +13,14 @@ use \PhilKra\Exception\Transaction\UnknownTransactionException;
 /**
  * APM Agent
  */
-class Apm {
+class Agent {
+
+  /**
+   * Agent Version
+   *
+   * @var string
+   */
+  const VERSION = '0.1.0';
 
   /**
    * Config Store
