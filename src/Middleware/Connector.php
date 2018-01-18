@@ -78,12 +78,14 @@ class Connector {
   private function getRequestHeaders() : array {
     // Default Headers Set
     $headers = [
-      'Content-Type' => 'application/json',
+      'Content-Type'     => 'application/json',
+      'Content-Encoding' => 'deflate',
+      'User-Agent'       => spritnf( 'elasticapm-php/%s', Agent::VERSION ),
     ];
 
     // Add Secret Token to Header
     if( $this->config->get( 'secretToken' ) !== null ) {
-//      $headers['SECRET'] = $this->config['secretToken'];
+      $headers['Authorization'] = sprintf( 'Bearer %s', $this->config['secretToken'] );
     }
 
     return $headers;
