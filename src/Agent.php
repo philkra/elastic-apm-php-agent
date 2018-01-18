@@ -32,7 +32,7 @@ class Agent {
    *
    * @var string
    */
-  const NAME = 'php';
+  const NAME = 'elastic-php';
 
   /**
    * Config Store
