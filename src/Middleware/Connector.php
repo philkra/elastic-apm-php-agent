@@ -42,15 +42,18 @@ class Connector {
    *
    * @param \PhilKra\Stores\TransactionsStore $store
    *
-   * @return
+   * @return bool
    */
-  public function sendTransactions( TransactionsStore $store ) {
+  public function sendTransactions( TransactionsStore $store ) : bool {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'transactions' ),
       $this->getRequestHeaders(),
       json_encode( new Transactions( $this->config, $store ) )
     );
+
+    $response = $this->client->send( $request );
+    return ( $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 );
   }
 
   /**
@@ -58,9 +61,9 @@ class Connector {
    *
    * @param \PhilKra\Stores\ErrorsStore $store
    *
-   * @return
+   * @return bool
    */
-  public function sendErrors( ErrorsStore $store ) {
+  public function sendErrors( ErrorsStore $store ) : bool {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'errors' ),
@@ -69,6 +72,7 @@ class Connector {
     );
 
     $response = $this->client->send( $request );
+    return ( $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 );
   }
 
   /**
