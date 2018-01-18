@@ -140,7 +140,7 @@ class Agent {
    * @return void
    */
   public function captureException( \Throwable $exception ) {
-    $this->errorsStore->register( $this->timer->getElapsed(), $exception );
+    $this->errorsStore->register( $exception );
   }
 
   /**
