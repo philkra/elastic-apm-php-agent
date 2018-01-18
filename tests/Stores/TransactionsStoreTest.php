@@ -20,6 +20,9 @@ final class TransactionsStoreTest extends TestCase {
     $name  = 'test';
     $trx   = new Transaction( $name );
 
+    // Must be Empty
+    $this->assertTrue( $store->isEmpty() );
+
     // Store the Transaction and fetch it then
     $store->register( $trx );
     $proof = $store->fetch( $name );
@@ -27,6 +30,9 @@ final class TransactionsStoreTest extends TestCase {
     // We should get the Same!
     $this->assertEquals( $trx, $proof );
     $this->assertNotNull( $proof );
+
+    // Must not be Empty
+    $this->assertFalse( $store->isEmpty() );
   }
 
   /**

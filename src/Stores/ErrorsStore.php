@@ -38,6 +38,15 @@ class ErrorsStore implements \JsonSerializable {
   }
 
   /**
+   * Is the Store Empty ?
+   *
+   * @return bool
+   */
+  public function isEmpty() : bool {
+    return empty( $this->store );
+  }
+
+  /**
    * Serialize the Error Events Store
    *
    * @return array

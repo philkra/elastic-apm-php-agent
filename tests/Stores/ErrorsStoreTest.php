@@ -19,11 +19,17 @@ final class ErrorsStoreTest extends TestCase {
     $store = new ErrorsStore();
     $error = new \Error( 'error' );
 
+    // Must be Empty
+    $this->assertTrue( $store->isEmpty() );
+
     // Store the Error and Check that it's "stored"
     $store->register( $error );
     $list = $store->list();
 
     $this->assertEquals( count( $list ), 1 );
+
+    // Must not be Empty
+    $this->assertFalse( $store->isEmpty() );
   }
 
 }

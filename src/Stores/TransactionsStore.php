@@ -50,4 +50,13 @@ class TransactionsStore {
     return $this->store[$name] ?? null;
   }
 
+  /**
+   * Is the Store Empty ?
+   *
+   * @return bool
+   */
+  public function isEmpty() : bool {
+    return empty( $this->store );
+  }
+
 }
