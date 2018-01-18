@@ -5,6 +5,8 @@ namespace PhilKra\Events;
  *
  * Event Bean for Error wrapping
  *
+ * @link https://www.elastic.co/guide/en/apm/server/master/error-api.html
+ *
  */
 class Error extends EventBean implements \JsonSerializable {
 
@@ -26,7 +28,7 @@ class Error extends EventBean implements \JsonSerializable {
   }
 
   /**
-   * Serialize Event
+   * Serialize Error Event
    *
    * @return array
    */

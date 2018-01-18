@@ -7,8 +7,10 @@ use \PhilKra\Helper\Timer;
  *
  * Abstract Transaction class for all inheriting Transactions
  *
+ * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
+ *
  */
-class Transaction extends EventBean {
+class Transaction extends EventBean implements \JsonSerializable {
 
   /**
    * Transaction Name
@@ -16,6 +18,13 @@ class Transaction extends EventBean {
    * @var string
    */
   private $name;
+
+  /**
+   * Transaction Type
+   *
+   * @var string
+   */
+  private $type = 'generic';
 
   /**
    * Transaction Timer
@@ -104,6 +113,40 @@ class Transaction extends EventBean {
    */
   public function getSummary() : array {
     return $this->summary;
+  }
+
+  /**
+   * Set the Transaction Type
+   *
+   * @return string
+   */
+  public function setTransactionType( string $type ) {
+    $this->type = $type;
+  }
+
+  /**
+   * Get the Transaction Type
+   *
+   * @return string
+   */
+  public function getTransactionType() : string {
+    return $this->type;
+  }
+
+  /**
+   * Serialize Transaction Event
+   *
+   * @return array
+   */
+  public function jsonSerialize() : array {
+    return [
+      'id'        => $this->getId(),
+      'timestamp' => $this->getTimestamp(),
+      'name'      => $this->getTransactionName(),
+      'type'      => $this->getTransactionType(),
+      'duration'  => $this->summary['duration'],
+      'result'    => 'n/a'
+    ];
   }
 
 }
