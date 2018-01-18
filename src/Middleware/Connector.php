@@ -2,8 +2,6 @@
 namespace PhilKra\Middleware;
 
 use GuzzleHttp\Psr7\Request;
-use \PhilKra\Transaction\Transaction;
-use \PhilKra\Transaction\ITransaction;
 
 /**
  * Connector which Transmits the Data to the Endpoints
