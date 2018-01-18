@@ -62,8 +62,8 @@ class Error extends EventBean implements \JsonSerializable {
       }
       if( isset( $trace['file'] ) === true ) {
         $item += [
-          'abs_path' => basename( $trace['file'] ),
-          'filename' => $trace['file']
+          'filename' => basename( $trace['file'] ),
+          'abs_path' => $trace['file']
         ];
       }
       if( isset( $trace['class'] ) === true ) {
