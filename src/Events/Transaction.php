@@ -20,13 +20,6 @@ class Transaction extends EventBean implements \JsonSerializable {
   private $name;
 
   /**
-   * Transaction Type
-   *
-   * @var string
-   */
-  private $type = 'generic';
-
-  /**
    * Transaction Timer
    *
    * @var \PhilKra\Helper\Timer
@@ -41,6 +34,16 @@ class Transaction extends EventBean implements \JsonSerializable {
   private $summary = [
     'duration'  => 0.0,
     'backtrace' => null,
+  ];
+
+  /**
+   * Transaction Metadata
+   *
+   * @var array
+   */
+  private $meta = [
+    'result' => 200,
+    'type'   => 'generic',
   ];
 
   /**
@@ -82,7 +85,7 @@ class Transaction extends EventBean implements \JsonSerializable {
     $this->running = false;
 
     // Store Summary
-    $this->summary['duration']  = $this->timer->getDuration();
+    $this->summary['duration']  = round( $this->timer->getDuration(), 3 );
     $this->summary['backtrace'] = debug_backtrace();
   }
 
@@ -116,21 +119,14 @@ class Transaction extends EventBean implements \JsonSerializable {
   }
 
   /**
-   * Set the Transaction Type
+   * Set the Transaction Meta data
    *
-   * @return string
-   */
-  public function setTransactionType( string $type ) {
-    $this->type = $type;
-  }
-
-  /**
-   * Get the Transaction Type
+   * @param array $meta
    *
-   * @return string
+   * @return void
    */
-  public function getTransactionType() : string {
-    return $this->type;
+  public function setMeta( array $meta ) {
+    $this->meta = array_merge( $this->meta, $meta );
   }
 
   /**
@@ -143,9 +139,9 @@ class Transaction extends EventBean implements \JsonSerializable {
       'id'        => $this->getId(),
       'timestamp' => $this->getTimestamp(),
       'name'      => $this->getTransactionName(),
-      'type'      => $this->getTransactionType(),
       'duration'  => $this->summary['duration'],
-      'result'    => 'n/a'
+      'type'      => $this->meta['type'],
+      'result'    => (string)$this->meta['result'],
     ];
   }
 

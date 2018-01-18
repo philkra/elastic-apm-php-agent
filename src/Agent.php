@@ -119,6 +119,26 @@ class Agent {
   }
 
   /**
+   * Set Transaction Meta data
+   *
+   * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
+   *
+   * @param string $name
+   * @param array  $meta
+   *
+   * @return void
+   */
+  public function setTransactionMeta( string $name, array $meta ) {
+    // Does this Transaction even exist ?
+    if( $this->transactionsStore->fetch( $name ) === null ) {
+      throw new UnknownTransactionException( $name );
+    }
+
+    // Now, we're safe to write the meta data!
+    $this->transactionsStore->fetch( $name )->setMeta( $meta );
+  }
+
+  /**
    * Get the Summary of a traced Transaction
    *
    * @param string $name
