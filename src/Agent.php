@@ -7,6 +7,7 @@ use \PhilKra\Events\Transaction;
 use \PhilKra\Events\Errors;
 use \PhilKra\Helper\Timer;
 use \PhilKra\Helper\Config;
+use \PhilKra\Middleware\Connector;
 use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use \PhilKra\Exception\Transaction\UnknownTransactionException;
 
@@ -149,6 +150,27 @@ class Agent {
    */
   public function getConfig() : \PhilKra\Helper\Config {
     return $this->config;
+  }
+
+  /**
+   * Send Data to APM Service
+   *
+   * @return bool
+   */
+  public function send() : bool {
+    $connector = new Connector( $this->config );
+
+    // Commit the Errors
+    if( $this->errorsStore->isEmpty() === false ) {
+      $connector->sendErrors( json_encode( $this->errorsStore ) );
+    }
+
+    // Commit the Transactions
+    if( $this->transactionsStore->isEmpty() === false ) {
+      $connector->sendTransactions( json_encode( $this->transactionsStore ) );
+    }
+
+    return true;
   }
 
 }

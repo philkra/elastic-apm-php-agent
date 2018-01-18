@@ -29,7 +29,7 @@ class Connector {
    *
    * @return
    */
-  public function pushTransactions( string $json ) {
+  public function sendTransactions( string $json ) {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'transactions' ),
@@ -45,7 +45,7 @@ class Connector {
    *
    * @return
    */
-  public function pushErrors( string $json ) {
+  public function sendErrors( string $json ) {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'errors' ),
