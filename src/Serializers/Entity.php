@@ -47,7 +47,7 @@ class Entity {
       'system' => [
         'hostname'     => $this->config->get( 'hostname' ),
         'architecture' => php_uname( 'm' ),
-        'platform'     => PHP_OS_FAMILY
+        'platform'     => php_uname( 's' )
       ]
     ];
   }
