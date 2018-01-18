@@ -3,10 +3,9 @@
 	"type" : "Elastic APM Agent for PHP",
 	"license": "MIT",
 	"require" : {
-		"monolog/monolog" : "~1.0",
 		"guzzlehttp/guzzle": "6.*",
-		"ext-curl" : "*",
-		"ramsey/uuid": "^3.7"
+		"ramsey/uuid": "^3.7",
+		"ext-curl" : "*"
 	},
 	"require-dev" : {
 		"php" : ">= 7.0",
