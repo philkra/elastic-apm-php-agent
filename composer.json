@@ -1,4 +1,7 @@
 {
+	"name" : "philkra/elastic-apm-php-agent",
+	"type" : "Elastic APM Agent for PHP",
+	"license": "MIT",
 	"require" : {
 		"monolog/monolog" : "~1.0",
 		"guzzlehttp/guzzle": "6.*",
@@ -26,10 +29,6 @@
 			"name" : "Philip Krauss",
 			"email" : "philip@philipkrauss.at",
 			"homepage" : "https://github.com/philkra/elastic-apm-agent-php",
-			"role" : "Dev Team"
 		}
-	],
-	"name" : "Elastic APM Agent for PHP (7.x)",
-	"type" : "Elastic APM Agent for PHP",
-	"license": "MIT"
+	]
 }
