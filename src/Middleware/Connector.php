@@ -1,10 +1,13 @@
 <?php
 namespace PhilKra\Middleware;
 
+use \PhilKra\Agent;
 use GuzzleHttp\Psr7\Request;
 
 /**
+ *
  * Connector which Transmits the Data to the Endpoints
+ * 
  */
 class Connector {
 
