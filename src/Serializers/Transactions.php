@@ -10,7 +10,7 @@ use \PhilKra\Stores\TransactionsStore;
  * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
  *
  */
-class Transactions extends Entity implements JsonSerializable {
+class Transactions extends Entity implements \JsonSerializable {
 
   /**
    * @var \PhilKra\Stores\TransactionsStore

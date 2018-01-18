@@ -10,7 +10,7 @@ use \PhilKra\Stores\ErrorsStore;
  * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
  *
  */
-class Errors extends Entity implements JsonSerializable {
+class Errors extends Entity implements \JsonSerializable {
 
   /**
    * @var \PhilKra\Stores\ErrorsStore
