@@ -38,7 +38,7 @@ class Error extends EventBean implements \JsonSerializable {
       'timestamp' => $this->getTimestamp(),
       'exception' => [
         'message'    => $this->throwable->getMessage(),
-//        'type'       => $this->throwable->getType(),
+        'type'       => get_class( $this->throwable ),
         'code'       => $this->throwable->getCode(),
         'stacktrace' => $this->mapStacktrace(),
       ]
