@@ -175,12 +175,12 @@ class Agent {
 
     // Commit the Errors
     if( $this->errorsStore->isEmpty() === false ) {
-      $connector->sendErrors( json_encode( $this->errorsStore ) );
+      $connector->sendErrors( $this->errorsStore );
     }
 
     // Commit the Transactions
     if( $this->transactionsStore->isEmpty() === false ) {
-      $connector->sendTransactions( json_encode( $this->transactionsStore ) );
+      $connector->sendTransactions( $this->transactionsStore );
     }
 
     return true;

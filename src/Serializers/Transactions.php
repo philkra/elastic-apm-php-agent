@@ -1,7 +1,7 @@
 <?php
 namespace PhilKra\Serializers;
 
-use \PhilKra\Transaction\ITransaction;
+use \PhilKra\Stores\TransactionsStore;
 
 /**
  *
@@ -10,37 +10,29 @@ use \PhilKra\Transaction\ITransaction;
  * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
  *
  */
-class Transactions implements JsonSerializable {
+class Transactions extends Entity implements JsonSerializable {
 
   /**
-   * @var \PhilKra\Transactions\Store
+   * @var \PhilKra\Stores\TransactionsStore
    */
-  private $transactions;
+  private $store;
 
   /**
-   * @param Config $config
-   * @param Store  $transactions
+   * @param ErrorsStore $store
    */
-  public function __construct( Config $config, Store $transactions ) {
-    parent::__construct( $config );
-    $this->transactions = $transactions;
+  public function __construct( TransactionsStore $store ) {
+    $this->$store = $store;
   }
 
   /**
-   * Serialize Error Data to JSON "ready" Array
+   * Serialize Transactions Data to JSON "ready" Array
    *
    * @return array
    */
   public function jsonSerialize() {
-    $set = $this->getSkeleton();
-
-    $set += [
-      'transactions' => [
-
-      ]
+    return $this->getSkeleton() + [
+      'transactions' => $this->store
     ];
-
-    return $set;
   }
 
 }

@@ -1,8 +1,7 @@
 <?php
 namespace PhilKra\Serializers;
 
-use \PhilKra\Helper\Config;
-use \PhilKra\Transactions\Store;
+use \PhilKra\Stores\ErrorsStore;
 
 /**
  *
@@ -14,17 +13,15 @@ use \PhilKra\Transactions\Store;
 class Errors extends Entity implements JsonSerializable {
 
   /**
-   * @var \PhilKra\Transactions\Store
+   * @var \PhilKra\Stores\ErrorsStore
    */
-  private $transactions;
+  private $store;
 
   /**
-   * @param Config $config
-   * @param Store  $transactions
+   * @param ErrorsStore $store
    */
-  public function __construct( Config $config, Store $transactions ) {
-    parent::__construct( $config );
-    $this->transactions = $transactions;
+  public function __construct( ErrorsStore $store ) {
+    $this->$store = $store;
   }
 
   /**
@@ -33,18 +30,9 @@ class Errors extends Entity implements JsonSerializable {
    * @return array
    */
   public function jsonSerialize() {
-    $set = $this->getSkeleton();
-
-    $set += [
-      'errors' => [
-
-      ],
-      'exceptions' => [
-
-      ]
+    return $this->getSkeleton() + [
+      'errors' => $this->store
     ];
-
-    return $set;
   }
 
 }

@@ -2,12 +2,16 @@
 namespace PhilKra\Middleware;
 
 use \PhilKra\Agent;
-use GuzzleHttp\Psr7\Request;
+use \GuzzleHttp\Psr7\Request;
+use \PhilKra\Stores\ErrorsStore;
+use \PhilKra\Stores\TransactionsStore;
+use \PhilKra\Serializers\Errors;
+use \PhilKra\Serializers\Transactions;
 
 /**
  *
  * Connector which Transmits the Data to the Endpoints
- * 
+ *
  */
 class Connector {
 
@@ -28,32 +32,32 @@ class Connector {
   /**
    * Push the Transactions to APM Server
    *
-   * @param string $json
+   * @param \PhilKra\Stores\TransactionsStore $store
    *
    * @return
    */
-  public function sendTransactions( string $json ) {
+  public function sendTransactions( TransactionsStore $store ) {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'transactions' ),
       $this->getRequestHeaders(),
-      $json
+      json_encode( new Transactions( $store ) )
     );
   }
 
   /**
    * Push the Errors to APM Server
    *
-   * @param string $json
+   * @param \PhilKra\Stores\ErrorsStore $store
    *
    * @return
    */
-  public function sendErrors( string $json ) {
+  public function sendErrors( ErrorsStore $store ) {
     $request = new Request(
       'POST',
       $this->getEndpoint( 'errors' ),
       $this->getRequestHeaders(),
-      $json
+      json_encode( new Errors( $store ) )
     );
   }
 
