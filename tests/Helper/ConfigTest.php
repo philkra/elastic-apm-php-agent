@@ -27,6 +27,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'secretToken', $config );
     $this->assertArrayHasKey( 'serverUrl', $config );
     $this->assertArrayHasKey( 'hostname', $config );
+    $this->assertArrayHasKey( 'active', $config );
     $this->assertArrayHasKey( 'timeout', $config );
     $this->assertArrayHasKey( 'apmVersion', $config );
     $this->assertArrayHasKey( 'appVersion', $config );
@@ -36,6 +37,7 @@ final class ConfigTest extends TestCase {
     $this->assertNull( $config['secretToken'] );
     $this->assertEquals( $config['serverUrl'], 'http://127.0.0.1:8200' );
     $this->assertEquals( $config['hostname'], gethostname() );
+    $this->assertTrue( $config['active'] );
     $this->assertEquals( $config['timeout'], 5 );
     $this->assertEquals( $config['apmVersion'], 'v1' );
     $this->assertEquals( $config['backtraceDepth'], 25 );
@@ -58,6 +60,7 @@ final class ConfigTest extends TestCase {
       'frameworkName' => uniqid(),
       'timeout'       => rand( 10, 20 ),
       'hostname'      => sprintf( 'host_%d', rand( 0, 9 ) ),
+      'active'        => false,
     ];
 
     $agent = new Agent( $init );

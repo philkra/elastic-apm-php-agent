@@ -59,6 +59,7 @@ class Config {
       'secretToken'    => null,
       'serverUrl'      => 'http://127.0.0.1:8200',
       'appVersion'     => '',
+      'active'         => true,
       'hostname'       => gethostname(),
       'timeout'        => 5,
       'apmVersion'     => 'v1',
