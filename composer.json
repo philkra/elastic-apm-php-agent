@@ -28,7 +28,7 @@
 	"authors" : [{
 			"name" : "Philip Krauss",
 			"email" : "philip@philipkrauss.at",
-			"homepage" : "https://github.com/philkra/elastic-apm-agent-php",
+			"homepage" : "https://github.com/philkra/elastic-apm-agent-php"
 		}
 	]
 }
