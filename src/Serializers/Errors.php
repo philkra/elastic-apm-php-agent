@@ -21,7 +21,7 @@ class Errors extends Entity implements \JsonSerializable {
    * @param ErrorsStore $store
    */
   public function __construct( ErrorsStore $store ) {
-    $this->$store = $store;
+    $this->store = $store;
   }
 
   /**

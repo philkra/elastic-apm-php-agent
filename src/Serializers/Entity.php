@@ -21,7 +21,7 @@ class Entity {
    * @param Store  $transactions
    */
   public function __construct( Config $config ) {
-    $this->$config = $config;
+    $this->config = $config;
   }
 
   /**

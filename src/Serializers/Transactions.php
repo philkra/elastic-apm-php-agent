@@ -21,7 +21,7 @@ class Transactions extends Entity implements \JsonSerializable {
    * @param ErrorsStore $store
    */
   public function __construct( TransactionsStore $store ) {
-    $this->$store = $store;
+    $this->store = $store;
   }
 
   /**
