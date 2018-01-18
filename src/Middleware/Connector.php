@@ -2,11 +2,13 @@
 namespace PhilKra\Middleware;
 
 use \PhilKra\Agent;
-use \GuzzleHttp\Psr7\Request;
 use \PhilKra\Stores\ErrorsStore;
 use \PhilKra\Stores\TransactionsStore;
 use \PhilKra\Serializers\Errors;
 use \PhilKra\Serializers\Transactions;
+
+use \GuzzleHttp\Psr7\Request;
+use \GuzzleHttp\Client;
 
 /**
  *
@@ -23,10 +25,16 @@ class Connector {
   private $config;
 
   /**
+   * @var \GuzzleHttp\Client
+   */
+  private $client;
+
+  /**
    * @param \PhilKra\Helper\Config $config
    */
   public function __construct( \PhilKra\Helper\Config $config ) {
     $this->config = $config;
+    $this->client = new Client();
   }
 
   /**
@@ -59,6 +67,8 @@ class Connector {
       $this->getRequestHeaders(),
       json_encode( new Errors( $this->config, $store ) )
     );
+
+    $response = $this->client->send( $request );
   }
 
   /**
@@ -85,9 +95,8 @@ class Connector {
   private function getRequestHeaders() : array {
     // Default Headers Set
     $headers = [
-      'Content-Type'     => 'application/json',
-      'Content-Encoding' => 'deflate',
-      'User-Agent'       => sprintf( 'elasticapm-php/%s', Agent::VERSION ),
+      'Content-Type' => 'application/json',
+      'User-Agent'   => sprintf( 'elasticapm-php/%s', Agent::VERSION ),
     ];
 
     // Add Secret Token to Header
