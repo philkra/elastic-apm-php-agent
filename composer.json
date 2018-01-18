@@ -1,6 +1,5 @@
 {
 	"name" : "philkra/elastic-apm-php-agent",
-	"type" : "Elastic APM Agent for PHP",
 	"license": "MIT",
 	"require" : {
 		"guzzlehttp/guzzle": "6.*",
