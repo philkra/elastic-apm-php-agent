@@ -37,7 +37,7 @@ class Entity {
         'pid'     => getmypid(),
         'language' => [
           'name'    => 'php',
-          'version' => PHP_RELEASE_VERSION
+          'version' => phpversion()
         ],
         'agent' => [
           'name'    => Agent::NAME,
