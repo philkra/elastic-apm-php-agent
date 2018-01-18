@@ -80,7 +80,7 @@ class Connector {
     $headers = [
       'Content-Type'     => 'application/json',
       'Content-Encoding' => 'deflate',
-      'User-Agent'       => spritnf( 'elasticapm-php/%s', Agent::VERSION ),
+      'User-Agent'       => sprintf( 'elasticapm-php/%s', Agent::VERSION ),
     ];
 
     // Add Secret Token to Header
