@@ -153,7 +153,7 @@ class Agent {
    * @return void
    */
   public function captureError( \Throwable $error ) {
-    $this->cacaptureException( $error );
+    $this->captureException( $error );
   }
 
   /**
