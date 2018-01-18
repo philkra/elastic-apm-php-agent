@@ -191,19 +191,25 @@ class Agent {
    * @return bool
    */
   public function send() : bool {
+    // Is the Agent enabled ?
+    if( $this->config->get( 'active' ) === false ) {
+      return false;
+    }
+
     $connector = new Connector( $this->config );
+    $status = true;
 
     // Commit the Errors
     if( $this->errorsStore->isEmpty() === false ) {
-      $connector->sendErrors( $this->errorsStore );
+      $status = $status && $connector->sendErrors( $this->errorsStore );
     }
 
     // Commit the Transactions
     if( $this->transactionsStore->isEmpty() === false ) {
-      $connector->sendTransactions( $this->transactionsStore );
+      $status = $status && $connector->sendTransactions( $this->transactionsStore );
     }
 
-    return true;
+    return $status;
   }
 
 }
