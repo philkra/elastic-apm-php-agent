@@ -41,7 +41,7 @@ class Connector {
       'POST',
       $this->getEndpoint( 'transactions' ),
       $this->getRequestHeaders(),
-      json_encode( new Transactions( $store ) )
+      json_encode( new Transactions( $this->config, $store ) )
     );
   }
 
@@ -57,7 +57,7 @@ class Connector {
       'POST',
       $this->getEndpoint( 'errors' ),
       $this->getRequestHeaders(),
-      json_encode( new Errors( $store ) )
+      json_encode( new Errors( $this->config, $store ) )
     );
   }
 

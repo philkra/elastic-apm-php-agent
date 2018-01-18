@@ -2,6 +2,7 @@
 namespace PhilKra\Serializers;
 
 use \PhilKra\Stores\ErrorsStore;
+use \PhilKra\Helper\Config;
 
 /**
  *
@@ -20,7 +21,8 @@ class Errors extends Entity implements \JsonSerializable {
   /**
    * @param ErrorsStore $store
    */
-  public function __construct( ErrorsStore $store ) {
+  public function __construct( Config $config, ErrorsStore $store ) {
+    parent::__construct( $config );
     $this->store = $store;
   }
 

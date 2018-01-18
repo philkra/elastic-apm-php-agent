@@ -2,6 +2,7 @@
 namespace PhilKra\Serializers;
 
 use \PhilKra\Stores\TransactionsStore;
+use \PhilKra\Helper\Config;
 
 /**
  *
@@ -20,7 +21,8 @@ class Transactions extends Entity implements \JsonSerializable {
   /**
    * @param ErrorsStore $store
    */
-  public function __construct( TransactionsStore $store ) {
+  public function __construct( Config $config, TransactionsStore $store ) {
+    parent::__construct( $config );
     $this->store = $store;
   }
 
