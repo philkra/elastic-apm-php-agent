@@ -34,6 +34,7 @@ class Transaction extends EventBean implements \JsonSerializable {
   private $summary = [
     'duration'  => 0.0,
     'backtrace' => null,
+    'headers'   => []
   ];
 
   /**
@@ -43,15 +44,8 @@ class Transaction extends EventBean implements \JsonSerializable {
    */
   private $meta = [
     'result' => 200,
-    'type'   => 'generic',
+    'type'   => 'generic'
   ];
-
-  /**
-   * Is the Transaction running ?
-   *
-   * @var bool
-   */
-  private $running = false;
 
   /**
    * Create the Transaction
@@ -71,7 +65,6 @@ class Transaction extends EventBean implements \JsonSerializable {
    */
   public function start() {
     $this->timer->start();
-    $this->running = true;
   }
 
   /**
@@ -80,12 +73,12 @@ class Transaction extends EventBean implements \JsonSerializable {
    * @return void
    */
   public function stop() {
-    // Stop the Timer & Set the Status to not running
+    // Stop the Timer
     $this->timer->stop();
-    $this->running = false;
 
     // Store Summary
     $this->summary['duration']  = round( $this->timer->getDuration(), 3 );
+    $this->summary['headers']   = xdebug_get_headers();
     $this->summary['backtrace'] = debug_backtrace();
   }
 
@@ -142,7 +135,40 @@ class Transaction extends EventBean implements \JsonSerializable {
       'duration'  => $this->summary['duration'],
       'type'      => $this->meta['type'],
       'result'    => (string)$this->meta['result'],
+      'context'   => $this->getContext(),
+      'taces'     => $this->mapTraces(),
     ];
+  }
+
+  /**
+   * Get the Transaction Context
+   *
+   * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html#transaction-context-schema
+   *
+   * @return array
+   */
+  private function getContext() : array {
+    return [
+      'request' => [
+        'http_version' => substr( $_SERVER['SERVER_PROTOCOL'], strpos( $_SERVER['SERVER_PROTOCOL'], '/' ) ),
+        'method'       => $_SERVER['REQUEST_METHOD'],
+        'socket'       => [
+          'remote_address' => $_SERVER['REMOTE_ADDR'],
+          'encrypted'      => isset( $_SERVER['HTTPS'] )
+        ],
+        'url'          => [
+          'protocol' => isset( $_SERVER['HTTPS'] ) ? 'https' : 'http',
+          'hostname' => $_SERVER['SERVER_NAME'],
+          'port'     => $_SERVER['SERVER_PORT'],
+          'pathname' => $_SERVER['SCRIPT_NAME'],
+          'search'   => '?' . $_SERVER['QUERY_STRING']
+        ]
+      ]
+    ];
+  }
+
+  private function mapTraces() : array {
+    return [];
   }
 
 }
