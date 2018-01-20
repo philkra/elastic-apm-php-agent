@@ -148,6 +148,8 @@ class Transaction extends EventBean implements \JsonSerializable {
    * @return array
    */
   private function getContext() : array {
+    $headers = getallheaders();
+
     return [
       'request' => [
         'http_version' => substr( $_SERVER['SERVER_PROTOCOL'], strpos( $_SERVER['SERVER_PROTOCOL'], '/' ) ),
@@ -162,6 +164,10 @@ class Transaction extends EventBean implements \JsonSerializable {
           'port'     => $_SERVER['SERVER_PORT'],
           'pathname' => $_SERVER['SCRIPT_NAME'],
           'search'   => '?' . $_SERVER['QUERY_STRING']
+        ],
+        'headers'    => [
+          'user-agent' => $headers['User-Agent'],
+          'cookie'     => $headers['Cookie']
         ]
       ]
     ];
