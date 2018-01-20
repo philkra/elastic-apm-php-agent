@@ -150,29 +150,16 @@ class Agent {
   }
 
   /**
-   * Register a Thrown Exception
+   * Register a Thrown Exception, Error, etc.
    *
    * @link http://php.net/manual/en/class.throwable.php
    *
-   * @param \Throwable $exception
+   * @param \Throwable $thrown
    *
    * @return void
    */
-  public function captureException( \Throwable $exception ) {
-    $this->errorsStore->register( $exception );
-  }
-
-  /**
-   * Register a Thrown Error
-   *
-   * Mnemonic for @see self::captureException
-   *
-   * @param  Throwable $error
-   *
-   * @return void
-   */
-  public function captureError( \Throwable $error ) {
-    $this->captureException( $error );
+  public function captureThrowable( \Throwable $thrown ) {
+    $this->errorsStore->register( $thrown );
   }
 
   /**
