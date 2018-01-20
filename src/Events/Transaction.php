@@ -48,6 +48,17 @@ class Transaction extends EventBean implements \JsonSerializable {
   ];
 
   /**
+   * Extended Contexts such as Custom and/or User
+   *
+   * @var array
+   */
+  private $contexts = [
+    'user'   => [],
+    'custom' => [],
+    'tags'   => []
+  ];
+
+  /**
    * Create the Transaction
    *
    * @param final string $name
@@ -123,6 +134,33 @@ class Transaction extends EventBean implements \JsonSerializable {
   }
 
   /**
+   * Set Meta data of User Context
+   *
+   * @param array $userContext
+   */
+  public function setUserContext( array $userContext ) {
+    $this->contexts['user'] = array_merge( $this->contexts['user'], $userContext );
+  }
+
+  /**
+   * Set custom Meta data for the Transaction in Context
+   *
+   * @param array $customContext
+   */
+  public function setCustomContext( array $customContext ) {
+    $this->contexts['custom'] = array_merge( $this->contexts['custom'], $customContext );
+  }
+
+  /**
+   * Set Tags for this Transaction
+   *
+   * @param array $tags
+   */
+  public function setTags( array $tags ) {
+    $this->contexts['tags'] = array_merge( $this->contexts['tags'], $tags );
+  }
+
+  /**
    * Serialize Transaction Event
    *
    * @return array
@@ -150,7 +188,8 @@ class Transaction extends EventBean implements \JsonSerializable {
   private function getContext() : array {
     $headers = getallheaders();
 
-    return [
+    // Build Context Stub
+    $context = [
       'request' => [
         'http_version' => substr( $_SERVER['SERVER_PROTOCOL'], strpos( $_SERVER['SERVER_PROTOCOL'], '/' ) ),
         'method'       => $_SERVER['REQUEST_METHOD'],
@@ -165,12 +204,34 @@ class Transaction extends EventBean implements \JsonSerializable {
           'pathname' => $_SERVER['SCRIPT_NAME'],
           'search'   => '?' . $_SERVER['QUERY_STRING']
         ],
-        'headers'    => [
+        'headers' => [
           'user-agent' => $headers['User-Agent'],
           'cookie'     => $headers['Cookie']
         ]
       ]
     ];
+
+    // Add Cookies Map
+    if( empty( $_COOKIE ) === false ) {
+      $context['request']['cookies'] = $_COOKIE;
+    }
+
+    // Add User Context
+    if( empty( $this->contexts['user'] ) === false ) {
+      $context['request']['user'] = $this->contexts['user'];
+    }
+
+    // Add Custom Context
+    if( empty( $this->contexts['custom'] ) === false ) {
+      $context['request']['custom'] = $this->contexts['custom'];
+    }
+
+    // Add Tags Context
+    if( empty( $this->contexts['tags'] ) === false ) {
+      $context['request']['tags'] = $this->contexts['tags'];
+    }
+
+    return $context;
   }
 
   private function mapTraces() : array {

@@ -139,15 +139,14 @@ class Agent {
   }
 
   /**
-   * Get the Summary of a traced Transaction
+   * Get a Transaction
    *
    * @param string $name
    *
-   * @return mixed: \PhilKra\Transaction\Summary | null
+   * @return void
    */
-  public function getTransactionSummary( string $name ) {
-    $trx = $this->transactionsStore->fetch( $name );
-    return ( $trx === null ) ? null : $trx->getSummary();
+  public function getTransaction( string $name ) {
+    return $this->transactionsStore->fetch( $name );
   }
 
   /**

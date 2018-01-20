@@ -14,6 +14,7 @@ final class AgentTest extends TestCase {
    * @covers \PhilKra\Agent::__construct
    * @covers \PhilKra\Agent::startTransaction
    * @covers \PhilKra\Agent::stopTransaction
+   * @covers \PhilKra\Agent::getTransaction
    */
   public function testStartAndStopATransaction() {
     $agent = new Agent( [ 'appName' => 'phpunit_1' ] );
@@ -25,7 +26,7 @@ final class AgentTest extends TestCase {
     $agent->stopTransaction( $name );
 
     // Transaction Summary must be populated
-    $summary = $agent->getTransactionSummary( $name );
+    $summary = $agent->getTransaction( $name )->getSummary();
 
     $this->assertArrayHasKey( 'duration', $summary );
     $this->assertArrayHasKey( 'backtrace', $summary );
@@ -53,12 +54,12 @@ final class AgentTest extends TestCase {
    * @depends testForceErrorOnUnstartedTransaction
    *
    * @covers \PhilKra\Agent::__construct
-   * @covers \PhilKra\Agent::getTransactionSummary
+   * @covers \PhilKra\Agent::getTransaction
    */
   public function testForceErrorOnSummaryOfUnstartedTransaction() {
     $agent = new Agent( [ 'appName' => 'phpunit_3' ] );
 
-    $summary = $agent->getTransactionSummary( 'unknown' );
+    $summary = $agent->getTransaction( 'unknown' );
     $this->assertNull( $summary );
   }
 
