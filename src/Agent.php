@@ -105,11 +105,13 @@ class Agent {
    * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
    *
    * @param string $name
+   * @param array $meta, Def: []
    *
    * @return void
    */
-  public function stopTransaction( string $name ) {
+  public function stopTransaction( string $name, array $meta = [] ) {
     $this->getTransaction( $name )->stop();
+    $this->getTransaction( $name )->setMeta( $meta );
   }
 
   /**
