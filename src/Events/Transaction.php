@@ -208,13 +208,7 @@ class Transaction extends EventBean implements \JsonSerializable {
           'user-agent' => $headers['User-Agent'],
           'cookie'     => $headers['Cookie']
         ],
-        'env' => [
-          'REMOTE_ADDR'     => $_SERVER['REMOTE_ADDR'],
-          'REMOTE_PORT'     => $_SERVER['REMOTE_PORT'],
-          'SERVER_SOFTWARE' => $_SERVER['SERVER_SOFTWARE'],
-          'SERVER_PROTOCOL' => $_SERVER['SERVER_PROTOCOL'],
-          'DOCUMENT_ROOT'   => $_SERVER['DOCUMENT_ROOT'],
-        ]
+        'env' => $_SERVER[],
       ]
     ];
 
