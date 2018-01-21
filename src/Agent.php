@@ -109,44 +109,25 @@ class Agent {
    * @return void
    */
   public function stopTransaction( string $name ) {
-    // Does this Transaction even exist ?
-    if( $this->transactionsStore->fetch( $name ) === null ) {
-      throw new UnknownTransactionException( $name );
-    }
-
-    // Now, we're safe to stop it!
-    $this->transactionsStore->fetch( $name )->stop();
-  }
-
-  /**
-   * Set Transaction Meta data
-   *
-   * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
-   *
-   * @param string $name
-   * @param array  $meta
-   *
-   * @return void
-   */
-  public function setTransactionMeta( string $name, array $meta ) {
-    // Does this Transaction even exist ?
-    if( $this->transactionsStore->fetch( $name ) === null ) {
-      throw new UnknownTransactionException( $name );
-    }
-
-    // Now, we're safe to write the meta data!
-    $this->transactionsStore->fetch( $name )->setMeta( $meta );
+    $this->getTransaction( $name )->stop();
   }
 
   /**
    * Get a Transaction
+   *
+   * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
    *
    * @param string $name
    *
    * @return void
    */
   public function getTransaction( string $name ) {
-    return $this->transactionsStore->fetch( $name );
+    $transaction = $this->transactionsStore->fetch( $name );
+    if( $transaction === null ) {
+      throw new UnknownTransactionException( $name );
+    }
+
+    return $transaction;
   }
 
   /**
