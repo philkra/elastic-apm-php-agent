@@ -36,6 +36,7 @@ class Error extends EventBean implements \JsonSerializable {
     return [
       'id'        => $this->getId(),
       'timestamp' => $this->getTimestamp(),
+      'context'   => $this->getContext(),
       'culprit'   => sprintf( '%s:%d', $this->throwable->getFile(), $this->throwable->getLine() ),
       'exception' => [
         'message'    => $this->throwable->getMessage(),
