@@ -17,7 +17,7 @@ final class ErrorsStoreTest extends TestCase {
    */
   public function testCaptureErrorExceptionAndListIt() {
     $store = new ErrorsStore();
-    $error = new \Error( 'error' );
+    $error = new Error( new \Error( 'unit-test' ), [] );
 
     // Must be Empty
     $this->assertTrue( $store->isEmpty() );

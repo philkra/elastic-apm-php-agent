@@ -18,7 +18,7 @@ final class TransactionsStoreTest extends TestCase {
   public function testTransactionRegistrationAndFetch() {
     $store = new TransactionsStore();
     $name  = 'test';
-    $trx   = new Transaction( $name );
+    $trx   = new Transaction( $name, [] );
 
     // Must be Empty
     $this->assertTrue( $store->isEmpty() );
@@ -45,7 +45,7 @@ final class TransactionsStoreTest extends TestCase {
   public function testDuplicateTransactionRegistration() {
     $store = new TransactionsStore();
     $name  = 'test';
-    $trx   = new Transaction( $name );
+    $trx   = new Transaction( $name, [] );
 
     // Store the Transaction again to force an Exception
     $store->register( $trx );
