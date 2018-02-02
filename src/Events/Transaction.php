@@ -69,7 +69,7 @@ class Transaction extends EventBean implements \JsonSerializable {
 
     // Store Summary
     $this->summary['duration']  = round( $this->timer->getDuration(), 3 );
-    $this->summary['headers']   = xdebug_get_headers();
+    $this->summary['headers']   = ( function_exists( 'xdebug_get_headers' ) === true ) ? xdebug_get_headers() : [];
     $this->summary['backtrace'] = debug_backtrace();
   }
 
