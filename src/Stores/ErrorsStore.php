@@ -20,12 +20,12 @@ class ErrorsStore implements \JsonSerializable {
   /**
    * Register an Error
    *
-   * @param Throwable $throwable
+   * @param \PhilKra\Events\Error $error
    *
    * @return void
    */
-  public function register( \Throwable $throwable ) {
-    array_push( $this->store, new Error( $throwable ) );
+  public function register( \PhilKra\Events\Error $error ) {
+    array_push( $this->store, $error );
   }
 
   /**

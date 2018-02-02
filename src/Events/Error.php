@@ -21,9 +21,10 @@ class Error extends EventBean implements \JsonSerializable {
 
   /**
    * @param Throwable $throwable
+   * @param array $contexts
    */
-  public function __construct( \Throwable $throwable ) {
-    parent::__construct();
+  public function __construct( \Throwable $throwable, array $contexts ) {
+    parent::__construct( $contexts );
     $this->throwable = $throwable;
   }
 

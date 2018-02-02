@@ -49,11 +49,18 @@ class EventBean {
    * Init the Event with the Timestamp and UUID
    *
    * @link https://github.com/philkra/elastic-apm-php-agent/issues/3
+   *
+   * @param array $contexts
    */
-  public function __construct() {
+  public function __construct( array $contexts ) {
+    // Generate Random UUID
     $this->id = Uuid::uuid4()->toString();
 
-    $timestamp = \DateTime::createFromFormat( 'U.u', sprintf("%.6F", microtime( true ) ) );
+    // Merge Initial Context
+    $this->contexts = $contexts;
+
+    // Get UTC timestamp of Now
+    $timestamp = \DateTime::createFromFormat( 'U.u', sprintf( '%.6F', microtime( true ) ) );
     $timestamp->setTimeZone( new \DateTimeZone( 'UTC' ) );
     $this->timestamp = $timestamp->format( 'Y-m-d\TH:i:s.u\Z' );
   }

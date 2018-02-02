@@ -25,6 +25,21 @@ require 'vendor/autoload.php';
 ```php
 $agent = new \PhilKra\Agent( [ 'appName' => 'demo' ] );
 ```
+When creating the agent, you can directly inject shared contexts such as user, tags and custom.
+```php
+$agent = new \PhilKra\Agent( [ 'appName' => 'with-custom-context' ], [
+  'user' => [
+    'id'    => 12345,
+    'email' => 'email@acme.com',
+  ],
+  'tags' => [
+    // ... more key-values
+  ],
+  'custom' => [
+    // ... more key-values
+  ]
+] );
+```
 
 ### Capture Errors and Exceptions
 The agent can capture all types or errors and exceptions that are implemented from the interface `Throwable` (http://php.net/manual/en/class.throwable.php).
