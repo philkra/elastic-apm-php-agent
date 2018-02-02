@@ -24,7 +24,7 @@ class ErrorsStore implements \JsonSerializable {
    *
    * @return void
    */
-  public function register( \PhilKra\Events\Error $error ) {
+  public function register( Error $error ) {
     array_push( $this->store, $error );
   }
 
