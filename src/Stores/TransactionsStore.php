@@ -9,14 +9,7 @@ use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
  * Store for the Transaction Events
  *
  */
-class TransactionsStore implements \JsonSerializable {
-
-  /**
-   * HashMap of Transactions
-   *
-   * @var array of \PhilKra\Events\Transaction
-   */
-  private $store = [];
+class TransactionsStore extends Store {
 
   /**
    * Register a Transaction
@@ -48,15 +41,6 @@ class TransactionsStore implements \JsonSerializable {
    */
   public function fetch( string $name ) {
     return $this->store[$name] ?? null;
-  }
-
-  /**
-   * Is the Store Empty ?
-   *
-   * @return bool
-   */
-  public function isEmpty() : bool {
-    return empty( $this->store );
   }
 
   /**
