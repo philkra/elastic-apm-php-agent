@@ -140,6 +140,8 @@ class EventBean {
   protected final function getContext() : array {
     $headers = getallheaders();
 
+
+
     // Build Context Stub
     $context = [
       'request' => [
@@ -157,8 +159,8 @@ class EventBean {
           'search'   => '?' . ( ( $_SERVER['QUERY_STRING'] ) ?? '' )
         ],
         'headers' => [
-          'user-agent' => $headers['User-Agent'],
-          'cookie'     => $headers['Cookie']
+          'user-agent' => $headers['User-Agent'] ?? '',
+          'cookie'     => $headers['Cookie'] ?? ''
         ],
         'env' => $_SERVER,
       ]
