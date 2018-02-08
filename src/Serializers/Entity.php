@@ -31,7 +31,7 @@ class Entity {
    */
   protected function getSkeleton() : array {
     return [
-      'app' => [
+      'service' => [
         'name'    => $this->config->get( 'appName' ),
         'version' => $this->config->get( 'appVersion' ),
         'pid'     => getmypid(),
