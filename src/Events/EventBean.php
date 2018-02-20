@@ -152,26 +152,27 @@ class EventBean {
 
 
     // Build Context Stub
-    $context = [
+      $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
+      $context         = [
       'request' => [
-        'http_version' => substr( $_SERVER['SERVER_PROTOCOL'], strpos( $_SERVER['SERVER_PROTOCOL'], '/' ) ),
-        'method'       => $_SERVER['REQUEST_METHOD'],
-        'socket'       => [
-          'remote_address' => $_SERVER['REMOTE_ADDR'],
+          'http_version' => substr( $SERVER_PROTOCOL, strpos( $SERVER_PROTOCOL, '/' ) ),
+          'method'       => $_SERVER['REQUEST_METHOD'] ?? 'cli',
+          'socket'       => [
+          'remote_address' => $_SERVER['REMOTE_ADDR'] ?? '',
           'encrypted'      => isset( $_SERVER['HTTPS'] )
         ],
-        'url'          => [
+          'url'          => [
           'protocol' => isset( $_SERVER['HTTPS'] ) ? 'https' : 'http',
-          'hostname' => $_SERVER['SERVER_NAME'],
-          'port'     => $_SERVER['SERVER_PORT'],
-          'pathname' => $_SERVER['SCRIPT_NAME'],
-          'search'   => '?' . ( ( $_SERVER['QUERY_STRING'] ) ?? '' )
+          'hostname' => $_SERVER['SERVER_NAME'] ?? '',
+          'port'     => $_SERVER['SERVER_PORT'] ?? '',
+          'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
+          'search'   => '?' . ( ( $_SERVER['QUERY_STRING'] ?? '') ?? '' )
         ],
-        'headers' => [
+          'headers' => [
           'user-agent' => $headers['User-Agent'] ?? '',
           'cookie'     => $headers['Cookie'] ?? ''
         ],
-        'env' => $_SERVER,
+          'env' => $_SERVER,
       ]
     ];
 
