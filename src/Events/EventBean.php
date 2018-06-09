@@ -40,9 +40,14 @@ class EventBean {
    * @var array
    */
   private $contexts = [
-    'user'   => [],
-    'custom' => [],
-    'tags'   => []
+    'user'     => [],
+    'custom'   => [],
+    'tags'     => [],
+    'response' => [
+        'finished'     => true,
+        'headers_sent' => true,
+        'status_code'  => 200,
+    ],
   ];
 
   /**
@@ -57,7 +62,7 @@ class EventBean {
     $this->id = Uuid::uuid4()->toString();
 
     // Merge Initial Context
-    $this->contexts = $contexts;
+    $this->contexts = array_merge( $this->contexts, $contexts );
 
     // Get UTC timestamp of Now
     $timestamp = \DateTime::createFromFormat( 'U.u', sprintf( '%.6F', microtime( true ) ) );
@@ -113,6 +118,15 @@ class EventBean {
   }
 
   /**
+   * Set Transaction Response
+   *
+   * @param array $response
+   */
+  public final function setResponse( array $response ) {
+    $this->contexts['response'] = array_merge( $this->contexts['response'], $response );
+  }
+
+  /**
    * Set Tags for this Transaction
    *
    * @param array $tags
@@ -149,30 +163,29 @@ class EventBean {
   protected final function getContext() : array {
     $headers = getallheaders();
 
-
-
     // Build Context Stub
       $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
       $context         = [
-      'request' => [
+        'request' => [
           'http_version' => substr( $SERVER_PROTOCOL, strpos( $SERVER_PROTOCOL, '/' ) ),
           'method'       => $_SERVER['REQUEST_METHOD'] ?? 'cli',
           'socket'       => [
           'remote_address' => $_SERVER['REMOTE_ADDR'] ?? '',
           'encrypted'      => isset( $_SERVER['HTTPS'] )
         ],
-          'url'          => [
+        'response' => $this->contexts['response'],
+        'url'          => [
           'protocol' => isset( $_SERVER['HTTPS'] ) ? 'https' : 'http',
           'hostname' => $_SERVER['SERVER_NAME'] ?? '',
           'port'     => $_SERVER['SERVER_PORT'] ?? '',
           'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
           'search'   => '?' . ( ( $_SERVER['QUERY_STRING'] ?? '') ?? '' )
         ],
-          'headers' => [
+        'headers' => [
           'user-agent' => $headers['User-Agent'] ?? '',
           'cookie'     => $headers['Cookie'] ?? ''
         ],
-          'env' => $_SERVER,
+        'env' => $_SERVER,
       ]
     ];
 

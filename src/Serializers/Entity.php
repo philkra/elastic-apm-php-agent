@@ -34,6 +34,7 @@ class Entity {
       'service' => [
         'name'    => $this->config->get( 'appName' ),
         'version' => $this->config->get( 'appVersion' ),
+        'framework' => $this->config->get( 'framework' ) ?? '/',
         'pid'     => getmypid(),
         'language' => [
           'name'    => 'php',
