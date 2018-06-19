@@ -4,6 +4,8 @@
 
 This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Please note that this agent is still **experimental** and not ready for any production usage.
 
+*New:* Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
+
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
 
