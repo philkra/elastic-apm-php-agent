@@ -39,6 +39,13 @@ class Transaction extends EventBean implements \JsonSerializable
     ];
 
     /**
+     * The spams for the transaction
+     *
+     * @var array
+     */
+    private $spans = [];
+
+    /**
     * Create the Transaction
     *
     * @param string $name
@@ -64,15 +71,17 @@ class Transaction extends EventBean implements \JsonSerializable
     /**
      * Stop the Transaction
      *
+     * @param integer|null $duration
+     *
      * @return void
      */
-    public function stop()
+    public function stop(int $duration = null)
     {
         // Stop the Timer
         $this->timer->stop();
 
         // Store Summary
-        $this->summary['duration']  = round($this->timer->getDuration(), 3);
+        $this->summary['duration']  = $duration ?? round($this->timer->getDuration(), 3);
         $this->summary['headers']   = (function_exists('xdebug_get_headers') === true) ? xdebug_get_headers() : [];
         $this->summary['backtrace'] = debug_backtrace();
     }
@@ -124,16 +133,12 @@ class Transaction extends EventBean implements \JsonSerializable
           'type'      => $this->getMetaType(),
           'result'    => $this->getMetaResult(),
           'context'   => $this->getContext(),
-          'taces'     => $this->mapTraces(),
-          'processor' => [
-              'event' => 'transaction',
-              'name'  => 'transaction',
-          ]
+          'spans'     => $this->getSpans(),
       ];
     }
 
-    private function mapTraces() : array
+    private function getSpans(): array
     {
-        return [];
+        return $this->spans;
     }
 }
