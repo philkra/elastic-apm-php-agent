@@ -108,15 +108,18 @@ class Agent
      *
      * @param string $name
      *
-     * @return void
+     * @return Transaction
      */
-    public function startTransaction(string $name)
+    public function startTransaction(string $name): Transaction
     {
         // Create and Store Transaction
         $this->transactionsStore->register(new Transaction($name, $this->sharedContext));
 
         // Start the Transaction
-        $transaction = $this->transactionsStore->fetch($name)->start();
+        $transaction = $this->transactionsStore->fetch($name);
+        $transaction->start();
+    
+        return $transaction;
     }
 
     /**
