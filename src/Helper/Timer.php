@@ -1,93 +1,98 @@
 <?php
+
 namespace PhilKra\Helper;
 
-use \PhilKra\Exception\Timer\NotStartedException;
-use \PhilKra\Exception\Timer\NotStoppedException;
+use PhilKra\Exception\Timer\NotStartedException;
+use PhilKra\Exception\Timer\NotStoppedException;
 
 /**
  * Timer for Duration tracing
  */
-class Timer {
+class Timer
+{
+    /**
+     * Starting Timestamp
+     *
+     * @var double
+     */
+    private $startedOn = null;
 
-  /**
-   * Starting Timestamp
-   *
-   * @var double
-   */
-  private $startedOn = null;
+    /**
+     * Ending Timestamp
+     *
+     * @var double
+     */
+    private $stoppedOn = null;
 
-  /**
-   * Ending Timestamp
-   *
-   * @var double
-   */
-  private $stoppedOn = null;
-
-  /**
-   * Start the Timer
-   *
-   * @return void
-   */
-  public function start() {
-    $this->startedOn = microtime( true );
-  }
-
-  /**
-   * Stop the Timer
-   *
-   * @throws \PhilKra\Exception\Timer\NotStartedException
-   *
-   * @return void
-   */
-  public function stop() {
-    if( $this->startedOn === null ) {
-      throw new NotStartedException();
+    /**
+     * Start the Timer
+     *
+     * @return void
+     */
+    public function start()
+    {
+        $this->startedOn = microtime(true);
     }
 
-    $this->stoppedOn = microtime( true );
-  }
+    /**
+     * Stop the Timer
+     *
+     * @throws \PhilKra\Exception\Timer\NotStartedException
+     *
+     * @return void
+     */
+    public function stop()
+    {
+        if ($this->startedOn === null) {
+            throw new NotStartedException();
+        }
 
-  /**
-   * Get the elapsed Duration of this Timer
-   *
-   * @throws \PhilKra\Exception\Timer\NotStoppedException
-   *
-   * @return float
-   */
-  public function getDuration() : float {
-    if( $this->stoppedOn === null ) {
-      throw new NotStoppedException();
+        $this->stoppedOn = microtime(true);
     }
 
-    return $this->toMicro( $this->stoppedOn - $this->startedOn );
-  }
+    /**
+     * Get the elapsed Duration of this Timer
+     *
+     * @throws \PhilKra\Exception\Timer\NotStoppedException
+     *
+     * @return float
+     */
+    public function getDuration() : float
+    {
+        if ($this->stoppedOn === null) {
+            throw new NotStoppedException();
+        }
 
-  /**
-   * Get the current elapsed Interval of the Timer
-   *
-   * @throws \PhilKra\Exception\Timer\NotStartedException
-   *
-   * @return float
-   */
-  public function getElapsed() : float {
-    if( $this->startedOn === null ) {
-      throw new NotStartedException();
+        return $this->toMicro($this->stoppedOn - $this->startedOn);
     }
 
-    return ( $this->stoppedOn === null )
-      ? $this->toMicro( microtime( true ) - $this->startedOn )
-      : $this->getDuration();
-  }
+    /**
+     * Get the current elapsed Interval of the Timer
+     *
+     * @throws \PhilKra\Exception\Timer\NotStartedException
+     *
+     * @return float
+     */
+    public function getElapsed() : float
+    {
+        if ($this->startedOn === null) {
+            throw new NotStartedException();
+        }
 
-  /**
-   * Convert the Duration from Seconds to Micro-Seconds
-   *
-   * @param  float $num
-   *
-   * @return float
-   */
-  private function toMicro( float $num ) : float {
-    return $num * 1000000;
-  }
+        return ($this->stoppedOn === null) ?
+            $this->toMicro(microtime(true) - $this->startedOn) :
+            $this->getDuration();
+    }
 
+    /**
+     * Convert the Duration from Seconds to Micro-Seconds
+     *
+     * @param  float $num
+     *
+     * @return float
+     */
+    private function toMicro(float $num) : float
+    {
+        return $num * 1000000;
+    }
 }
