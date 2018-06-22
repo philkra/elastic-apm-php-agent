@@ -1,4 +1,5 @@
 <?php
+
 namespace PhilKra\Events;
 
 /**
@@ -8,8 +9,8 @@ namespace PhilKra\Events;
  * @link https://www.elastic.co/guide/en/apm/server/6.2/errors.html
  *
  */
-class Error extends EventBean implements \JsonSerializable {
-
+class Error extends EventBean implements \JsonSerializable
+{
     /**
      * Error | Exception
      *
@@ -23,8 +24,9 @@ class Error extends EventBean implements \JsonSerializable {
      * @param Throwable $throwable
      * @param array $contexts
      */
-    public function __construct( \Throwable $throwable, array $contexts ) {
-        parent::__construct( $contexts );
+    public function __construct(\Throwable $throwable, array $contexts)
+    {
+        parent::__construct($contexts);
         $this->throwable = $throwable;
     }
 
@@ -33,15 +35,16 @@ class Error extends EventBean implements \JsonSerializable {
      *
      * @return array
      */
-    public function jsonSerialize() : array {
+    public function jsonSerialize() : array
+    {
         return [
             'id'        => $this->getId(),
             'timestamp' => $this->getTimestamp(),
             'context'   => $this->getContext(),
-            'culprit'   => sprintf( '%s:%d', $this->throwable->getFile(), $this->throwable->getLine() ),
+            'culprit'   => sprintf('%s:%d', $this->throwable->getFile(), $this->throwable->getLine()),
             'exception' => [
                 'message'    => $this->throwable->getMessage(),
-                'type'       => get_class( $this->throwable ),
+                'type'       => get_class($this->throwable),
                 'code'       => $this->throwable->getCode(),
                 'stacktrace' => $this->mapStacktrace(),
             ],
@@ -52,46 +55,50 @@ class Error extends EventBean implements \JsonSerializable {
         ];
     }
 
-  /**
-   * Map the Stacktrace to Schema
-   *
-   * @return array
-   */
-  private function mapStacktrace() : array {
-    $stacktrace = [];
+    /**
+     * Map the Stacktrace to Schema
+     *
+     * @return array
+     */
+    private function mapStacktrace() : array
+    {
+        $stacktrace = [];
 
-    foreach( $this->throwable->getTrace() as $trace ) {
-      $item = [
-        'function' => $trace['function'] ?? '(closure)'
-      ];
-      if( isset( $trace['line'] ) === true ) {
-        $item['lineno'] = $trace['line'];
-      }
-      if( isset( $trace['file'] ) === true ) {
-        $item += [
-          'filename' => basename( $trace['file'] ),
-          'abs_path' => $trace['file']
-        ];
-      }
-      if( isset( $trace['class'] ) === true ) {
-        $item['module'] = $trace['class'];
-      }
-      if( isset( $trace['type'] ) === true ) {
-        $item['type'] = $trace['type'];
-      }
+        foreach ($this->throwable->getTrace() as $trace) {
+            $item = [
+              'function' => $trace['function'] ?? '(closure)'
+            ];
 
-      if (!isset($item['lineno'])) {
-          $item['lineno'] = 0;
-      }
+            if (isset($trace['line']) === true) {
+                $item['lineno'] = $trace['line'];
+            }
 
-      if (!isset($item['filename'])) {
-          $item['filename'] = '(anonymous)';
-      }
+            if (isset($trace['file']) === true) {
+                $item += [
+                    'filename' => basename($trace['file']),
+                    'abs_path' => $trace['file']
+                ];
+            }
 
-      array_push( $stacktrace, $item );
+            if (isset($trace['class']) === true) {
+                $item['module'] = $trace['class'];
+            }
+            
+            if (isset($trace['type']) === true) {
+                $item['type'] = $trace['type'];
+            }
+
+            if (!isset($item['lineno'])) {
+                $item['lineno'] = 0;
+            }
+
+            if (!isset($item['filename'])) {
+                $item['filename'] = '(anonymous)';
+            }
+
+            array_push($stacktrace, $item);
+        }
+
+        return $stacktrace;
     }
-
-    return $stacktrace;
-  }
-
 }
