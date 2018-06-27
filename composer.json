@@ -28,10 +28,15 @@
     "config" : {
         "optimize-autoloader" : true
     },
-    "authors" : [{
+    "authors" : [
+        {
             "name" : "Philip Krauss",
             "email" : "philip@philipkrauss.at",
             "homepage" : "https://github.com/philkra/elastic-apm-agent-php"
+        },
+        {
+            "name" : "George Boot",
+            "email": "george@entryninja.com"
         }
     ]
 }
