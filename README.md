@@ -60,8 +60,9 @@ $agent = new \PhilKra\Agent(['appName' => 'Demo with Spans']);
 // start a new transaction
 $transaction = $agent->startTransaction('GET /some/transaction/name');
 
-// add our spans
-$transaction->setSpans([
+// create a span
+$spans = [];
+$spans[] = [
   'name' => 'Your Span Name. eg: ORM Query',
   'type' => 'db.mysql.query',
   'start' => 300, // when did tht query start, relative to the transaction start, in milliseconds
@@ -98,7 +99,10 @@ $transaction->setSpans([
       'user' => 'root', // the user executing the query (don't use root!)
     ],
   ],
-]);
+];
+
+// add the array of spans to the transaction
+$transaction->setSpans($spans);
 
 // send our transactions to te apm
 $agent->send();
