@@ -26,7 +26,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.2.1';
+    const VERSION = '6.2.2';
 
     /**
      * Agent Name
