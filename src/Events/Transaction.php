@@ -119,6 +119,28 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
+     * Set the spans for the transacton
+     *
+     * @param array $spans
+     *
+     * @return void
+     */
+    public function setSpans(array $spans)
+    {
+        $this->spans = $spans;
+    }
+    
+    /**
+     * Get the spans from the transaction
+     *
+     * @return array
+     */
+    private function getSpans(): array
+    {
+        return $this->spans;
+    }
+
+    /**
     * Serialize Transaction Event
     *
     * @return array
@@ -135,10 +157,5 @@ class Transaction extends EventBean implements \JsonSerializable
           'context'   => $this->getContext(),
           'spans'     => $this->getSpans(),
       ];
-    }
-
-    private function getSpans(): array
-    {
-        return $this->spans;
     }
 }

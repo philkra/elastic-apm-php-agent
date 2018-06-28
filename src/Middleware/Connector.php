@@ -110,7 +110,7 @@ class Connector
 
         // Add Secret Token to Header
         if ($this->config->get('secretToken') !== null) {
-            $headers['Authorization'] = sprintf('Bearer %s', $this->config['secretToken']);
+            $headers['Authorization'] = sprintf('Bearer %s', $this->config->get('secretToken'));
         }
 
         return $headers;

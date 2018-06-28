@@ -38,8 +38,8 @@ class Entity
                 'name'    => $this->config->get('appName'),
                 'version' => $this->config->get('appVersion'),
                 'framework' => [
-                    'name' => $this->config->get('framework') ?? null,
-                    'version' => $this->config->get('frameworkVersion') ?? null,
+                    'name' => $this->config->get('framework') ?? '',
+                    'version' => $this->config->get('frameworkVersion') ?? '',
                 ],
                 'pid'     => getmypid(),
                 'language' => [

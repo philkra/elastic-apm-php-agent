@@ -1,34 +1,42 @@
 {
-	"name" : "philkra/elastic-apm-php-agent",
-	"license": "MIT",
-	"require" : {
-		"php" : ">= 7.0",
-		"guzzlehttp/guzzle": "6.*",
-		"ramsey/uuid": "^3.7",
-		"ralouphie/getallheaders": "2.0.5",
-		"ext-curl" : "*",
-		"ext-xdebug": "*"
-	},
-	"require-dev" : {
-		"phpunit/phpunit" : "6.*"
-	},
-	"autoload" : {
-		"psr-4" : {
-			"PhilKra\\": "src/"
-		}
-	},
-	"autoload-dev": {
+    "name" : "philkra/elastic-apm-php-agent",
+    "description": "A php agent for Elastic APM",
+    "license": "MIT",
+    "require" : {
+        "php" : ">= 7.0",
+        "guzzlehttp/guzzle": "6.*",
+        "ramsey/uuid": "^3.7",
+        "ralouphie/getallheaders": "2.0.5",
+        "ext-curl" : "*"
+    },
+    "require-dev" : {
+        "phpunit/phpunit" : "6.*"
+    },
+    "suggest": {
+        "ext-xdebug": "Required for processing of request headers"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "PhilKra\\": "src/"
+        }
+    },
+    "autoload-dev": {
     "psr-4": {
         "PhilKra\\Tests\\": "tests/"
     }
   },
-	"config" : {
-		"optimize-autoloader" : true
-	},
-	"authors" : [{
-			"name" : "Philip Krauss",
-			"email" : "philip@philipkrauss.at",
-			"homepage" : "https://github.com/philkra/elastic-apm-agent-php"
-		}
-	]
+    "config" : {
+        "optimize-autoloader" : true
+    },
+    "authors" : [
+        {
+            "name" : "Philip Krauss",
+            "email" : "philip@philipkrauss.at",
+            "homepage" : "https://github.com/philkra/elastic-apm-agent-php"
+        },
+        {
+            "name" : "George Boot",
+            "email": "george@entryninja.com"
+        }
+    ]
 }
