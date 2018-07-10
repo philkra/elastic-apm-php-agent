@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Please note that this agent is still **experimental** and not ready for any production usage.
+This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm.
 
 *New:* Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
 
