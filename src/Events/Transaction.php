@@ -129,7 +129,7 @@ class Transaction extends EventBean implements \JsonSerializable
     {
         $this->spans = $spans;
     }
-    
+
     /**
      * Get the spans from the transaction
      *
@@ -156,6 +156,10 @@ class Transaction extends EventBean implements \JsonSerializable
           'result'    => $this->getMetaResult(),
           'context'   => $this->getContext(),
           'spans'     => $this->getSpans(),
+          'processor' => [
+              'event' => 'transaction',
+              'name'  => 'transaction',
+          ]
       ];
     }
 }
