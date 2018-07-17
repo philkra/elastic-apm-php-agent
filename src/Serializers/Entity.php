@@ -41,10 +41,12 @@ class Entity
                     'name' => $this->config->get('framework') ?? '',
                     'version' => $this->config->get('frameworkVersion') ?? '',
                 ],
-                'pid'     => getmypid(),
                 'language' => [
                     'name'    => 'php',
                     'version' => phpversion()
+                ],
+                'process' => [
+                    'pid' => getmypid(),
                 ],
                 'agent' => [
                     'name'    => Agent::NAME,
