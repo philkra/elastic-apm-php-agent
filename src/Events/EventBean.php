@@ -174,7 +174,8 @@ class EventBean
     final protected function getContext() : array
     {
         $headers = getallheaders();
-
+        $http_or_https = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+        
         // Build Context Stub
         $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
         $context         = [
@@ -187,11 +188,12 @@ class EventBean
                 ],
                 'response' => $this->contexts['response'],
                 'url'          => [
-                    'protocol' => isset($_SERVER['HTTPS']) ? 'https' : 'http',
+                    'protocol' => $http_or_https,
                     'hostname' => $_SERVER['SERVER_NAME'] ?? '',
                     'port'     => $_SERVER['SERVER_PORT'] ?? '',
                     'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
-                    'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? '')
+                    'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
+                    'full' => $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
                 ],
                 'headers' => [
                     'user-agent' => $headers['User-Agent'] ?? '',
