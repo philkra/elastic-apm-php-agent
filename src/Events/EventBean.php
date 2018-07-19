@@ -210,17 +210,17 @@ class EventBean
 
         // Add User Context
         if (empty($this->contexts['user']) === false) {
-            $context['request']['user'] = $this->contexts['user'];
+            $context['user'] = $this->contexts['user'];
         }
 
         // Add Custom Context
         if (empty($this->contexts['custom']) === false) {
-            $context['request']['custom'] = $this->contexts['custom'];
+            $context['custom'] = $this->contexts['custom'];
         }
 
         // Add Tags Context
         if (empty($this->contexts['tags']) === false) {
-            $context['request']['tags'] = $this->contexts['tags'];
+            $context['tags'] = $this->contexts['tags'];
         }
 
         return $context;
