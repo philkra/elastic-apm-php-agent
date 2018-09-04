@@ -50,7 +50,7 @@ $agent->captureThrowable( new Exception() );
 ```
 
 ### Adding spans
-Addings spans (https://www.elastic.co/guide/en/apm/server/current/spans.html) is easy.
+Addings spans (https://www.elastic.co/guide/en/apm/server/current/transactions.html#transaction-spans) is easy.
 Please consult the documentation for your exact needs. Below is an example for adding a MySQL span.
 
 ```php
