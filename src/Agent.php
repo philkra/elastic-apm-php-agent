@@ -107,13 +107,14 @@ class Agent
      * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
      *
      * @param string $name
+     * @param array  $context
      *
      * @return Transaction
      */
-    public function startTransaction(string $name): Transaction
+    public function startTransaction(string $name, array $context = []): Transaction
     {
         // Create and Store Transaction
-        $this->transactionsStore->register(new Transaction($name, $this->sharedContext));
+        $this->transactionsStore->register(new Transaction($name, array_replace_recursive($this->sharedContext, $context)));
 
         // Start the Transaction
         $transaction = $this->transactionsStore->fetch($name);
@@ -163,12 +164,13 @@ class Agent
      * @link http://php.net/manual/en/class.throwable.php
      *
      * @param \Throwable $thrown
+     * @param array      $context
      *
      * @return void
      */
-    public function captureThrowable(\Throwable $thrown)
+    public function captureThrowable(\Throwable $thrown, array $context = [])
     {
-        $this->errorsStore->register(new Error($thrown, $this->sharedContext));
+        $this->errorsStore->register(new Error($thrown, array_replace_recursive($this->sharedContext, $context)));
     }
 
     /**
