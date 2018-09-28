@@ -2,6 +2,8 @@
 
 namespace PhilKra;
 
+use PhilKra\Events\DefaultEventFactory;
+use PhilKra\Events\EventFactoryInterface;
 use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Events\Transaction;
@@ -75,17 +77,26 @@ class Agent
     ];
 
     /**
+     * @var EventFactoryInterface
+     */
+    private $eventFactory;
+
+    /**
      * Setup the APM Agent
      *
-     * @param array $config
-     * @param array $sharedContext  Set shared contexts such as user and tags
+     * @param array                 $config
+     * @param array                 $sharedContext Set shared contexts such as user and tags
+     * @param EventFactoryInterface $eventFactory  Alternative factory to use when creating event objects
      *
      * @return void
      */
-    public function __construct(array $config, array $sharedContext = [])
+    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null)
     {
         // Init Agent Config
         $this->config = new Config($config);
+
+        // Use the custom event factory or create a default one
+        $this->eventFactory = $eventFactory ?? new DefaultEventFactory();
 
         // Init the Shared Context
         $this->sharedContext['user']   = $sharedContext['user'] ?? [];
@@ -114,12 +125,14 @@ class Agent
     public function startTransaction(string $name, array $context = []): Transaction
     {
         // Create and Store Transaction
-        $this->transactionsStore->register(new Transaction($name, array_replace_recursive($this->sharedContext, $context)));
+        $this->transactionsStore->register(
+            $this->eventFactory->createTransaction($name, array_replace_recursive($this->sharedContext, $context))
+        );
 
         // Start the Transaction
         $transaction = $this->transactionsStore->fetch($name);
         $transaction->start();
-    
+
         return $transaction;
     }
 
@@ -170,7 +183,9 @@ class Agent
      */
     public function captureThrowable(\Throwable $thrown, array $context = [])
     {
-        $this->errorsStore->register(new Error($thrown, array_replace_recursive($this->sharedContext, $context)));
+        $this->errorsStore->register(
+            $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context))
+        );
     }
 
     /**
