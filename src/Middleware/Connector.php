@@ -35,7 +35,9 @@ class Connector
     public function __construct(\PhilKra\Helper\Config $config)
     {
         $this->config = $config;
-        $this->client = new Client();
+        $this->client = new Client([
+            'timeout' => $config->get('timeout'),
+        ]);
     }
 
     /**
