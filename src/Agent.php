@@ -28,7 +28,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.3.2';
+    const VERSION = '6.4.0';
 
     /**
      * Agent Name
@@ -102,6 +102,13 @@ class Agent
         $this->sharedContext['user']   = $sharedContext['user'] ?? [];
         $this->sharedContext['custom'] = $sharedContext['custom'] ?? [];
         $this->sharedContext['tags']   = $sharedContext['tags'] ?? [];
+
+        // Let's misuse the context to pass the Environment Var config
+        // to the EventBeans and the getContext method
+        // @see https://github.com/philkra/elastic-apm-php-agent/issues/27
+        $this->sharedContext['env'] = ( $this->config->get( 'env' ) === null )
+            ? []
+            : $this->config->get( 'env' );
 
         // Initialize Event Stores
         $this->transactionsStore = new TransactionsStore();

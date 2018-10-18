@@ -61,14 +61,14 @@ class Config
     private function getDefaultConfig() : array
     {
         return [
-            'secretToken'    => null,
-            'serverUrl'      => 'http://127.0.0.1:8200',
-            'appVersion'     => '',
-            'active'         => true,
-            'hostname'       => gethostname(),
-            'timeout'        => 5,
-            'apmVersion'     => 'v1',
-            'backtraceDepth' => 25,
+            'serverUrl'   => 'http://127.0.0.1:8200',
+            'secretToken' => null,
+            'hostname'    => gethostname(),
+            'appVersion'  => '',
+            'active'      => true,
+            'timeout'     => 5,
+            'apmVersion'  => 'v1',
+            'env'         => [],
         ];
     }
 }

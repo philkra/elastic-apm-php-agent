@@ -136,6 +136,32 @@ $agent->getTransaction( $trxName )->setUserContext( [
 $agent->getTransaction( $trxName )->setTags( [ 'k1' => 'v1', 'k2' => 'v2' ] );  
 ```
 
+### Configuration
+```
+appName    : Name of this application, Required
+appVersion : Application version, Default: ''
+serverUrl  : APM Server Endpoint, Default: 'http://127.0.0.1:8200'
+secretToken: Secret token for APM Server, Default: null
+hostname   : Hostname to transmit to the APM Server, Default: gethostname()
+active     : Activate the APM Agent, Default: true
+timeout    : Guzzle Client timeout, Default: 5
+apmVersion : APM Server Intake API version, Default: 'v1'
+env        : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
+```
+
+#### Example of an extended Configuration
+```php
+$config = [
+    'appName'     => 'My WebApp',
+    'appVersion'  => '1.0.42',
+    'serverUrl'   => 'http://apm-server.example.com',
+    'secretToken' => 'DKKbdsupZWEEzYd4LX34TyHF36vDKRJP',
+    'hostname'    => 'node-24.app.network.com',
+    'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR'],
+];
+$agent = new \PhilKra\Agent($config);
+```
+
 ## Tests
 ```bash
 vendor/bin/phpunit
