@@ -43,6 +43,7 @@ class EventBean
     private $contexts = [
         'user'     => [],
         'custom'   => [],
+        'env'      => [],
         'tags'     => [],
         'response' => [
             'finished'     => true,
@@ -174,7 +175,7 @@ class EventBean
      */
     final protected function getEnv() : array
     {
-        $env = $this->context['env'];
+        $env = $this->contexts['env'];
         return ( empty( $env ) === true )
             ? $_SERVER
             : array_intersect_key($_SERVER, array_flip($env));
