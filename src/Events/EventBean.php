@@ -43,6 +43,7 @@ class EventBean
     private $contexts = [
         'user'     => [],
         'custom'   => [],
+        'env'      => [],
         'tags'     => [],
         'response' => [
             'finished'     => true,
@@ -165,6 +166,22 @@ class EventBean
     }
 
     /**
+     * Get the Environment Variables
+     *
+     * @link http://php.net/manual/en/reserved.variables.server.php
+     * @link https://github.com/philkra/elastic-apm-php-agent/issues/27
+     *
+     * @return array
+     */
+    final protected function getEnv() : array
+    {
+        $env = $this->contexts['env'];
+        return ( empty( $env ) === true )
+            ? $_SERVER
+            : array_intersect_key($_SERVER, array_flip($env));
+    }
+
+    /**
      * Get the Events Context
      *
      * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html#transaction-context-schema
@@ -175,7 +192,7 @@ class EventBean
     {
         $headers = getallheaders();
         $http_or_https = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-        
+
         // Build Context Stub
         $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
         $context         = [
@@ -199,7 +216,7 @@ class EventBean
                     'user-agent' => $headers['User-Agent'] ?? '',
                     'cookie'     => $headers['Cookie'] ?? ''
                 ],
-                'env' => $_SERVER,
+                'env' => $this->getEnv(),
             ]
         ];
 

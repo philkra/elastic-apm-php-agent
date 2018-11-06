@@ -2,6 +2,8 @@
 
 namespace PhilKra;
 
+use PhilKra\Events\DefaultEventFactory;
+use PhilKra\Events\EventFactoryInterface;
 use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Events\Transaction;
@@ -26,7 +28,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.3.2';
+    const VERSION = '6.4.0';
 
     /**
      * Agent Name
@@ -75,22 +77,38 @@ class Agent
     ];
 
     /**
+     * @var EventFactoryInterface
+     */
+    private $eventFactory;
+
+    /**
      * Setup the APM Agent
      *
-     * @param array $config
-     * @param array $sharedContext  Set shared contexts such as user and tags
+     * @param array                 $config
+     * @param array                 $sharedContext Set shared contexts such as user and tags
+     * @param EventFactoryInterface $eventFactory  Alternative factory to use when creating event objects
      *
      * @return void
      */
-    public function __construct(array $config, array $sharedContext = [])
+    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null)
     {
         // Init Agent Config
         $this->config = new Config($config);
+
+        // Use the custom event factory or create a default one
+        $this->eventFactory = $eventFactory ?? new DefaultEventFactory();
 
         // Init the Shared Context
         $this->sharedContext['user']   = $sharedContext['user'] ?? [];
         $this->sharedContext['custom'] = $sharedContext['custom'] ?? [];
         $this->sharedContext['tags']   = $sharedContext['tags'] ?? [];
+
+        // Let's misuse the context to pass the Environment Var config
+        // to the EventBeans and the getContext method
+        // @see https://github.com/philkra/elastic-apm-php-agent/issues/27
+        $this->sharedContext['env'] = ( $this->config->get( 'env' ) === null )
+            ? []
+            : $this->config->get( 'env' );
 
         // Initialize Event Stores
         $this->transactionsStore = new TransactionsStore();
@@ -107,18 +125,21 @@ class Agent
      * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
      *
      * @param string $name
+     * @param array  $context
      *
      * @return Transaction
      */
-    public function startTransaction(string $name): Transaction
+    public function startTransaction(string $name, array $context = []): Transaction
     {
         // Create and Store Transaction
-        $this->transactionsStore->register(new Transaction($name, $this->sharedContext));
+        $this->transactionsStore->register(
+            $this->eventFactory->createTransaction($name, array_replace_recursive($this->sharedContext, $context))
+        );
 
         // Start the Transaction
         $transaction = $this->transactionsStore->fetch($name);
         $transaction->start();
-    
+
         return $transaction;
     }
 
@@ -163,12 +184,15 @@ class Agent
      * @link http://php.net/manual/en/class.throwable.php
      *
      * @param \Throwable $thrown
+     * @param array      $context
      *
      * @return void
      */
-    public function captureThrowable(\Throwable $thrown)
+    public function captureThrowable(\Throwable $thrown, array $context = [])
     {
-        $this->errorsStore->register(new Error($thrown, $this->sharedContext));
+        $this->errorsStore->register(
+            $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context))
+        );
     }
 
     /**
