@@ -210,7 +210,7 @@ class EventBean
                     'port'     => $_SERVER['SERVER_PORT'] ?? '',
                     'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
                     'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
-                    'full' => $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
+                    'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
                 ],
                 'headers' => [
                     'user-agent' => $headers['User-Agent'] ?? '',
