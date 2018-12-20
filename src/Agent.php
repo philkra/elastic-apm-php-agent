@@ -28,7 +28,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.4.0';
+    const VERSION = '6.4.2';
 
     /**
      * Agent Name
@@ -208,6 +208,8 @@ class Agent
     /**
      * Send Data to APM Service
      *
+     * @link https://github.com/philkra/elastic-apm-laravel/issues/22
+     *
      * @return bool
      */
     public function send() : bool
@@ -223,11 +225,17 @@ class Agent
         // Commit the Errors
         if ($this->errorsStore->isEmpty() === false) {
             $status = $status && $connector->sendErrors($this->errorsStore);
+            if ($status === true) {
+                $this->errorsStore->reset();
+            }
         }
 
         // Commit the Transactions
         if ($this->transactionsStore->isEmpty() === false) {
             $status = $status && $connector->sendTransactions($this->transactionsStore);
+            if ($status === true) {
+                $this->transactionsStore->reset();
+            }
         }
 
         return $status;
