@@ -208,6 +208,8 @@ class Agent
     /**
      * Send Data to APM Service
      *
+     * @link https://github.com/philkra/elastic-apm-laravel/issues/22
+     *
      * @return bool
      */
     public function send() : bool
