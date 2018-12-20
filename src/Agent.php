@@ -223,11 +223,17 @@ class Agent
         // Commit the Errors
         if ($this->errorsStore->isEmpty() === false) {
             $status = $status && $connector->sendErrors($this->errorsStore);
+            if ($status === true) {
+                $this->errorsStore->reset();
+            }
         }
 
         // Commit the Transactions
         if ($this->transactionsStore->isEmpty() === false) {
             $status = $status && $connector->sendTransactions($this->transactionsStore);
+            if ($status === true) {
+                $this->transactionsStore->reset();
+            }
         }
 
         return $status;
