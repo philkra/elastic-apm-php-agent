@@ -35,9 +35,24 @@ class Connector
     public function __construct(\PhilKra\Helper\Config $config)
     {
         $this->config = $config;
-        $this->client = new Client([
-            'timeout' => $config->get('timeout'),
-        ]);
+
+        $this->configureHttpClient();
+    }
+
+    /**
+     * Create and configure the HTTP client
+     *
+     * @return void
+     */
+    private function configureHttpClient()
+    {
+        $httpClientDefaults = [
+            'timeout' => $this->config->get('timeout'),
+        ];
+
+        $httpClientConfig = $this->config->get('httpClient') ?? [];
+
+        $this->client = new Client(array_merge($httpClientDefaults, $httpClientConfig));
     }
 
     /**
