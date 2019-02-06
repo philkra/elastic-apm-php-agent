@@ -69,6 +69,7 @@ class Config
             'timeout'     => 5,
             'apmVersion'  => 'v1',
             'env'         => [],
+            'httpClient'  => [],
         ];
     }
 }
