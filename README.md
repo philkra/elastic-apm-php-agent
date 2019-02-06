@@ -147,7 +147,10 @@ active     : Activate the APM Agent, Default: true
 timeout    : Guzzle Client timeout, Default: 5
 apmVersion : APM Server Intake API version, Default: 'v1'
 env        : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
+httpClient : Extended GuzzleHttp\Client Default: []
 ```
+
+Detailed `GuzzleHttp\Client` options can be found [here](http://docs.guzzlephp.org/en/stable/request-options.html#request-options).
 
 #### Example of an extended Configuration
 ```php
@@ -158,6 +161,10 @@ $config = [
     'secretToken' => 'DKKbdsupZWEEzYd4LX34TyHF36vDKRJP',
     'hostname'    => 'node-24.app.network.com',
     'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR'],
+    'httpClient'  => [
+        'verify' => false,
+        'proxy'  => 'tcp://localhost:8125'
+    ],
 ];
 $agent = new \PhilKra\Agent($config);
 ```
