@@ -2,8 +2,7 @@
 namespace PhilKra\Tests\Helper;
 
 use \PhilKra\Agent;
-use \PhilKra\Helper\Config;
-use \PHPUnit\Framework\TestCase;
+use PhilKra\Tests\TestCase;
 
 /**
  * Test Case for @see \PhilKra\Helper\Config
