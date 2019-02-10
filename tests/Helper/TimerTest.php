@@ -2,7 +2,7 @@
 namespace PhilKra\Tests\Helper;
 
 use \PhilKra\Helper\Timer;
-use \PHPUnit\Framework\TestCase;
+use PhilKra\Tests\TestCase;
 
 /**
  * Test Case for @see \PhilKra\Helper\Timer
@@ -26,7 +26,24 @@ final class TimerTest extends TestCase {
     $this->assertGreaterThanOrEqual( $duration, $timer->getDuration() );
   }
 
-  /**
+    /**
+     * @covers \PhilKra\Helper\Timer::start
+     * @covers \PhilKra\Helper\Timer::stop
+     * @covers \PhilKra\Helper\Timer::getDuration
+     * @covers \PhilKra\Helper\Timer::toMicro
+     */
+    public function testCanCalculateDurationInMilliseconds() {
+        $timer = new Timer();
+        $duration = rand( 25, 100 ); // duration in milliseconds
+
+        $timer->start();
+        usleep( $duration * 1000 ); // sleep microseconds
+        $timer->stop();
+
+        $this->assertDurationIsWithinThreshold($duration, $timer->getDurationInMilliseconds());
+    }
+
+    /**
    * @depends testCanBeStartedAndStoppedWithDuration
    *
    * @covers \PhilKra\Helper\Timer::start

@@ -3,8 +3,7 @@ namespace PhilKra\Tests\Stores;
 
 use \PhilKra\Stores\ErrorsStore;
 use \PhilKra\Events\Error;
-use \PhilKra\Exception\Transaction\DuplicateTransactionNameException;
-use \PHPUnit\Framework\TestCase;
+use PhilKra\Tests\TestCase;
 
 /**
  * Test Case for @see \PhilKra\Stores\ErrorsStore

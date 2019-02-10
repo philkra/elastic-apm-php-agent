@@ -3,7 +3,6 @@ namespace PhilKra\Tests;
 
 use \PhilKra\Agent;
 use \PhilKra\Transaction\Summary;
-use \PHPUnit\Framework\TestCase;
 
 /**
  * Test Case for @see \PhilKra\Agent
@@ -22,7 +21,7 @@ final class AgentTest extends TestCase {
     // Create a Transaction, wait and Stop it
     $name = 'trx';
     $agent->startTransaction( $name );
-    usleep( 10 );
+    usleep( 10 * 1000 ); // sleep milliseconds
     $agent->stopTransaction( $name );
 
     // Transaction Summary must be populated
@@ -31,7 +30,8 @@ final class AgentTest extends TestCase {
     $this->assertArrayHasKey( 'duration', $summary );
     $this->assertArrayHasKey( 'backtrace', $summary );
 
-    $this->assertGreaterThanOrEqual( 10, $summary['duration'] );
+    // Expect duration in milliseconds
+    $this->assertDurationIsWithinThreshold(10, $summary['duration']);
     $this->assertNotEmpty( $summary['backtrace'] );
   }
 
