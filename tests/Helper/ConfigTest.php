@@ -32,6 +32,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'appVersion', $config );
     $this->assertArrayHasKey( 'env', $config );
     $this->assertArrayHasKey( 'httpClient', $config );
+    $this->assertArrayHasKey( 'environment', $config );
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
@@ -42,6 +43,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['apmVersion'], 'v1' );
     $this->assertEquals( $config['env'], [] );
     $this->assertEquals( $config['httpClient'], [] );
+    $this->assertEquals( $config['environment'], 'development' );
   }
 
   /**
