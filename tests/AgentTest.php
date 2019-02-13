@@ -38,13 +38,13 @@ final class AgentTest extends TestCase {
   /**
    * @depends testStartAndStopATransaction
    *
-   * @expectedException \PhilKra\Exception\Transaction\UnknownTransactionException
-   *
    * @covers \PhilKra\Agent::__construct
    * @covers \PhilKra\Agent::getTransaction
    */
   public function testForceErrorOnUnknownTransaction() {
     $agent = new Agent( [ 'appName' => 'phpunit_x' ] );
+
+    $this->expectException( \PhilKra\Exception\Transaction\UnknownTransactionException::class );
 
     // Let it go boom!
     $agent->getTransaction( 'unknown' );
@@ -52,14 +52,14 @@ final class AgentTest extends TestCase {
 
   /**
    * @depends testForceErrorOnUnknownTransaction
-   *
-   * @expectedException \PhilKra\Exception\Transaction\UnknownTransactionException
-   *
+   * 
    * @covers \PhilKra\Agent::__construct
    * @covers \PhilKra\Agent::stopTransaction
    */
   public function testForceErrorOnUnstartedTransaction() {
     $agent = new Agent( [ 'appName' => 'phpunit_2' ] );
+
+    $this->expectException( \PhilKra\Exception\Transaction\UnknownTransactionException::class );
 
     // Stop an unstarted Transaction and let it go boom!
     $agent->stopTransaction( 'unknown' );

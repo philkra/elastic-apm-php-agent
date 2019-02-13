@@ -35,12 +35,13 @@ class Config
      * Get Config Value
      *
      * @param string $key
+     * @param mixed $default
      *
      * @return mixed: value | null
      */
-    public function get(string $key)
+    public function get(string $key, $default = null)
     {
-        return ($this->config[$key]) ?? null;
+        return ($this->config[$key]) ?? $default;
     }
 
     /**
@@ -69,7 +70,9 @@ class Config
             'timeout'     => 5,
             'apmVersion'  => 'v1',
             'env'         => [],
+            'cookies'     => [],
             'httpClient'  => [],
+            'environment' => 'development',
         ];
     }
 }

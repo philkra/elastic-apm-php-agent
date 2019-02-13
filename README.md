@@ -1,10 +1,10 @@
 # Elastic APM: PHP Agent
 
-[![Build Status](https://travis-ci.org/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
+[![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm.
+This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
 
-*New:* Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
+*Please note* that currently only the `v1` intake API of the APM server is supported, `v2` is in planing.
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
@@ -147,6 +147,7 @@ active     : Activate the APM Agent, Default: true
 timeout    : Guzzle Client timeout, Default: 5
 apmVersion : APM Server Intake API version, Default: 'v1'
 env        : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
+cookies    : Cookies to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 httpClient : Extended GuzzleHttp\Client Default: []
 ```
 
@@ -161,6 +162,7 @@ $config = [
     'secretToken' => 'DKKbdsupZWEEzYd4LX34TyHF36vDKRJP',
     'hostname'    => 'node-24.app.network.com',
     'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR'],
+    'cookies'     => ['my-cookie'],
     'httpClient'  => [
         'verify' => false,
         'proxy'  => 'tcp://localhost:8125'

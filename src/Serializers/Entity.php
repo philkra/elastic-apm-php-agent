@@ -51,7 +51,8 @@ class Entity
                 'agent' => [
                     'name'    => Agent::NAME,
                     'version' => Agent::VERSION
-                ]
+                ],
+                'environment' => $this->config->get('environment')
             ],
             'system' => [
                 'hostname'     => $this->config->get('hostname'),
