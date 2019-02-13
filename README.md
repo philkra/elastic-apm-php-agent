@@ -1,6 +1,6 @@
 # Elastic APM: PHP Agent
 
-[![Build Status](https://travis-ci.org/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
+[![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
 This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm.
 
