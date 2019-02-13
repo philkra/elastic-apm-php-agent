@@ -209,6 +209,7 @@ class Agent
      * Send Data to APM Service
      *
      * @link https://github.com/philkra/elastic-apm-laravel/issues/22
+     * @link https://github.com/philkra/elastic-apm-laravel/issues/26
      *
      * @return bool
      */
@@ -216,7 +217,7 @@ class Agent
     {
         // Is the Agent enabled ?
         if ($this->config->get('active') === false) {
-            return false;
+            return true;
         }
 
         $connector = new Connector($this->config);
