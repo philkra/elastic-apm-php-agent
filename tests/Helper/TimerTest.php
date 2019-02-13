@@ -43,7 +43,7 @@ final class TimerTest extends TestCase {
         $this->assertDurationIsWithinThreshold($duration, $timer->getDurationInMilliseconds());
     }
 
-    /**
+  /**
    * @depends testCanBeStartedAndStoppedWithDuration
    *
    * @covers \PhilKra\Helper\Timer::start
@@ -67,26 +67,28 @@ final class TimerTest extends TestCase {
   /**
    * @depends testCanBeStartedAndStoppedWithDuration
    *
-   * @expectedException \PhilKra\Exception\Timer\NotStoppedException
-   *
    * @covers \PhilKra\Helper\Timer::start
    * @covers \PhilKra\Helper\Timer::getDuration
    */
   public function testCanBeStartedWithForcingDurationException() {
     $timer = new Timer();
     $timer->start();
+
+    $this->expectException( \PhilKra\Exception\Timer\NotStoppedException::class );
+
     $timer->getDuration();
   }
 
   /**
    * @depends testCanBeStartedWithForcingDurationException
    *
-   * @expectedException \PhilKra\Exception\Timer\NotStartedException
-   *
    * @covers \PhilKra\Helper\Timer::stop
    */
   public function testCannotBeStoppedWithoutStart() {
     $timer = new Timer();
+
+    $this->expectException( \PhilKra\Exception\Timer\NotStartedException::class );
+
     $timer->stop();
   }
 

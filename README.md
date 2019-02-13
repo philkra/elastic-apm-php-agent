@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm.
+This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
 
-Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
+*Please note* that currently only the `v1` intake API of the APM server is supported, `v2` is in planing.
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).

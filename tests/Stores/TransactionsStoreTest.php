@@ -37,14 +37,14 @@ final class TransactionsStoreTest extends TestCase {
   /**
    * @depends testTransactionRegistrationAndFetch
    *
-   * @expectedException \PhilKra\Exception\Transaction\DuplicateTransactionNameException
-   *
    * @covers \PhilKra\Stores\TransactionsStore::register
    */
   public function testDuplicateTransactionRegistration() {
     $store = new TransactionsStore();
     $name  = 'test';
     $trx   = new Transaction( $name, [] );
+
+    $this->expectException( \PhilKra\Exception\Transaction\DuplicateTransactionNameException::class );
 
     // Store the Transaction again to force an Exception
     $store->register( $trx );

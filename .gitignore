@@ -4,3 +4,4 @@ phpunit.xml
 composer.phar
 .DS_STORE
 .idea
+.phpunit.result.cache
