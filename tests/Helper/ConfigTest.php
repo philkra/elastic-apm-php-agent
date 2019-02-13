@@ -31,6 +31,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'apmVersion', $config );
     $this->assertArrayHasKey( 'appVersion', $config );
     $this->assertArrayHasKey( 'env', $config );
+    $this->assertArrayHasKey( 'cookies', $config );
     $this->assertArrayHasKey( 'httpClient', $config );
 
     $this->assertEquals( $config['appName'], $appName );
@@ -41,6 +42,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['timeout'], 5 );
     $this->assertEquals( $config['apmVersion'], 'v1' );
     $this->assertEquals( $config['env'], [] );
+    $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );
   }
 

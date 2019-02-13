@@ -103,12 +103,12 @@ class Agent
         $this->sharedContext['custom'] = $sharedContext['custom'] ?? [];
         $this->sharedContext['tags']   = $sharedContext['tags'] ?? [];
 
-        // Let's misuse the context to pass the Environment Var config
-        // to the EventBeans and the getContext method
+        // Let's misuse the context to pass the environment variable and cookies
+        // config to the EventBeans and the getContext method
         // @see https://github.com/philkra/elastic-apm-php-agent/issues/27
-        $this->sharedContext['env'] = ( $this->config->get( 'env' ) === null )
-            ? []
-            : $this->config->get( 'env' );
+        // @see https://github.com/philkra/elastic-apm-php-agent/issues/30
+        $this->sharedContext['env'] = $this->config->get('env', []);
+        $this->sharedContext['cookies'] = $this->config->get('cookies', []);
 
         // Initialize Event Stores
         $this->transactionsStore = new TransactionsStore();
