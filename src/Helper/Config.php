@@ -70,6 +70,7 @@ class Config
             'apmVersion'  => 'v1',
             'env'         => [],
             'httpClient'  => [],
+            'environment' => 'development',
         ];
     }
 }
