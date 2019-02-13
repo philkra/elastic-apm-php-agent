@@ -6,7 +6,7 @@ use Ramsey\Uuid\Uuid;
 
 /**
  *
- * EventBean for occuring events such as Excpetions or Transactions
+ * EventBean for occuring events such as Exceptions or Transactions
  *
  */
 class EventBean
@@ -182,6 +182,37 @@ class EventBean
     }
 
     /**
+     * Get the cookies
+     *
+     * @link https://github.com/philkra/elastic-apm-php-agent/issues/30
+     *
+     * @return array
+     */
+    final protected function getCookies() : array
+    {
+        $cookieMask = $this->contexts['cookies'];
+
+        return empty($cookieMask)
+            ? $_COOKIE
+            : array_intersect_key($_COOKIE, array_flip($cookieMask));
+    }
+
+    /**
+     * Get the cookie header
+     *
+     * @link https://github.com/philkra/elastic-apm-php-agent/issues/30
+     *
+     * @return string
+     */
+    final protected function getCookieHeader(string $cookieHeader) : string
+    {
+        $cookieMask = $this->contexts['cookies'];
+
+        // Returns an empty string if cookies are masked.
+        return empty($cookieMask) ? $cookieHeader : '';
+    }
+
+    /**
      * Get the Events Context
      *
      * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html#transaction-context-schema
@@ -214,16 +245,12 @@ class EventBean
                 ],
                 'headers' => [
                     'user-agent' => $headers['User-Agent'] ?? '',
-                    'cookie'     => $headers['Cookie'] ?? ''
+                    'cookie'     => $this->getCookieHeader($headers['Cookie'] ?? ''),
                 ],
                 'env' => $this->getEnv(),
+                'cookies' => $this->getCookies(),
             ]
         ];
-
-        // Add Cookies Map
-        if (empty($_COOKIE) === false) {
-            $context['request']['cookies'] = $_COOKIE;
-        }
 
         // Add User Context
         if (empty($this->contexts['user']) === false) {
