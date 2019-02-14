@@ -173,12 +173,14 @@ class EventBean
      *
      * @return array
      */
-    final protected function getEnv() : array
+    final protected function getEnv() : ?array
     {
-        $env = $this->contexts['env'];
-        return ( empty( $env ) === true )
+        $envMask = $this->contexts['env'];
+        $env = empty($envMask)
             ? $_SERVER
-            : array_intersect_key($_SERVER, array_flip($env));
+            : array_intersect_key($_SERVER, array_flip($envMask));
+
+        return !empty($env) ? $env : null;
     }
 
     /**
@@ -188,13 +190,14 @@ class EventBean
      *
      * @return array
      */
-    final protected function getCookies() : array
+    final protected function getCookies() : ?array
     {
         $cookieMask = $this->contexts['cookies'];
-
-        return empty($cookieMask)
+        $cookies = empty($cookieMask)
             ? $_COOKIE
             : array_intersect_key($_COOKIE, array_flip($cookieMask));
+
+        return !empty($cookies) ? $cookies : null;
     }
 
     /**
