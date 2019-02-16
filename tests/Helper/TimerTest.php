@@ -92,4 +92,21 @@ final class TimerTest extends TestCase {
     $timer->stop();
   }
 
+    /**
+     * @covers \PhilKra\Helper\Timer::start
+     * @covers \PhilKra\Helper\Timer::getDurationInMilliseconds
+     */
+    public function testCanBeStartedWithExplicitStartTime() {
+        $timer = new Timer(microtime(true) - .5); // Start timer 500 milliseconds ago
+
+        usleep(500 * 1000); // Sleep for 500 milliseconds
+
+        $timer->stop();
+
+        $duration = $timer->getDurationInMilliseconds();
+
+        // Duration should be more than 1000 milliseconds
+        //  sum of initial offset and sleep
+        $this->assertGreaterThanOrEqual(1000, $duration);
+    }
 }
