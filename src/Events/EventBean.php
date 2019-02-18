@@ -171,14 +171,16 @@ class EventBean
      * @link http://php.net/manual/en/reserved.variables.server.php
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/27
      *
-     * @return array
+     * @return object
      */
-    final protected function getEnv() : array
+    final protected function getEnv() : object
     {
-        $env = $this->contexts['env'];
-        return ( empty( $env ) === true )
+        $envMask = $this->contexts['env'];
+        $env = empty($envMask)
             ? $_SERVER
-            : array_intersect_key($_SERVER, array_flip($env));
+            : array_intersect_key($_SERVER, array_flip($envMask));
+
+        return (object) $env;
     }
 
     /**
@@ -186,15 +188,16 @@ class EventBean
      *
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/30
      *
-     * @return array
+     * @return object
      */
-    final protected function getCookies() : array
+    final protected function getCookies() : object
     {
         $cookieMask = $this->contexts['cookies'];
-
-        return empty($cookieMask)
+        $cookies = empty($cookieMask)
             ? $_COOKIE
             : array_intersect_key($_COOKIE, array_flip($cookieMask));
+
+        return (object) $cookies;
     }
 
     /**
