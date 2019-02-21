@@ -51,11 +51,11 @@ class Transaction extends EventBean implements \JsonSerializable
     * @param string $name
     * @param array $contexts
     */
-    public function __construct(string $name, array $contexts)
+    public function __construct(string $name, array $contexts, $start = null)
     {
         parent::__construct($contexts);
         $this->setTransactionName($name);
-        $this->timer = new Timer();
+        $this->timer = new Timer($start);
     }
 
     /**
