@@ -1,6 +1,7 @@
 <?php
 namespace PhilKra\Tests\Helper;
 
+use PhilKra\Exception\Timer\AlreadyRunningException;
 use \PhilKra\Helper\Timer;
 use PhilKra\Tests\TestCase;
 
@@ -108,5 +109,15 @@ final class TimerTest extends TestCase {
         // Duration should be more than 1000 milliseconds
         //  sum of initial offset and sleep
         $this->assertGreaterThanOrEqual(1000, $duration);
+    }
+
+    /**
+     * @covers \PhilKra\Helper\Timer::start
+     */
+    public function testCannotBeStartedIfAlreadyRunning() {
+        $timer = new Timer(microtime(true));
+
+        $this->expectException(AlreadyRunningException::class);
+        $timer->start();
     }
 }
