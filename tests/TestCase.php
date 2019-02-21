@@ -12,14 +12,12 @@ namespace PhilKra\Tests;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
 
-    protected function assertDurationIsWithinThreshold(int $sleptMilliseconds, float $timedDuration)
+    protected function assertDurationIsWithinThreshold(int $expectedMilliseconds, float $timedDuration, float $maxOverhead = 10)
     {
-        $this->assertGreaterThanOrEqual( $sleptMilliseconds, $timedDuration );
+        $this->assertGreaterThanOrEqual( $expectedMilliseconds, $timedDuration );
 
-        // Generally we should expect less than 1ms of overhead, but that is not guaranteed.
-        // 10ms should be enough unless the test system is really unresponsive.
-        $overhead = ($timedDuration - $sleptMilliseconds);
-        $this->assertLessThanOrEqual( 10, $overhead );
+        $overhead = ($timedDuration - $expectedMilliseconds);
+        $this->assertLessThanOrEqual( $maxOverhead, $overhead );
     }
 
 }

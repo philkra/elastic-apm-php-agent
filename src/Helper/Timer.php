@@ -2,6 +2,7 @@
 
 namespace PhilKra\Helper;
 
+use PhilKra\Exception\Timer\AlreadyRunningException;
 use PhilKra\Exception\Timer\NotStartedException;
 use PhilKra\Exception\Timer\NotStoppedException;
 
@@ -24,13 +25,23 @@ class Timer
      */
     private $stoppedOn = null;
 
+    public function __construct(float $startTime = null)
+    {
+        $this->startedOn = $startTime;
+    }
+
     /**
      * Start the Timer
      *
      * @return void
+     * @throws AlreadyRunningException
      */
     public function start()
     {
+        if (null !== $this->startedOn) {
+            throw new AlreadyRunningException();
+        }
+        
         $this->startedOn = microtime(true);
     }
 

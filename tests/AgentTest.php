@@ -36,6 +36,32 @@ final class AgentTest extends TestCase {
   }
 
   /**
+   * @covers \PhilKra\Agent::__construct
+   * @covers \PhilKra\Agent::startTransaction
+   * @covers \PhilKra\Agent::stopTransaction
+   * @covers \PhilKra\Agent::getTransaction
+   */
+  public function testStartAndStopATransactionWithExplicitStart() {
+    $agent = new Agent( [ 'appName' => 'phpunit_1' ] );
+
+    // Create a Transaction, wait and Stop it
+    $name = 'trx';
+    $agent->startTransaction( $name, [], microtime(true) - 1);
+    usleep( 500 * 1000 ); // sleep milliseconds
+    $agent->stopTransaction( $name );
+
+    // Transaction Summary must be populated
+    $summary = $agent->getTransaction( $name )->getSummary();
+
+    $this->assertArrayHasKey( 'duration', $summary );
+    $this->assertArrayHasKey( 'backtrace', $summary );
+
+    // Expect duration in milliseconds
+    $this->assertDurationIsWithinThreshold(1500, $summary['duration'], 150);
+    $this->assertNotEmpty( $summary['backtrace'] );
+  }
+
+  /**
    * @depends testStartAndStopATransaction
    *
    * @covers \PhilKra\Agent::__construct
