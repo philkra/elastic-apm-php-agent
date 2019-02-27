@@ -158,6 +158,7 @@ class Agent
      */
     public function stopTransaction(string $name, array $meta = [])
     {
+        $this->getTransaction($name)->setBacktraceLimit($this->config->get('backtraceLimit', 0));
         $this->getTransaction($name)->stop();
         $this->getTransaction($name)->setMeta($meta);
     }

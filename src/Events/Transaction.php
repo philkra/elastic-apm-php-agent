@@ -39,11 +39,18 @@ class Transaction extends EventBean implements \JsonSerializable
     ];
 
     /**
-     * The spams for the transaction
+     * The spans for the transaction
      *
      * @var array
      */
     private $spans = [];
+
+    /**
+     * Backtrace Depth
+     *
+     * @var int
+     */
+    private $backtraceLimit = 0;
 
     /**
     * Create the Transaction
@@ -83,7 +90,7 @@ class Transaction extends EventBean implements \JsonSerializable
         // Store Summary
         $this->summary['duration']  = $duration ?? round($this->timer->getDurationInMilliseconds(), 3);
         $this->summary['headers']   = (function_exists('xdebug_get_headers') === true) ? xdebug_get_headers() : [];
-        $this->summary['backtrace'] = debug_backtrace();
+        $this->summary['backtrace'] = debug_backtrace($this->backtraceLimit);
     }
 
     /**
@@ -128,6 +135,19 @@ class Transaction extends EventBean implements \JsonSerializable
     public function setSpans(array $spans)
     {
         $this->spans = $spans;
+    }
+
+    /**
+     * Set the Max Depth/Limit of the debug_backtrace method
+     *
+     * @link http://php.net/manual/en/function.debug-backtrace.php
+     * @link https://github.com/philkra/elastic-apm-php-agent/issues/55
+     *
+     * @param int $limit [description]
+     */
+    public function setBacktraceLimit(int $limit)
+    {
+        $this->backtraceLimit = $limit;
     }
 
     /**

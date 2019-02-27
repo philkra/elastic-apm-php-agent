@@ -34,6 +34,7 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'cookies', $config );
     $this->assertArrayHasKey( 'httpClient', $config );
     $this->assertArrayHasKey( 'environment', $config );
+    $this->assertArrayHasKey( 'backtraceLimit', $config );
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
@@ -46,6 +47,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );
     $this->assertEquals( $config['environment'], 'development' );
+    $this->assertEquals( $config['backtraceLimit'], 1 );
   }
 
   /**
