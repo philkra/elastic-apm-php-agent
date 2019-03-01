@@ -47,7 +47,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );
     $this->assertEquals( $config['environment'], 'development' );
-    $this->assertEquals( $config['backtraceLimit'], 1 );
+    $this->assertEquals( $config['backtraceLimit'], 0 );
   }
 
   /**
