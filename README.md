@@ -136,6 +136,34 @@ $agent->getTransaction( $trxName )->setUserContext( [
 $agent->getTransaction( $trxName )->setTags( [ 'k1' => 'v1', 'k2' => 'v2' ] );  
 ```
 
+### Example of a Transaction
+This example illustrates how you can monitor a call to another web service.
+```php
+$agent = new \PhilKra\Agent( [ 'appName' => 'example' ] );
+
+$endpoint = 'https://acme.com/api/';
+$payload  = [ 'foo' => 'bar' ];
+$trxName  = sprintf('POST %s', $endpoint);
+$client   = new GuzzleHttp\Client();
+
+// Start the Transaction
+$agent->startTransaction( $trxName );
+
+// Do the call via curl/Guzzle e.g.
+$response = $client->request('POST', $endpoint, [
+    'json' => $payload
+]);
+
+// Stop the Transaction tracing, attach the Status and the sent Payload
+$agent->stopTransaction( $trxName, [
+    'status'  => $response->getStatusCode(),
+    'payload' => $payload,
+] );
+
+// Send the collected Traces to the APM server
+$agent->send();
+```
+
 ### Configuration
 ```
 appName       : Name of this application, Required
