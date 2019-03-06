@@ -181,7 +181,7 @@ class EventBean
             ? $_SERVER
             : array_intersect_key($_SERVER, array_flip($envMask));
 
-        return (object)$env;
+        return $env;
     }
 
     /**
