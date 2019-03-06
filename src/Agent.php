@@ -28,7 +28,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.5.1';
+    const VERSION = '6.5.4';
 
     /**
      * Agent Name
@@ -158,6 +158,7 @@ class Agent
      */
     public function stopTransaction(string $name, array $meta = [])
     {
+        $this->getTransaction($name)->setBacktraceLimit($this->config->get('backtraceLimit', 0));
         $this->getTransaction($name)->stop();
         $this->getTransaction($name)->setMeta($meta);
     }

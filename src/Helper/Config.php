@@ -57,22 +57,25 @@ class Config
     /**
      * Get the Default Config of the Agent
      *
+     * @link https://github.com/philkra/elastic-apm-php-agent/issues/55
+     *
      * @return array
      */
     private function getDefaultConfig() : array
     {
         return [
-            'serverUrl'   => 'http://127.0.0.1:8200',
-            'secretToken' => null,
-            'hostname'    => gethostname(),
-            'appVersion'  => '',
-            'active'      => true,
-            'timeout'     => 5,
-            'apmVersion'  => 'v1',
-            'env'         => [],
-            'cookies'     => [],
-            'httpClient'  => [],
-            'environment' => 'development',
+            'serverUrl'      => 'http://127.0.0.1:8200',
+            'secretToken'    => null,
+            'hostname'       => gethostname(),
+            'appVersion'     => '',
+            'active'         => true,
+            'timeout'        => 5,
+            'apmVersion'     => 'v1',
+            'env'            => [],
+            'cookies'        => [],
+            'httpClient'     => [],
+            'environment'    => 'development',
+            'backtraceLimit' => 0,
         ];
     }
 }
