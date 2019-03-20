@@ -1,5 +1,5 @@
 {
-    "name" : "philkra/elastic-apm-php-agent",
+    "name" : "l00cyph3r/elastic-apm-php-agent",
     "description": "A php agent for Elastic APM",
     "license": "MIT",
     "require" : {
@@ -37,6 +37,10 @@
         {
             "name" : "George Boot",
             "email": "george@entryninja.com"
+        },
+        {
+            "name" : "Loo Cypher",
+            "email": "composer@loo.sh"
         }
     ]
 }
