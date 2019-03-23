@@ -41,6 +41,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $transactionStore
             ->method('jsonSerialize')
             ->willReturn($transactions);
+        $transactionStore
+            ->method('isEmpty')
+            ->willReturn(empty($transactions));
 
         return $transactionStore;
     }

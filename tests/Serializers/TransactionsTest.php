@@ -42,11 +42,7 @@ class TransactionsTest extends TestCase
          * as JSON.
          */
         $transactions = [
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'duration' => 1,
-                'type' => 'test',
-            ]
+            $this->makeTransactionData($apmVersion)
         ];
 
         $serializer = new Transactions($config, $this->makeTransactionsStore($transactions));
@@ -60,7 +56,30 @@ class TransactionsTest extends TestCase
     {
         return [
             'APM Version 1' => ['v1'],
-//            'APM Version 2' => ['v2'],
+            'APM Version 2' => ['v2'],
         ];
+    }
+
+    private function makeTransactionData(string $version = 'v1'): array
+    {
+        if ($version === 'v2') {
+            return [
+                'id' => Uuid::uuid4()->toString(),
+                'duration' => 1,
+                'type' => 'test',
+                'trace_id' => Uuid::uuid4()->toString(),
+                'span_count' => ['started' => 1, 'dropped' => 0],
+            ];
+        }
+
+        if ($version === 'v1') {
+            return [
+                'id' => Uuid::uuid4()->toString(),
+                'duration' => 1,
+                'type' => 'test',
+            ];
+        }
+
+        return [];
     }
 }
