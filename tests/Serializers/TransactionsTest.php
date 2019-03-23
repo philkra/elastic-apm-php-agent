@@ -8,46 +8,59 @@
 
 namespace PhilKra\Tests\Serializers;
 
-use JsonSchema\Validator;
-use PhilKra\Events\Transaction;
-use PhilKra\Helper\Config;
+use EnricoStahn\JsonAssert\AssertClass as JsonAssert;
 use PhilKra\Serializers\Transactions;
-use PhilKra\Stores\TransactionsStore;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use PhilKra\Tests\TestCase;
 use Ramsey\Uuid\Uuid;
 
 class TransactionsTest extends TestCase
 {
-    public function testProducesExceptedDefault()
+    private $schemaDirectory = '';
+    private $schemaVersionFiles = [];
+
+    public function setUp()
     {
-        $config = new Config(['appName' => 'Test Application']);
+        parent::setUp();
 
-        /** @var TransactionsStore|MockObject $transactionStore */
-        $transactionStore = $this->createMock(TransactionsStore::class);
-        $transactionStore->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn([
-                [
-                    'id' => Uuid::uuid4()->toString(),
-                    'duration' => 1,
-                    'type' => 'test',
-                ]
-            ]);
+        $this->schemaDirectory = __DIR__ . '/../../schemas';
 
-        $serializer = new Transactions($config, $transactionStore);
+        $this->schemaVersionFiles['v1'] = $this->schemaDirectory . '/apm-6.5/spec/transactions/v1_transaction.json';
+        $this->schemaVersionFiles['v2'] = $this->schemaDirectory . '/apm-6.5/spec/transactions/v2_transaction.json';
+    }
 
-        $data = json_decode(json_encode($serializer));
+    /**
+     * @dataProvider apmVersionProvider
+     */
+    public function testProducesValidJsonData(string $apmVersion)
+    {
+        $config = $this->makeConfig(['apmVersion' => $apmVersion]);
 
-        $validator = new Validator;
-        $validator->validate($data, (object)['$ref' => 'file://' . realpath('schemas/apm-6.5/spec/transactions/v1_transaction.json')]);
+        /*
+         * The TransactionsStore is simply rendered as JSON in the Transactions serializer
+         * For now, we can test by providing the data structure expected to represent a
+         * Transaction object. The mock TransactionsStore will return that when rendered
+         * as JSON.
+         */
+        $transactions = [
+            [
+                'id' => Uuid::uuid4()->toString(),
+                'duration' => 1,
+                'type' => 'test',
+            ]
+        ];
 
-        if (!$validator->isValid()) {
-            echo "JSON does not validate. Violations:\n";
-            foreach ($validator->getErrors() as $error) {
-                echo sprintf("[%s] %s\n", $error['property'], $error['message']);
-            }
-            $this->fail('JSON does not validate');
-        }
+        $serializer = new Transactions($config, $this->makeTransactionsStore($transactions));
+
+        $json = json_encode($serializer);
+
+        JsonAssert::assertJsonMatchesSchema(json_decode($json), $this->schemaVersionFiles[$apmVersion]);
+    }
+
+    public function apmVersionProvider()
+    {
+        return [
+            'APM Version 1' => ['v1'],
+//            'APM Version 2' => ['v2'],
+        ];
     }
 }

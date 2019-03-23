@@ -9,6 +9,10 @@
 namespace PhilKra\Tests;
 
 
+use PhilKra\Helper\Config;
+use PhilKra\Stores\TransactionsStore;
+use PHPUnit\Framework\MockObject\MockObject;
+
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
 
@@ -20,4 +24,24 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertLessThanOrEqual( $maxOverhead, $overhead );
     }
 
+    protected function makeConfig(array $overrides = []): Config
+    {
+        $defaults = [
+            'appName' => 'Test Application',
+            'apmVersion' => 'v1',
+        ];
+
+        return new Config(array_merge($defaults, $overrides));
+    }
+
+    protected function makeTransactionsStore(array $transactions = []): TransactionsStore
+    {
+        /** @var TransactionsStore|MockObject $transactionStore */
+        $transactionStore = $this->createMock(TransactionsStore::class);
+        $transactionStore
+            ->method('jsonSerialize')
+            ->willReturn($transactions);
+
+        return $transactionStore;
+    }
 }
