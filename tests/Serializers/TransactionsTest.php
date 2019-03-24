@@ -11,7 +11,6 @@ namespace PhilKra\Tests\Serializers;
 use EnricoStahn\JsonAssert\AssertClass as JsonAssert;
 use PhilKra\Serializers\Transactions;
 use PhilKra\Tests\TestCase;
-use Ramsey\Uuid\Uuid;
 
 class TransactionsTest extends TestCase
 {
@@ -50,36 +49,5 @@ class TransactionsTest extends TestCase
         $json = json_encode($serializer);
 
         JsonAssert::assertJsonMatchesSchema(json_decode($json), $this->schemaVersionFiles[$apmVersion]);
-    }
-
-    public function apmVersionProvider()
-    {
-        return [
-            'APM Version 1' => ['v1'],
-            'APM Version 2' => ['v2'],
-        ];
-    }
-
-    private function makeTransactionData(string $version = 'v1'): array
-    {
-        if ($version === 'v2') {
-            return [
-                'id' => Uuid::uuid4()->toString(),
-                'duration' => 1,
-                'type' => 'test',
-                'trace_id' => Uuid::uuid4()->toString(),
-                'span_count' => ['started' => 1, 'dropped' => 0],
-            ];
-        }
-
-        if ($version === 'v1') {
-            return [
-                'id' => Uuid::uuid4()->toString(),
-                'duration' => 1,
-                'type' => 'test',
-            ];
-        }
-
-        return [];
     }
 }

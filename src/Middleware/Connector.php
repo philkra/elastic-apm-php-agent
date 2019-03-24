@@ -31,10 +31,12 @@ class Connector
 
     /**
      * @param \PhilKra\Helper\Config $config
+     * @param Client|null $client
      */
-    public function __construct(\PhilKra\Helper\Config $config)
+    public function __construct(\PhilKra\Helper\Config $config, Client $client = null)
     {
         $this->config = $config;
+        $this->client = $client;
 
         $this->configureHttpClient();
     }
@@ -46,6 +48,10 @@ class Connector
      */
     private function configureHttpClient()
     {
+        if (null !== $this->client) {
+            return;
+        }
+
         $httpClientDefaults = [
             'timeout' => $this->config->get('timeout'),
         ];
