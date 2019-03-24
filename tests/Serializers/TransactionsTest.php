@@ -24,8 +24,8 @@ class TransactionsTest extends TestCase
 
         $this->schemaDirectory = __DIR__ . '/../../schemas';
 
-        $this->schemaVersionFiles['v1'] = $this->schemaDirectory . '/apm-6.5/spec/transactions/v1_transaction.json';
-        $this->schemaVersionFiles['v2'] = $this->schemaDirectory . '/apm-6.5/spec/transactions/v2_transaction.json';
+        $this->schemaVersionFiles['v1'] = $this->schemaDirectory . '/apm-6.5/docs/spec/transactions/v1_transaction.json';
+        $this->schemaVersionFiles['v2'] = $this->schemaDirectory . '/apm-6.5/docs/spec/transactions/v2_transaction.json';
     }
 
     /**
