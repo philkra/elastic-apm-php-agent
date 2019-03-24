@@ -43,8 +43,6 @@ class Transactions extends Entity implements \JsonSerializable
                 ];
         }
 
-        // TODO v2 should return a collection of transactions
-        // The agent send() method must send each v2 transaction as separate requests
         if ($this->useVersion2()) {
             return $this->makeVersion2Json();
         }
@@ -60,7 +58,13 @@ class Transactions extends Entity implements \JsonSerializable
 
         $transactionData = json_decode(json_encode($this->store), true);
 
-        return array_merge($this->getSkeleton(), $transactionData[0]);
+        $encodedTransactions = [];
+
+        foreach ($transactionData as $transaction) {
+            $encodedTransactions[] = array_merge($this->getSkeleton(), $transaction);
+        }
+
+        return $encodedTransactions;
     }
 
     private function apmVersion(): string

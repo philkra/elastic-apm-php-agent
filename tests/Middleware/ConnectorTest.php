@@ -11,10 +11,8 @@ namespace PhilKra\Tests\Middleware;
 use GuzzleHttp\Psr7\Response;
 use PhilKra\Agent;
 use PhilKra\Events\Error;
-use PhilKra\Events\Transaction;
 use PhilKra\Middleware\Connector;
 use PhilKra\Stores\ErrorsStore;
-use PhilKra\Stores\TransactionsStore;
 use PhilKra\Tests\TestCase;
 
 class ConnectorTest extends TestCase
@@ -24,7 +22,7 @@ class ConnectorTest extends TestCase
      */
     public function testSetsContentTypeHeader(string $apmVersion)
     {
-        $transactionStore = new TransactionsStore();
+        $transactionStore = $this->makeTransactionsStore([$this->makeTransactionData($apmVersion)]);
 
         $connector = $this->makeConnector(['apmVersion' => $apmVersion], [new Response()]);
 
@@ -39,7 +37,7 @@ class ConnectorTest extends TestCase
      */
     public function testSetsUserAgentHeader(string $apmVersion)
     {
-        $transactionStore = new TransactionsStore();
+        $transactionStore = $this->makeTransactionsStore([$this->makeTransactionData($apmVersion)]);
 
         $connector = $this->makeConnector(['apmVersion' => $apmVersion], [new Response()]);
 
@@ -54,7 +52,7 @@ class ConnectorTest extends TestCase
      */
     public function testDoesNotSetAuthorizationHeaderWithoutToken(string $apmVersion)
     {
-        $transactionStore = new TransactionsStore();
+        $transactionStore = $this->makeTransactionsStore([$this->makeTransactionData($apmVersion)]);
 
         $connector = $this->makeConnector(['apmVersion' => $apmVersion], [new Response()]);
 
@@ -69,7 +67,7 @@ class ConnectorTest extends TestCase
      */
     public function testSetsAuthorizationHeaderWithToken(string $apmVersion)
     {
-        $transactionStore = new TransactionsStore();
+        $transactionStore = $this->makeTransactionsStore([$this->makeTransactionData($apmVersion)]);
 
         $connector = $this->makeConnector(
             ['apmVersion' => $apmVersion, 'secretToken' => 'abc123'],
@@ -190,6 +188,7 @@ class ConnectorTest extends TestCase
 
     private function assertSendMultipleTransactionsV1(int $count)
     {
+        // Makes a single POST for multiple transactions
         $this->assertEquals(1, $this->requestCount());
 
         $request = $this->getRequest();
@@ -198,11 +197,13 @@ class ConnectorTest extends TestCase
 
         $body = json_decode($request->getBody()->getContents(), true);
 
+        // Consistent with v1 schema
         $this->assertCount($count, $body['transactions']);
     }
 
     private function assertSendMultipleTransactionsV2(int $count)
     {
+        // Makes a POST for each transaction
         $this->assertEquals($count, $this->requestCount());
 
         $request = $this->getRequest();
@@ -211,6 +212,7 @@ class ConnectorTest extends TestCase
 
         $body = json_decode($request->getBody()->getContents(), true);
 
-        $this->assertCount($count, $body['transactions']);
+        // Consistent with v2 schema
+        $this->assertFalse(array_key_exists('transactions', $body));
     }
 }

@@ -48,6 +48,21 @@ class TransactionsTest extends TestCase
 
         $json = json_encode($serializer);
 
-        JsonAssert::assertJsonMatchesSchema(json_decode($json), $this->schemaVersionFiles[$apmVersion]);
+        $this->assertValidJson($apmVersion, $json);
+    }
+
+    private function assertValidJson(string $apmVersion, string $json)
+    {
+        switch ($apmVersion) {
+            case 'v1':
+                $object = json_decode($json);
+                break;
+
+            case 'v2':
+                $object = json_decode($json)[0];
+                break;
+        }
+
+        JsonAssert::assertJsonMatchesSchema($object, $this->schemaVersionFiles[$apmVersion]);
     }
 }

@@ -3,6 +3,7 @@
 namespace PhilKra\Middleware;
 
 use PhilKra\Agent;
+use PhilKra\Exception\Serializers\UnsupportedApmVersionException;
 use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Serializers\Errors;
@@ -70,15 +71,25 @@ class Connector
      */
     public function sendTransactions(TransactionsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('transactions'),
-            $this->getRequestHeaders(),
-            json_encode(new Transactions($this->config, $store))
-        );
+        // TODO in the long run, the Connector should not be responsible for
+        // understanding version specific send requirements.
+        if ($this->useVersion1()) {
+            $request = new Request(
+                'POST',
+                $this->getEndpoint('transactions'),
+                $this->getRequestHeaders(),
+                json_encode(new Transactions($this->config, $store))
+            );
 
-        $response = $this->client->send($request);
-        return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+            $response = $this->client->send($request);
+            return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+        }
+
+        if ($this->useVersion2()) {
+            return $this->sendTransactionsWithVersion2($store);
+        }
+
+        throw new UnsupportedApmVersionException($this->apmVersion());
     }
 
     /**
@@ -137,5 +148,48 @@ class Connector
         }
 
         return $headers;
+    }
+
+    private function sendTransactionsWithVersion2(TransactionsStore $store): bool
+    {
+        // TODO handling of individual request failures
+        $success = true;
+
+        // TODO we should serialize individual transactions
+        // This is a hack to make the serializer produce the required v2 structure, but
+        // have the connector send the transactions individually
+        $transactions = json_decode(json_encode(new Transactions($this->config, $store)), true);
+        foreach ($transactions as $transaction) {
+            $request = new Request(
+                'POST',
+                $this->getEndpoint('transactions'),
+                $this->getRequestHeaders(),
+                json_encode($transaction)
+            );
+
+            $response = $this->client->send($request);
+
+            // This will use the last response status, which may ok in most cases, assuming
+            // they all succeed or fail, but is not a good long term solution.
+            $success = ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+        }
+
+        return $success;
+    }
+
+    // TODO these are duplicated from the Transactions serializer. The Config class should probably provide them.
+    private function apmVersion(): string
+    {
+        return $this->config->get('apmVersion');
+    }
+
+    private function useVersion1(): bool
+    {
+        return $this->config->get('apmVersion') === 'v1';
+    }
+
+    private function useVersion2(): bool
+    {
+        return $this->config->get('apmVersion') === 'v2';
     }
 }
