@@ -229,7 +229,7 @@ class EventBean
 
         // Build Context Stub
         $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
-        $remote_address = $_SERVER['REMOTE_ADDR'];
+        $remote_address = $_SERVER['REMOTE_ADDR'] ?? '';
         if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === true) {
             $remote_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
@@ -238,7 +238,7 @@ class EventBean
                 'http_version' => substr($SERVER_PROTOCOL, strpos($SERVER_PROTOCOL, '/')),
                 'method'       => $_SERVER['REQUEST_METHOD'] ?? 'cli',
                 'socket'       => [
-                    'remote_address' => $remote_address ?? '',
+                    'remote_address' => $remote_address,
                     'encrypted'      => isset($_SERVER['HTTPS'])
                 ],
                 'response' => $this->contexts['response'],
