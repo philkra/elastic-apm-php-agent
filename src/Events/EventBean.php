@@ -16,14 +16,14 @@ class EventBean
      *
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * Error occurred on Timestamp
      *
      * @var string
      */
-    private $timestamp;
+    protected $timestamp;
 
     /**
      * Event Metadata

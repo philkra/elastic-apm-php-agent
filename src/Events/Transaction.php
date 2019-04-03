@@ -18,7 +18,7 @@ class Transaction extends EventBean implements \JsonSerializable
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * Transaction Timer
@@ -32,7 +32,7 @@ class Transaction extends EventBean implements \JsonSerializable
      *
      * @var array
      */
-    private $summary = [
+    protected $summary = [
         'duration'  => 0.0,
         'backtrace' => null,
         'headers'   => []
@@ -43,7 +43,7 @@ class Transaction extends EventBean implements \JsonSerializable
      *
      * @var array
      */
-    private $spans = [];
+    protected $spans = [];
 
     /**
      * Backtrace Depth
@@ -155,7 +155,7 @@ class Transaction extends EventBean implements \JsonSerializable
      *
      * @return array
      */
-    private function getSpans(): array
+    protected function getSpans(): array
     {
         return $this->spans;
     }

@@ -18,7 +18,7 @@ class Error extends EventBean implements \JsonSerializable
      *
      * @var Throwable
      */
-    private $throwable;
+    protected $throwable;
 
     /**
      * @param Throwable $throwable
@@ -60,7 +60,7 @@ class Error extends EventBean implements \JsonSerializable
      *
      * @return array
      */
-    private function mapStacktrace() : array
+    protected function mapStacktrace() : array
     {
         $stacktrace = [];
 

@@ -35,6 +35,16 @@ class TransactionsStore extends Store
     }
 
     /**
+     * @return array
+     */
+    public function getAllSpans() {
+        $spans = [];
+        foreach ($this->store as $transaction){
+            $spans += $transaction->getSpans();
+        }
+        return $spans;
+    }
+    /**
      * Fetch a Transaction from the Store
      *
      * @param final string $name

@@ -2,26 +2,29 @@
 
 namespace PhilKra;
 
-use PhilKra\Events\DefaultEventFactory;
 use PhilKra\Events\EventFactoryInterface;
+use PhilKra\EventsV2\DefaultEventFactory;
+use PhilKra\EventsV2\Transaction;
+use PhilKra\EventsV2\Error;
+use PhilKra\Middleware\ConnectorV2Interface;
+use PhilKra\Middleware\HttpConnectorV2;
+use PhilKra\SerializersV2\Errors;
+use PhilKra\SerializersV2\Metadata;
+use PhilKra\SerializersV2\Transactions;
+use PhilKra\SerializersV2\Spans;
 use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
-use PhilKra\Events\Transaction;
-use PhilKra\Events\Error;
 use PhilKra\Helper\Timer;
 use PhilKra\Helper\Config;
-use PhilKra\Middleware\Connector;
 use PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use PhilKra\Exception\Transaction\UnknownTransactionException;
 
 /**
  *
- * APM Agent
- *
- * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
+ * APM Agent for API v2
  *
  */
-class Agent implements AgentInterface
+class AgentV2 implements AgentInterface
 {
     /**
      * Agent Version
@@ -35,7 +38,7 @@ class Agent implements AgentInterface
      *
      * @var string
      */
-    const NAME = 'elastic-php';
+    const NAME = 'elastic-v2-php';
 
     /**
      * Config Store
@@ -88,7 +91,6 @@ class Agent implements AgentInterface
      * @param array                 $sharedContext Set shared contexts such as user and tags
      * @param EventFactoryInterface $eventFactory  Alternative factory to use when creating event objects
      *
-     * @return void
      */
     public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null)
     {
@@ -170,7 +172,7 @@ class Agent implements AgentInterface
      *
      * @param string $name
      *
-     * @return void
+     * @return Transaction
      */
     public function getTransaction(string $name)
     {
@@ -209,11 +211,9 @@ class Agent implements AgentInterface
         return $this->config;
     }
 
+
     /**
-     * Send Data to APM Service
-     *
-     * @link https://github.com/philkra/elastic-apm-laravel/issues/22
-     * @link https://github.com/philkra/elastic-apm-laravel/issues/26
+     * Send Data to V2 endpoint of APM Service
      *
      * @return bool
      */
@@ -224,25 +224,33 @@ class Agent implements AgentInterface
             return true;
         }
 
-        $connector = new Connector($this->config);
-        $status = true;
+        $connector = $this->getConnector();
 
-        // Commit the Errors
-        if ($this->errorsStore->isEmpty() === false) {
-            $status = $status && $connector->sendErrors($this->errorsStore);
-            if ($status === true) {
-                $this->errorsStore->reset();
-            }
+        //$events = (new Metadata($this->config))->jsonSerialize();
+        $meta = (new Metadata($this->config))->jsonSerialize();
+        $errors = (new Errors($this->config, $this->errorsStore))->jsonSerialize();
+        $transactions = (new Transactions($this->config, $this->transactionsStore))->jsonSerialize();
+        $spans = (new Spans($this->config, $this->transactionsStore->getAllSpans()))->jsonSerialize();
+
+        $events = array_merge( [$meta], $transactions , $errors, $spans);
+
+        $status =  $connector->sendEvents($events);
+
+        if ($status === true) {
+            $this->errorsStore->reset();
+            $this->transactionsStore->reset();
         }
 
-        // Commit the Transactions
-        if ($this->transactionsStore->isEmpty() === false) {
-            $status = $status && $connector->sendTransactions($this->transactionsStore);
-            if ($status === true) {
-                $this->transactionsStore->reset();
-            }
-        }
 
         return $status;
+    }
+
+    /**
+     * @return ConnectorV2Interface
+     */
+    protected function getConnector()
+    {
+        $connector = new HttpConnectorV2($this->config);
+        return $connector;
     }
 }
