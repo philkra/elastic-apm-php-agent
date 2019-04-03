@@ -131,7 +131,7 @@ class AgentV2 implements AgentInterface
      *
      * @return Transaction
      */
-    public function startTransaction(string $name, array $context = [], float $start = null): Transaction
+    public function startTransaction(string $name, array $context = [], float $start = null): \PhilKra\Events\Transaction
     {
         // Create and Store Transaction
         $this->transactionsStore->register(
