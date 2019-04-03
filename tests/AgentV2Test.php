@@ -60,6 +60,8 @@ final class AgentV2Test extends TestCase {
   }
 
   public function testAgentSend() {
+    $this->markTestSkipped('Only run in environment with a test apm server');
+
     $agent = new AgentV2( [ 'appName' => 'phpunit_1' ] );
 
     // Create a Transaction with two span
