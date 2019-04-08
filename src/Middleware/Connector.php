@@ -73,7 +73,7 @@ class Connector
     {
         // TODO in the long run, the Connector should not be responsible for
         // understanding version specific send requirements.
-        if ($this->useVersion1()) {
+        if ($this->config->useVersion1()) {
             $request = new Request(
                 'POST',
                 $this->getEndpoint('transactions'),
@@ -85,11 +85,11 @@ class Connector
             return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
         }
 
-        if ($this->useVersion2()) {
+        if ($this->config->useVersion2()) {
             return $this->sendTransactionsWithVersion2($store);
         }
 
-        throw new UnsupportedApmVersionException($this->apmVersion());
+        throw new UnsupportedApmVersionException($this->config->apmVersion());
     }
 
     /**
@@ -175,21 +175,5 @@ class Connector
         }
 
         return $success;
-    }
-
-    // TODO these are duplicated from the Transactions serializer. The Config class should probably provide them.
-    private function apmVersion(): string
-    {
-        return $this->config->get('apmVersion');
-    }
-
-    private function useVersion1(): bool
-    {
-        return $this->config->get('apmVersion') === 'v1';
-    }
-
-    private function useVersion2(): bool
-    {
-        return $this->config->get('apmVersion') === 'v2';
     }
 }

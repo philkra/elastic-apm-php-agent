@@ -3,6 +3,7 @@
 namespace PhilKra\Tests\Helper;
 
 use \PhilKra\Agent;
+use PhilKra\Helper\Config;
 use PhilKra\Tests\TestCase;
 
 /**
@@ -101,4 +102,60 @@ final class ConfigTest extends TestCase
         $this->assertEquals($agent->getConfig()->get('appName'), $init['appName']);
     }
 
+    /**
+     * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Helper\Config::apmVersion
+     */
+    public function testCanGetDefaultApmVersion()
+    {
+        $config = new Config(['appName' => 'Test App']);
+
+        $this->assertEquals(Config::DEFAULT_APM_VERSION, $config->apmVersion());
+    }
+
+    /**
+     * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Helper\Config::apmVersion
+     */
+    public function testCanUseSpecificApmVersion()
+    {
+        $config = new Config(['appName' => 'Test App', 'apmVersion' => 'v2']);
+
+        $this->assertEquals('v2', $config->apmVersion());
+    }
+
+    /**
+     * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Helper\Config::useVersion1
+     * @covers \PhilKra\Helper\Config::useVersion2
+     *
+     * @dataProvider apmVersionChecks
+     */
+    public function testAssertUsingApmVersion(string $version, array $expects)
+    {
+        $config = new Config(['appName' => 'Test App', 'apmVersion' => $version]);
+
+        $this->assertEquals($expects['v1'], $config->useVersion1());
+        $this->assertEquals($expects['v2'], $config->useVersion2());
+    }
+
+    public function apmVersionChecks()
+    {
+        return [
+            'APM Version 1' => [
+                'v1',
+                [
+                    'v1' => true,
+                    'v2' => false,
+                ]
+            ],
+            'APM Version 2' => [
+                'v2',
+                [
+                    'v1' => false,
+                    'v2' => true,
+                ]
+            ],
+        ];
+    }
 }

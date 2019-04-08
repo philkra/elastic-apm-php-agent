@@ -37,17 +37,17 @@ class Transactions extends Entity implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        if ($this->useVersion1()) {
+        if ($this->config->useVersion1()) {
             return $this->getSkeleton() + [
                     'transactions' => $this->store
                 ];
         }
 
-        if ($this->useVersion2()) {
+        if ($this->config->useVersion2()) {
             return $this->makeVersion2Json();
         }
 
-        throw new UnsupportedApmVersionException($this->apmVersion());
+        throw new UnsupportedApmVersionException($this->config->apmVersion());
     }
 
     private function makeVersion2Json(): array
@@ -65,20 +65,5 @@ class Transactions extends Entity implements \JsonSerializable
         }
 
         return $encodedTransactions;
-    }
-
-    private function apmVersion(): string
-    {
-        return $this->config->get('apmVersion');
-    }
-
-    private function useVersion1(): bool
-    {
-        return $this->config->get('apmVersion') === 'v1';
-    }
-
-    private function useVersion2(): bool
-    {
-        return $this->config->get('apmVersion') === 'v2';
     }
 }
