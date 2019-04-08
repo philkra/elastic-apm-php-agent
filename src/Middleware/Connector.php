@@ -3,6 +3,7 @@
 namespace PhilKra\Middleware;
 
 use PhilKra\Agent;
+use PhilKra\Exception\Serializers\UnsupportedApmVersionException;
 use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Serializers\Errors;
@@ -31,10 +32,12 @@ class Connector
 
     /**
      * @param \PhilKra\Helper\Config $config
+     * @param Client|null $client
      */
-    public function __construct(\PhilKra\Helper\Config $config)
+    public function __construct(\PhilKra\Helper\Config $config, Client $client = null)
     {
         $this->config = $config;
+        $this->client = $client;
 
         $this->configureHttpClient();
     }
@@ -46,6 +49,10 @@ class Connector
      */
     private function configureHttpClient()
     {
+        if (null !== $this->client) {
+            return;
+        }
+
         $httpClientDefaults = [
             'timeout' => $this->config->get('timeout'),
         ];
@@ -64,15 +71,25 @@ class Connector
      */
     public function sendTransactions(TransactionsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('transactions'),
-            $this->getRequestHeaders(),
-            json_encode(new Transactions($this->config, $store))
-        );
+        // TODO in the long run, the Connector should not be responsible for
+        // understanding version specific send requirements.
+        if ($this->config->useVersion1()) {
+            $request = new Request(
+                'POST',
+                $this->getEndpoint('transactions'),
+                $this->getRequestHeaders(),
+                json_encode(new Transactions($this->config, $store))
+            );
 
-        $response = $this->client->send($request);
-        return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+            $response = $this->client->send($request);
+            return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+        }
+
+        if ($this->config->useVersion2()) {
+            return $this->sendTransactionsWithVersion2($store);
+        }
+
+        throw new UnsupportedApmVersionException($this->config->apmVersion());
     }
 
     /**
@@ -131,5 +148,32 @@ class Connector
         }
 
         return $headers;
+    }
+
+    private function sendTransactionsWithVersion2(TransactionsStore $store): bool
+    {
+        // TODO handling of individual request failures
+        $success = true;
+
+        // TODO we should serialize individual transactions
+        // This is a hack to make the serializer produce the required v2 structure, but
+        // have the connector send the transactions individually
+        $transactions = json_decode(json_encode(new Transactions($this->config, $store)), true);
+        foreach ($transactions as $transaction) {
+            $request = new Request(
+                'POST',
+                $this->getEndpoint('transactions'),
+                $this->getRequestHeaders(),
+                json_encode($transaction)
+            );
+
+            $response = $this->client->send($request);
+
+            // This will use the last response status, which may ok in most cases, assuming
+            // they all succeed or fail, but is not a good long term solution.
+            $success = ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+        }
+
+        return $success;
     }
 }

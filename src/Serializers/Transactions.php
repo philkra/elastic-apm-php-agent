@@ -2,6 +2,7 @@
 
 namespace PhilKra\Serializers;
 
+use PhilKra\Exception\Serializers\UnsupportedApmVersionException;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Helper\Config;
 
@@ -32,11 +33,37 @@ class Transactions extends Entity implements \JsonSerializable
      * Serialize Transactions Data to JSON "ready" Array
      *
      * @return array
+     * @throws UnsupportedApmVersionException
      */
     public function jsonSerialize()
     {
-        return $this->getSkeleton() + [
-            'transactions' => $this->store
-        ];
+        if ($this->config->useVersion1()) {
+            return $this->getSkeleton() + [
+                    'transactions' => $this->store
+                ];
+        }
+
+        if ($this->config->useVersion2()) {
+            return $this->makeVersion2Json();
+        }
+
+        throw new UnsupportedApmVersionException($this->config->apmVersion());
+    }
+
+    private function makeVersion2Json(): array
+    {
+        if ($this->store->isEmpty()) {
+            return $this->getSkeleton();
+        }
+
+        $transactionData = json_decode(json_encode($this->store), true);
+
+        $encodedTransactions = [];
+
+        foreach ($transactionData as $transaction) {
+            $encodedTransactions[] = array_merge($this->getSkeleton(), $transaction);
+        }
+
+        return $encodedTransactions;
     }
 }

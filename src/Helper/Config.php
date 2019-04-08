@@ -11,6 +11,8 @@ use PhilKra\Exception\MissingAppNameException;
  */
 class Config
 {
+    const DEFAULT_APM_VERSION = 'v1';
+
     /**
      * Config Set
      *
@@ -52,6 +54,21 @@ class Config
     public function asArray() : array
     {
         return $this->config;
+    }
+
+    public function apmVersion(): string
+    {
+        return $this->config['apmVersion'];
+    }
+
+    public function useVersion1(): bool
+    {
+        return $this->config['apmVersion'] === 'v1';
+    }
+
+    public function useVersion2(): bool
+    {
+        return $this->config['apmVersion'] === 'v2';
     }
 
     /**
