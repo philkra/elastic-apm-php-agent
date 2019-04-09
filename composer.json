@@ -6,7 +6,7 @@
         "php" : ">= 7.1",
         "guzzlehttp/guzzle": "6.*",
         "ramsey/uuid": "^3.7",
-        "ralouphie/getallheaders": "2.0.5",
+        "ralouphie/getallheaders": "2.0.*",
         "ext-curl" : "*"
     },
     "require-dev" : {
