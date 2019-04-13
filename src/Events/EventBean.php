@@ -229,7 +229,7 @@ class EventBean
 
         // Build Context Stub
         $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
-        $remote_address = (array_key_exists('REMOTE_ADDR', $_SERVER))    ? $_SERVER['REMOTE_ADDR'] : null;
+        $remote_address = (array_key_exists('REMOTE_ADDR', $_SERVER)) ? $_SERVER['REMOTE_ADDR'] : null;
         if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === true) {
             $remote_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
