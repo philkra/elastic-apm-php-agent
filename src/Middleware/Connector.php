@@ -122,7 +122,7 @@ class Connector
         // Default Headers Set
         $headers = [
             'Content-Type' => 'application/json',
-            'User-Agent'   => sprintf('elasticapm-php/%s', Agent::VERSION),
+            'User-Agent'   => sprintf('apm-agent-php/%s', Agent::VERSION),
         ];
 
         // Add Secret Token to Header
