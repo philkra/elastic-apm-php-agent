@@ -11,6 +11,14 @@ use PhilKra\Exception\MissingAppNameException;
  */
 class Config
 {
+
+    /**
+     * Default APM Version
+     *
+     * @var string
+     */
+    const DEFAULT_APM_VERSION = 'v1';
+
     /**
      * Config Set
      *
@@ -52,6 +60,36 @@ class Config
     public function asArray() : array
     {
         return $this->config;
+    }
+
+    /**
+     * Get the current Intake API version
+     *
+     * @return string
+     */
+    public function getApmVersion() : string
+    {
+        return strtolower($this->get('apmVersion', self::DEFAULT_APM_VERSION));
+    }
+
+    /**
+     * Is the Intake API version <b>v1</b> in use
+     *
+     * @return bool
+     */
+    public function useVersion1() : bool
+    {
+        return $this->getApmVersion() === 'v1';
+    }
+
+    /**
+     * Is the Intake API version <b>v2</b> in use
+     *
+     * @return bool
+     */
+    public function useVersion2() : bool
+    {
+        return $this->getApmVersion() === 'v2';
     }
 
     /**

@@ -104,28 +104,39 @@ final class ConfigTest extends TestCase
 
     /**
      * @covers \PhilKra\Helper\Config::__construct
-     * @covers \PhilKra\Helper\Config::apmVersion
+     * @covers \PhilKra\Helper\Config::getApmVersion
      */
     public function testCanGetDefaultApmVersion()
     {
         $config = new Config(['appName' => 'Test App']);
 
-        $this->assertEquals(Config::DEFAULT_APM_VERSION, $config->apmVersion());
+        $this->assertEquals(Config::DEFAULT_APM_VERSION, $config->getApmVersion());
     }
 
     /**
      * @covers \PhilKra\Helper\Config::__construct
-     * @covers \PhilKra\Helper\Config::apmVersion
+     * @covers \PhilKra\Helper\Config::getApmVersion
      */
     public function testCanUseSpecificApmVersion()
     {
         $config = new Config(['appName' => 'Test App', 'apmVersion' => 'v2']);
 
-        $this->assertEquals('v2', $config->apmVersion());
+        $this->assertEquals('v2', $config->getApmVersion());
     }
 
     /**
      * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Helper\Config::getApmVersion
+     */
+    public function testApmVersionSanity()
+    {
+        $config = new Config(['appName' => 'Test App', 'apmVersion' => 'V2']);
+        $this->assertEquals('v2', $config->getApmVersion());
+    }
+
+    /**
+     * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Helper\Config::getApmVersion
      * @covers \PhilKra\Helper\Config::useVersion1
      * @covers \PhilKra\Helper\Config::useVersion2
      *
