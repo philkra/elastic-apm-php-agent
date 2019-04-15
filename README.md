@@ -54,11 +54,13 @@ Addings spans (https://www.elastic.co/guide/en/apm/server/current/transactions.h
 Please consult the documentation for your exact needs. Below is an example for adding a MySQL span.
 
 ```php
+$trxName = 'GET /some/transaction/name';
+
 // create the agent
 $agent = new \PhilKra\Agent(['appName' => 'Demo with Spans']);
 
 // start a new transaction
-$transaction = $agent->startTransaction('GET /some/transaction/name');
+$transaction = $agent->startTransaction($trxName);
 
 // create a span
 $spans = [];
@@ -103,6 +105,11 @@ $spans[] = [
 
 // add the array of spans to the transaction
 $transaction->setSpans($spans);
+
+// Do some stuff you want to watch ...
+sleep(1);
+
+$agent->stopTransaction($trxName);
 
 // send our transactions to te apm
 $agent->send();
