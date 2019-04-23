@@ -22,14 +22,22 @@ class ConnectorTest extends TestCase
      */
     public function testSetsContentTypeHeader(string $apmVersion)
     {
-        $transactionStore = $this->makeTransactionsStore([$this->makeTransactionData($apmVersion)]);
+        $data  = $this->makeTransactionData($apmVersion);
+        $store = $this->makeTransactionsStore([$data]);
+
+        var_dump($data);
+        var_dump($store->isEmpty());
+        var_dump($store->list());
+        var_dump($store->toNdJson());
+        var_dump($apmVersion);
+        die('stop.');
 
         $connector = $this->makeConnector(['apmVersion' => $apmVersion], [new Response()]);
-
-        $connector->sendTransactions($transactionStore);
+        $connector->sendTransactions($store);
 
         $request = $this->getRequest();
-        $this->assertEquals('application/json', $request->getHeader('Content-Type')[0]);
+        $contentType = ($apmVersion == ['v1']) ? 'application/json' : 'application/x-ndjson';
+        $this->assertEquals($contentType, $request->getHeader('Content-Type')[0]);
     }
 
     /**
@@ -44,7 +52,7 @@ class ConnectorTest extends TestCase
         $connector->sendTransactions($transactionStore);
 
         $request = $this->getRequest();
-        $this->assertEquals(sprintf('elasticapm-php/%s', Agent::VERSION), $request->getHeader('User-Agent')[0]);
+        $this->assertEquals(sprintf('apm-agent-php/%s', Agent::VERSION), $request->getHeader('User-Agent')[0]);
     }
 
     /**

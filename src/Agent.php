@@ -1,24 +1,30 @@
 <?php
+//declare(strict_types=1);
+
+/**
+ * This file is part of the PhilKra/elastic-apm-php-agent library
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ * @link https://github.com/philkra/elastic-apm-php-agent GitHub
+ */
 
 namespace PhilKra;
 
-use PhilKra\Events\DefaultEventFactory;
-use PhilKra\Events\EventFactoryInterface;
-use PhilKra\Stores\ErrorsStore;
-use PhilKra\Stores\TransactionsStore;
-use PhilKra\Events\Transaction;
-use PhilKra\Events\Error;
+use PhilKra\Stores\TracesStore;
+use PhilKra\Factories\TracesFactory;
+use PhilKra\Factories\DefaultTracesFactory;
+use PhilKra\Traces\Trace;
 use PhilKra\Helper\Timer;
 use PhilKra\Helper\Config;
-use PhilKra\Middleware\Connector;
-use PhilKra\Exception\Transaction\DuplicateTransactionNameException;
-use PhilKra\Exception\Transaction\UnknownTransactionException;
+use PhilKra\Transport\Connector;
+use PhilKra\Transport\TransportFactory;
 
 /**
  *
  * APM Agent
- *
- * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
  *
  */
 class Agent
@@ -28,14 +34,14 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.5.4';
+    public const VERSION = '6.7.0';
 
     /**
      * Agent Name
      *
      * @var string
      */
-    const NAME = 'elastic-php';
+    public const NAME = 'apm-agent-php';
 
     /**
      * Config Store
@@ -45,18 +51,11 @@ class Agent
     private $config;
 
     /**
-     * Transactions Store
+     * Traces Store
      *
-     * @var \PhilKra\Stores\TransactionsStore
+     * @var \PhilKra\Stores\TracesStore
      */
-    private $transactionsStore;
-
-    /**
-     * Error Events Store
-     *
-     * @var \PhilKra\Stores\ErrorsStore
-     */
-    private $errorsStore;
+    private $traces;
 
     /**
      * Apm Timer
@@ -77,29 +76,35 @@ class Agent
     ];
 
     /**
-     * @var EventFactoryInterface
+     * @var DefaultTracesFactory
      */
-    private $eventFactory;
+    private $factory;
 
     /**
      * Setup the APM Agent
      *
-     * @param array                 $config
-     * @param array                 $sharedContext Set shared contexts such as user and tags
-     * @param EventFactoryInterface $eventFactory  Alternative factory to use when creating event objects
+     * @param array $config
+     * @param array $sharedContext Set shared contexts such as user and tags
      *
      * @return void
      */
-    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null)
+    public function __construct(array $config, array $sharedContext = [])
     {
         // Init Agent Config
         $this->config = new Config($config);
 
-        // Use the custom event factory or create a default one
-        $this->eventFactory = $eventFactory ?? new DefaultEventFactory();
+        // Init the Traces Factory
+        $this->factory = new DefaultTracesFactory($this->getConfig());
+
+        // Init the Traces Store
+        $this->traces = new TracesStore();
+
+        // Generate Metadata Trace
+        $metadata = $this->factory->newMetadata();
+        $metadata->getUser()->initFromArray($sharedContext['user']);
+        $this->register($metadata);
 
         // Init the Shared Context
-        $this->sharedContext['user']   = $sharedContext['user'] ?? [];
         $this->sharedContext['custom'] = $sharedContext['custom'] ?? [];
         $this->sharedContext['tags']   = $sharedContext['tags'] ?? [];
 
@@ -110,93 +115,29 @@ class Agent
         $this->sharedContext['env'] = $this->config->get('env', []);
         $this->sharedContext['cookies'] = $this->config->get('cookies', []);
 
-        // Initialize Event Stores
-        $this->transactionsStore = new TransactionsStore();
-        $this->errorsStore       = new ErrorsStore();
-
         // Start Global Agent Timer
         $this->timer = new Timer();
         $this->timer->start();
     }
 
     /**
-     * Start the Transaction capturing
+     * Inject a Custom Traces Factory
      *
-     * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
-     *
-     * @param string $name
-     * @param array  $context
-     *
-     * @return Transaction
+     * @param TracesFactory $factory
      */
-    public function startTransaction(string $name, array $context = [], float $start = null): Transaction
+    public function setFactory(TracesFactory $factory)
     {
-        // Create and Store Transaction
-        $this->transactionsStore->register(
-            $this->eventFactory->createTransaction($name, array_replace_recursive($this->sharedContext, $context), $start)
-        );
-
-        // Start the Transaction
-        $transaction = $this->transactionsStore->fetch($name);
-
-        if (null === $start) {
-            $transaction->start();
-        }
-
-        return $transaction;
+        $this->factory = $factory;
     }
 
     /**
-     * Stop the Transaction
+     * Public Interface to generate Traces
      *
-     * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
-     *
-     * @param string $name
-     * @param array $meta, Def: []
-     *
-     * @return void
+     * @return TracesFactory
      */
-    public function stopTransaction(string $name, array $meta = [])
+    public function factory() : TracesFactory
     {
-        $this->getTransaction($name)->setBacktraceLimit($this->config->get('backtraceLimit', 0));
-        $this->getTransaction($name)->stop();
-        $this->getTransaction($name)->setMeta($meta);
-    }
-
-    /**
-     * Get a Transaction
-     *
-     * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
-     *
-     * @param string $name
-     *
-     * @return void
-     */
-    public function getTransaction(string $name)
-    {
-        $transaction = $this->transactionsStore->fetch($name);
-        if ($transaction === null) {
-            throw new UnknownTransactionException($name);
-        }
-
-        return $transaction;
-    }
-
-    /**
-     * Register a Thrown Exception, Error, etc.
-     *
-     * @link http://php.net/manual/en/class.throwable.php
-     *
-     * @param \Throwable $thrown
-     * @param array      $context
-     *
-     * @return void
-     */
-    public function captureThrowable(\Throwable $thrown, array $context = [])
-    {
-        $this->errorsStore->register(
-            $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context))
-        );
+        return $this->factory;
     }
 
     /**
@@ -207,6 +148,30 @@ class Agent
     public function getConfig() : \PhilKra\Helper\Config
     {
         return $this->config;
+    }
+
+    /**
+     * Put a Trace in the Registry
+     *
+     * @param Trace $trace
+     *
+     * @return void
+     */
+    public function register(Trace $trace) : void
+    {
+        $this->traces->register($trace);
+    }
+
+    /**
+     * Get the Data of the Server Information Endpoint
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/6.7/server-info.html
+     *
+     * @return array
+     */
+    public function getServerInfo() : array
+    {
+        // TODO
     }
 
     /**
@@ -224,25 +189,17 @@ class Agent
             return true;
         }
 
-        $connector = new Connector($this->config);
         $status = true;
 
         // Commit the Errors
-        if ($this->errorsStore->isEmpty() === false) {
-            $status = $status && $connector->sendErrors($this->errorsStore);
+        if ($this->traces->isEmpty() === false) {
+            $status = TransportFactory::new($this->config)->send($this->traces);
             if ($status === true) {
-                $this->errorsStore->reset();
-            }
-        }
-
-        // Commit the Transactions
-        if ($this->transactionsStore->isEmpty() === false) {
-            $status = $status && $connector->sendTransactions($this->transactionsStore);
-            if ($status === true) {
-                $this->transactionsStore->reset();
+                $this->traces->reset();
             }
         }
 
         return $status;
     }
+
 }

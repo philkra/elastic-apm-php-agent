@@ -52,6 +52,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function makeTransactionsStore(array $transactions = []): TransactionsStore
     {
+
+        $store = new TransactionsStore();
+
         /** @var TransactionsStore|MockObject $transactionStore */
         $transactionStore = $this->createMock(TransactionsStore::class);
         $transactionStore
@@ -60,6 +63,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $transactionStore
             ->method('isEmpty')
             ->willReturn(empty($transactions));
+        $transactionStore
+            ->method('list')
+            ->willReturn($transactions);
 
         return $transactionStore;
     }

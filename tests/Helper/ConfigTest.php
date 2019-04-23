@@ -46,7 +46,7 @@ final class ConfigTest extends TestCase
         $this->assertEquals($config['hostname'], gethostname());
         $this->assertTrue($config['active']);
         $this->assertEquals($config['timeout'], 5);
-        $this->assertEquals($config['apmVersion'], 'v1');
+        $this->assertEquals($config['apmVersion'], Config::DEFAULT_APM_VERSION);
         $this->assertEquals($config['env'], []);
         $this->assertEquals($config['cookies'], []);
         $this->assertEquals($config['httpClient'], []);
