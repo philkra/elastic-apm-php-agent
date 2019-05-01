@@ -170,7 +170,7 @@ class Agent
      *
      * @param string $name
      *
-     * @return void
+     * @return Transaction
      */
     public function getTransaction(string $name)
     {
