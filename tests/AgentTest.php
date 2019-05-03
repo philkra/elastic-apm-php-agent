@@ -2,7 +2,11 @@
 namespace PhilKra\Tests;
 
 use \PhilKra\Agent;
+use PhilKra\Stores\ErrorsStore;
+use PhilKra\Stores\TransactionsStore;
 use \PhilKra\Transaction\Summary;
+use PHPUnit\Framework\MockObject\MockObject;
+use Yaoi\Mock;
 
 /**
  * Test Case for @see \PhilKra\Agent
@@ -91,4 +95,24 @@ final class AgentTest extends TestCase {
     $agent->stopTransaction( 'unknown' );
   }
 
+  public function testClearErrorStoreOnSendWhenNotActive()
+  {
+      /** @var TransactionsStore|MockObject $transactionStore */
+      $transactionStore = $this->createMock(TransactionsStore::class);
+      /** @var ErrorsStore|MockObject $errorStore */
+      $errorStore = $this->createMock(ErrorsStore::class);
+
+      $agent = new Agent(
+          [ 'appName' => 'phpunit_1', 'active' => false ],
+          [],
+          null,
+          $transactionStore,
+          $errorStore
+      );
+
+      $transactionStore->expects($this->once())->method('reset');
+      $errorStore->expects($this->once())->method('reset');
+
+      $agent->send();
+  }
 }
