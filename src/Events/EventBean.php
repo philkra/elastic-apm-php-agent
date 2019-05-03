@@ -41,6 +41,7 @@ class EventBean
      * @var array
      */
     private $contexts = [
+        'request'  => [],
         'user'     => [],
         'custom'   => [],
         'env'      => [],
@@ -146,6 +147,58 @@ class EventBean
     }
 
     /**
+     * Set Transaction Request
+     *
+     * @param array $request
+     */
+    final public function setRequest(array $request)
+    {
+        $this->contexts['request'] = array_merge($this->contexts['request'], $request);
+    }
+
+    /**
+     * Generate request data
+     *
+     * @return array
+     */
+    final public function generateRequest(): array
+    {
+        $headers = getallheaders();
+        $http_or_https = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+
+        // Build Context Stub
+        $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
+        $remote_address = $_SERVER['REMOTE_ADDR'] ?? '';
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === true) {
+            $remote_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+
+        return [
+            'http_version' => substr($SERVER_PROTOCOL, strpos($SERVER_PROTOCOL, '/')),
+            'method'       => $_SERVER['REQUEST_METHOD'] ?? 'cli',
+            'socket'       => [
+                'remote_address' => $remote_address,
+                'encrypted'      => isset($_SERVER['HTTPS'])
+            ],
+            'response' => $this->contexts['response'],
+            'url'          => [
+                'protocol' => $http_or_https,
+                'hostname' => $_SERVER['SERVER_NAME'] ?? '',
+                'port'     => $_SERVER['SERVER_PORT'] ?? '',
+                'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
+                'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
+                'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
+            ],
+            'headers' => [
+                'user-agent' => $headers['User-Agent'] ?? '',
+                'cookie'     => $this->getCookieHeader($headers['Cookie'] ?? ''),
+            ],
+            'env' => (object)$this->getEnv(),
+            'cookies' => (object)$this->getCookies(),
+        ];
+    }
+
+    /**
      * Get Type defined in Meta
      *
      * @return string
@@ -224,39 +277,8 @@ class EventBean
      */
     final protected function getContext() : array
     {
-        $headers = getallheaders();
-        $http_or_https = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-
-        // Build Context Stub
-        $SERVER_PROTOCOL = $_SERVER['SERVER_PROTOCOL'] ?? '';
-        $remote_address = $_SERVER['REMOTE_ADDR'] ?? '';
-        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) === true) {
-            $remote_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        $context         = [
-            'request' => [
-                'http_version' => substr($SERVER_PROTOCOL, strpos($SERVER_PROTOCOL, '/')),
-                'method'       => $_SERVER['REQUEST_METHOD'] ?? 'cli',
-                'socket'       => [
-                    'remote_address' => $remote_address,
-                    'encrypted'      => isset($_SERVER['HTTPS'])
-                ],
-                'response' => $this->contexts['response'],
-                'url'          => [
-                    'protocol' => $http_or_https,
-                    'hostname' => $_SERVER['SERVER_NAME'] ?? '',
-                    'port'     => $_SERVER['SERVER_PORT'] ?? '',
-                    'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
-                    'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
-                    'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
-                ],
-                'headers' => [
-                    'user-agent' => $headers['User-Agent'] ?? '',
-                    'cookie'     => $this->getCookieHeader($headers['Cookie'] ?? ''),
-                ],
-                'env' => (object)$this->getEnv(),
-                'cookies' => (object)$this->getCookies(),
-            ]
+        $context = [
+            'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request']
         ];
 
         // Add User Context
