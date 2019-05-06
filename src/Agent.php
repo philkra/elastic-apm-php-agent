@@ -90,7 +90,7 @@ class Agent
      *
      * @return void
      */
-    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null)
+    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null, TransactionsStore $transactionsStore = null, ErrorsStore $errorsStore = null)
     {
         // Init Agent Config
         $this->config = new Config($config);
@@ -111,8 +111,8 @@ class Agent
         $this->sharedContext['cookies'] = $this->config->get('cookies', []);
 
         // Initialize Event Stores
-        $this->transactionsStore = new TransactionsStore();
-        $this->errorsStore       = new ErrorsStore();
+        $this->transactionsStore = $transactionsStore ?? new TransactionsStore();
+        $this->errorsStore       = $errorsStore ?? new ErrorsStore();
 
         // Start Global Agent Timer
         $this->timer = new Timer();
@@ -221,6 +221,8 @@ class Agent
     {
         // Is the Agent enabled ?
         if ($this->config->get('active') === false) {
+            $this->errorsStore->reset();
+            $this->transactionsStore->reset();
             return true;
         }
 
