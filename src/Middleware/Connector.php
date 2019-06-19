@@ -3,12 +3,11 @@
 namespace PhilKra\Middleware;
 
 use PhilKra\Agent;
-use PhilKra\Stores\ErrorsStore;
-use PhilKra\Stores\TransactionsStore;
-use PhilKra\Serializers\Errors;
-use PhilKra\Serializers\Transactions;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
+use PhilKra\Serializers\Errors;
+use PhilKra\Stores\ErrorsStore;
+use PhilKra\Serializers\Transactions;
+use PhilKra\Stores\TransactionsStore;
 
 /**
  *
@@ -64,14 +63,10 @@ class Connector
      */
     public function sendTransactions(TransactionsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('transactions'),
-            $this->getRequestHeaders(),
-            json_encode(new Transactions($this->config, $store))
-        );
-
-        $response = $this->client->send($request);
+        $response = $this->client->post($this->getEndpoint('transactions'), [
+            'headers' => $this->getRequestHeaders(),
+            'json' => new Transactions($this->config, $store)
+        ]);
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
     }
 
@@ -84,14 +79,11 @@ class Connector
      */
     public function sendErrors(ErrorsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('errors'),
-            $this->getRequestHeaders(),
-            json_encode(new Errors($this->config, $store))
-        );
+        $response = $this->client->post($this->getEndpoint('errors'), [
+            'headers' => $this->getRequestHeaders(),
+            'json' => new Errors($this->config, $store)
+        ]);
 
-        $response = $this->client->send($request);
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
     }
 
