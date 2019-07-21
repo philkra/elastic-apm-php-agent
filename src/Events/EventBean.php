@@ -87,11 +87,11 @@ class EventBean
     /**
      * Get the Event's Timestamp
      *
-     * @return string
+     * @return int
      */
-    public function getTimestamp() : string
+    public function getTimestamp() : int
     {
-        return $this->timestamp;
+        return strtotime($this->timestamp) * 1000000;
     }
 
     /**

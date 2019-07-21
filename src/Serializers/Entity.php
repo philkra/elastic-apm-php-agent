@@ -33,7 +33,7 @@ class Entity
      */
     protected function getSkeleton() : array
     {
-        return [
+        $s = [
             'service' => [
                 'name'    => $this->config->get('appName'),
                 'version' => $this->config->get('appVersion'),
@@ -60,5 +60,7 @@ class Entity
                 'platform'     => php_uname('s')
             ]
       ];
+
+      return ['metadata' => $s];
     }
 }
