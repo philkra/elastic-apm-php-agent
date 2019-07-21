@@ -21,10 +21,10 @@
         }
     },
     "autoload-dev": {
-    "psr-4": {
-        "PhilKra\\Tests\\": "tests/"
-    }
-  },
+        "psr-4": {
+            "PhilKra\\Tests\\": "tests/"
+        }
+    },
     "config" : {
         "optimize-autoloader" : true
     },
