@@ -1,6 +1,6 @@
 {
-    "name" : "philkra/elastic-apm-php-agent",
-    "description": "A php agent for Elastic APM",
+    "name" : "speakol-ads/elastic-apm-php-agent",
+    "description": "A php agent for Elastic APM v2",
     "license": "MIT",
     "require" : {
         "php" : ">= 7.0",
@@ -29,6 +29,11 @@
         "optimize-autoloader" : true
     },
     "authors" : [
+        {
+            "name" : "Mohamed Al Ashaal",
+            "email" : "mohamed.alashaal@speakol.com",
+            "homepage" : "https://github.com/speakol-ads/elastic-apm-agent-php"
+        },
         {
             "name" : "Philip Krauss",
             "email" : "philip@philipkrauss.at",
