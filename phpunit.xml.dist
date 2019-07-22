@@ -1,0 +1,20 @@
+<phpunit bootstrap="./tests/bootstrap.php"
+  stopOnFailure="true"
+  stopOnError="true"
+  colors="false"
+  verbose="true"
+  processIsolation="false"
+  beStrictAboutChangesToGlobalState="true"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutTestsThatDoNotTestAnything="true">
+    <testsuites>
+        <testsuite name="lib">
+            <directory suffix="Test.php">./tests/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./src/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
