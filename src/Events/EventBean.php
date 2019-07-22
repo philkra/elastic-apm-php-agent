@@ -26,6 +26,13 @@ class EventBean
     private $timestamp;
 
     /**
+     * The parent transaction
+     *
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /**
      * Event Metadata
      *
      * @var array
@@ -72,6 +79,7 @@ class EventBean
         $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
         $timestamp->setTimeZone(new \DateTimeZone('UTC'));
         $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
+        $this->transaction = $transaction;
     }
 
     /**

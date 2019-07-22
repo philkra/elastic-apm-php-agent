@@ -81,6 +81,7 @@ class Connector
      */
     public function sendErrors(ErrorsStore $store) : bool
     {
+        // dd($this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error'));
         $response = $this->client->post($this->getEndpoint(), [
             'headers' => $this->getRequestHeaders(),
             'body' => $this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error')
@@ -104,11 +105,18 @@ class Connector
 
         foreach ( $data[$extractEvent]->list() as $item ) {
             $obj = $item->jsonSerialize();
+            $errors = $obj['errors'] ?? [];
             $spans = $obj['spans'] ?? [];
 
-            unset($obj['spans']);
+            unset($obj['spans'], $obj['errors']);
 
             $body .= "\n" . json_encode([$as => $item]);
+
+            if ( !empty($errors) ) {
+                foreach ( $errors as $i => $error ) {
+                    $body .= "\n" . json_encode(['error' => $error]);
+                }
+            }
 
             if ( !empty($spans) ) {
                 foreach ( $spans as $i => $span ) {

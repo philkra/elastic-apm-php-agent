@@ -37,7 +37,7 @@ class Error extends EventBean implements \JsonSerializable
      */
     public function jsonSerialize() : array
     {
-        return [
+        $result = [
             'id'        => $this->getId(),
             'timestamp' => $this->getTimestamp(),
             'context'   => $this->getContext(),
@@ -53,6 +53,14 @@ class Error extends EventBean implements \JsonSerializable
                 'name'  => 'error',
             ]
         ];
+
+        if ( ! empty($this->transaction) ) {
+            $result['transaction_id'] = $this->transaction->getId();
+            $result['parent_id'] = $this->transaction->getId();
+            $result['trace_id'] = $this->transaction->getId();
+        }
+
+        return $result;
     }
 
     /**
@@ -83,11 +91,6 @@ class Error extends EventBean implements \JsonSerializable
             if (isset($trace['class']) === true) {
                 $item['module'] = $trace['class'];
             }
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 8fce808847143baef99f86062797fc11da580da0
             if (isset($trace['type']) === true) {
                 $item['type'] = $trace['type'];
             }

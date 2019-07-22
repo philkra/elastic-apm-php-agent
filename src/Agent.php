@@ -194,8 +194,15 @@ class Agent
      */
     public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $transaction = null)
     {
+        $err = $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $transaction);
+
+        if ( ! empty($transaction) ) {
+            $transaction->addError($err);
+            return;
+        }
+
         $this->errorsStore->register(
-            $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $transaction)
+            $err
         );
     }
 
