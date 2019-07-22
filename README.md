@@ -12,7 +12,7 @@ The recommended way to install the agent is through [Composer](http://getcompose
 Run the following composer command
 
 ```bash
-php composer.phar require philkra/elastic-apm-php-agent
+php composer.phar require speakol-ads/elastic-apm-php-agent
 ```
 
 After installing, you need to require Composer's autoloader:
