@@ -103,7 +103,24 @@ class Connector
         $body = json_encode(['metadata' => $data['metadata']]);
 
         foreach ( $data[$extractEvent]->list() as $item ) {
+            $obj = $item->jsonSerialize();
+            $spans = $obj['spans'] ?? [];
+
+            unset($obj['spans']);
+
             $body .= "\n" . json_encode([$as => $item]);
+
+            if ( !empty($spans) ) {
+                foreach ( $spans as $i => $span ) {
+                    $span = array_merge($span, [
+                        'id' => $obj['id'] . '-' . $i,
+                        'parent_id' => $obj['id'],
+                        'transaction_id' => $obj['id'],
+                        'trace_id' => $obj['trace_id'],
+                    ]);
+                    $body .= "\n" . json_encode(['span' => $span]);
+                }
+            }
         }
 
         return $body;
