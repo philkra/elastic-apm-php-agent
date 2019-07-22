@@ -184,7 +184,7 @@ class EventBean
             'url'          => [
                 'protocol' => $http_or_https,
                 'hostname' => $_SERVER['SERVER_NAME'] ?? '',
-                'port'     => $_SERVER['SERVER_PORT'] ?? '',
+                'port'     => $_SERVER['SERVER_PORT'] ?? 0,
                 'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
                 'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
                 'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
