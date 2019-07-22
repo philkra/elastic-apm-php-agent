@@ -46,13 +46,6 @@ class Transaction extends EventBean implements \JsonSerializable
     private $spans = [];
 
     /**
-     * The errors for the transaction
-     *
-     * @var array
-     */
-    private $errors = [];
-
-    /**
      * Backtrace Depth
      *
      * @var int
@@ -145,18 +138,6 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
-     * Set the errors for the transacton
-     *
-     * @param array $errors
-     *
-     * @return void
-     */
-    public function setErrors(array $errors)
-    {
-        $this->errors = $errors;
-    }
-
-    /**
      * Set the Max Depth/Limit of the debug_backtrace method
      *
      * @link http://php.net/manual/en/function.debug-backtrace.php
@@ -180,16 +161,6 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
-     * Get the errors from the transaction
-     *
-     * @return array
-     */
-    private function getErrors(): array
-    {
-        return $this->errors;
-    }
-
-    /**
     * Serialize Transaction Event
     *
     * @return array
@@ -210,7 +181,6 @@ class Transaction extends EventBean implements \JsonSerializable
           'result'    => $this->getMetaResult(),
           'context'   => $this->getContext(),
           'spans'     => $this->getSpans(),
-          'errors'    => $this->getErrors(),
           'processor' => [
               'event' => 'transaction',
               'name'  => 'transaction',

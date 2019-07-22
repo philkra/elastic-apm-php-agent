@@ -60,7 +60,7 @@ class EventBean
      *
      * @param array $contexts
      */
-    public function __construct(array $contexts)
+    public function __construct(array $contexts, ?Transaction $transaction = null)
     {
         // Generate Random UUID
         $this->id = Uuid::uuid4()->toString();
@@ -182,7 +182,7 @@ class EventBean
             ],
             'response' => $this->contexts['response'],
             'url'          => [
-                'protocol' => !empty($_SERVER['REQUEST_METHOD']) ? $http_or_https : 'cli',
+                'protocol' => $http_or_https,
                 'hostname' => $_SERVER['SERVER_NAME'] ?? '',
                 'port'     => $_SERVER['SERVER_PORT'] ?? 0,
                 'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
@@ -190,7 +190,7 @@ class EventBean
                 'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
             ],
             'headers' => [
-                'user-agent' => $headers['User-Agent'] ?? 'cli',
+                'user-agent' => $headers['User-Agent'] ?? '',
                 'cookie'     => $this->getCookieHeader($headers['Cookie'] ?? ''),
             ],
             'env' => (object)$this->getEnv(),

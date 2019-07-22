@@ -100,7 +100,6 @@ class Connector
      */
     private function buildEventPayload(Entity $entity, string $extractEvent, string $as): string {
         $data = $entity->jsonSerialize();
-
         $body = json_encode(['metadata' => $data['metadata']]);
 
         foreach ( $data[$extractEvent]->list() as $item ) {
