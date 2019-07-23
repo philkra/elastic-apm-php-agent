@@ -4,7 +4,8 @@
 
 This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/speakol-ads/elastic-apm-laravel
 
-This API supports `v2`
+## Note
+This is a form from the [original](https://github.com/philkra/elastic-apm-php-agent) package to add the support for APM API `v2`
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
