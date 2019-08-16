@@ -7,8 +7,8 @@ use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
 use PhilKra\Serializers\Errors;
 use PhilKra\Serializers\Transactions;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
+use PhilKra\Serializers\Entity;
 
 /**
  *
@@ -64,14 +64,11 @@ class Connector
      */
     public function sendTransactions(TransactionsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('transactions'),
-            $this->getRequestHeaders(),
-            json_encode(new Transactions($this->config, $store))
-        );
+        $response = $this->client->post($this->getEndpoint(), [
+            'headers' => $this->getRequestHeaders(),
+            'body' => $this->buildEventPayload(new Transactions($this->config, $store), 'transactions', 'transaction')
+        ]);
 
-        $response = $this->client->send($request);
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
     }
 
@@ -84,15 +81,57 @@ class Connector
      */
     public function sendErrors(ErrorsStore $store) : bool
     {
-        $request = new Request(
-            'POST',
-            $this->getEndpoint('errors'),
-            $this->getRequestHeaders(),
-            json_encode(new Errors($this->config, $store))
-        );
+        // dd($this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error'));
+        $response = $this->client->post($this->getEndpoint(), [
+            'headers' => $this->getRequestHeaders(),
+            'body' => $this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error')
+        ]);
 
-        $response = $this->client->send($request);
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+    }
+
+    /**
+     * Transform the incoming entity to v2 ndjson style
+     *
+     * @param PhilKra\Serializers\Entity $entity
+     * @param string $extractEvent the old event key
+     * @param string $as the new event key
+     *
+     * @return string
+     */
+    private function buildEventPayload(Entity $entity, string $extractEvent, string $as): string {
+        $data = $entity->jsonSerialize();
+        $body = json_encode(['metadata' => $data['metadata']]);
+
+        foreach ( $data[$extractEvent]->list() as $item ) {
+            $obj = $item->jsonSerialize();
+            $errors = $obj['errors'] ?? [];
+            $spans = $obj['spans'] ?? [];
+
+            unset($obj['spans'], $obj['errors']);
+
+            $body .= "\n" . json_encode([$as => $item]);
+
+            if ( !empty($errors) ) {
+                foreach ( $errors as $i => $error ) {
+                    $body .= "\n" . json_encode(['error' => $error]);
+                }
+            }
+
+            if ( !empty($spans) ) {
+                foreach ( $spans as $i => $span ) {
+                    $span = array_merge($span, [
+                        'id' => $obj['id'] . '-' . $i,
+                        'parent_id' => $obj['id'],
+                        'transaction_id' => $obj['id'],
+                        'trace_id' => $obj['trace_id'],
+                    ]);
+                    $body .= "\n" . json_encode(['span' => $span]);
+                }
+            }
+        }
+
+        return $body;
     }
 
     /**
@@ -102,13 +141,12 @@ class Connector
      *
      * @return string
      */
-    private function getEndpoint(string $endpoint) : string
+    private function getEndpoint() : string
     {
         return sprintf(
-            '%s/%s/%s',
+            '%s/intake/v2/%s',
             $this->config->get('serverUrl'),
-            $this->config->get('apmVersion'),
-            $endpoint
+            'events'
         );
     }
 
@@ -121,8 +159,9 @@ class Connector
     {
         // Default Headers Set
         $headers = [
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/x-ndjson',
             'User-Agent'   => sprintf('elasticapm-php/%s', Agent::VERSION),
+            'Accept'       => 'application/json'
         ];
 
         // Add Secret Token to Header

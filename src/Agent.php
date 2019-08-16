@@ -28,7 +28,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '6.5.4';
+    const VERSION = '7.1';
 
     /**
      * Agent Name
@@ -192,10 +192,17 @@ class Agent
      *
      * @return void
      */
-    public function captureThrowable(\Throwable $thrown, array $context = [])
+    public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $transaction = null)
     {
+        $err = $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $transaction);
+
+        if ( ! empty($transaction) ) {
+            $transaction->addError($err);
+            return;
+        }
+
         $this->errorsStore->register(
-            $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context))
+            $err
         );
     }
 

@@ -26,6 +26,13 @@ class EventBean
     private $timestamp;
 
     /**
+     * The parent transaction
+     *
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /**
      * Event Metadata
      *
      * @var array
@@ -60,7 +67,7 @@ class EventBean
      *
      * @param array $contexts
      */
-    public function __construct(array $contexts)
+    public function __construct(array $contexts, ?Transaction $transaction = null)
     {
         // Generate Random UUID
         $this->id = Uuid::uuid4()->toString();
@@ -72,6 +79,7 @@ class EventBean
         $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
         $timestamp->setTimeZone(new \DateTimeZone('UTC'));
         $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
+        $this->transaction = $transaction;
     }
 
     /**
@@ -87,11 +95,11 @@ class EventBean
     /**
      * Get the Event's Timestamp
      *
-     * @return string
+     * @return int
      */
-    public function getTimestamp() : string
+    public function getTimestamp() : int
     {
-        return $this->timestamp;
+        return strtotime($this->timestamp) * 1000000;
     }
 
     /**
@@ -184,7 +192,7 @@ class EventBean
             'url'          => [
                 'protocol' => $http_or_https,
                 'hostname' => $_SERVER['SERVER_NAME'] ?? '',
-                'port'     => $_SERVER['SERVER_PORT'] ?? '',
+                'port'     => $_SERVER['SERVER_PORT'] ?? 0,
                 'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
                 'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
                 'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',

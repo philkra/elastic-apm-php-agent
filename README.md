@@ -2,9 +2,10 @@
 
 [![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/philkra/elastic-apm-laravel
+This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/speakol-ads/elastic-apm-laravel
 
-*Please note* that currently only the `v1` intake API of the APM server is supported, `v2` is in planing.
+## Note
+This is a fork from the [original](https://github.com/philkra/elastic-apm-php-agent) package to add the support for APM API `v2`
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
@@ -12,7 +13,7 @@ The recommended way to install the agent is through [Composer](http://getcompose
 Run the following composer command
 
 ```bash
-php composer.phar require philkra/elastic-apm-php-agent
+php composer.phar require speakol-ads/elastic-apm-php-agent
 ```
 
 After installing, you need to require Composer's autoloader:
@@ -46,7 +47,12 @@ $agent = new \PhilKra\Agent( [ 'appName' => 'with-custom-context' ], [
 ### Capture Errors and Exceptions
 The agent can capture all types or errors and exceptions that are implemented from the interface `Throwable` (http://php.net/manual/en/class.throwable.php).
 ```php
-$agent->captureThrowable( new Exception() );
+// start a new transaction or use an existing one
+$transaction = $agent->startTransaction($trxName);
+
+$agent->captureThrowable( new Exception(), [], $transaction );
+
+$agent->send();
 ```
 
 ### Adding spans
@@ -180,7 +186,7 @@ secretToken   : Secret token for APM Server, Default: null
 hostname      : Hostname to transmit to the APM Server, Default: gethostname()
 active        : Activate the APM Agent, Default: true
 timeout       : Guzzle Client timeout, Default: 5
-apmVersion    : APM Server Intake API version, Default: 'v1'
+apmVersion    : APM Server Intake API version, Default: 'v2'
 env           : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 cookies       : Cookies to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 httpClient    : Extended GuzzleHttp\Client Default: []
