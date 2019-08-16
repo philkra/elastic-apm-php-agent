@@ -50,56 +50,9 @@ class Error extends EventBean implements \JsonSerializable
                     'message'    => $this->throwable->getMessage(),
                     'type'       => get_class($this->throwable),
                     'code'       => $this->throwable->getCode(),
-                    'stacktrace' => $this->mapStacktrace(),
+                    'stacktrace' => $this->mapStacktrace($this->throwable->getTrace()),
                 ],
             ]
         ];
     }
-
-    /**
-     * Map the Stacktrace to Schema
-     *
-     * @return array
-     */
-    final private function mapStacktrace() : array
-    {
-        $stacktrace = [];
-
-        foreach ($this->throwable->getTrace() as $trace) {
-            $item = [
-              'function' => $trace['function'] ?? '(closure)'
-            ];
-
-            if (isset($trace['line']) === true) {
-                $item['lineno'] = $trace['line'];
-            }
-
-            if (isset($trace['file']) === true) {
-                $item += [
-                    'filename' => basename($trace['file']),
-                    'abs_path' => $trace['file']
-                ];
-            }
-
-            if (isset($trace['class']) === true) {
-                $item['module'] = $trace['class'];
-            }
-            if (isset($trace['type']) === true) {
-                $item['type'] = $trace['type'];
-            }
-
-            if (!isset($item['lineno'])) {
-                $item['lineno'] = 0;
-            }
-
-            if (!isset($item['filename'])) {
-                $item['filename'] = '(anonymous)';
-            }
-
-            array_push($stacktrace, $item);
-        }
-
-        return $stacktrace;
-    }
-
 }

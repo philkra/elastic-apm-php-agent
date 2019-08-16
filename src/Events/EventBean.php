@@ -186,6 +186,14 @@ class EventBean
     }
 
     /**
+     * @return array
+     */
+    public function getMeta(): array
+    {
+        return $this->meta;
+    }
+
+    /**
      * Set Meta data of User Context
      *
      * @param array $userContext
@@ -388,5 +396,52 @@ class EventBean
         }
 
         return $context;
+    }
+
+    /**
+     * Map the Stacktrace to Schema
+     *
+     * @param $backTrace
+     * @return array
+     */
+    protected function mapStacktrace($backTrace) : array
+    {
+        $stacktrace = [];
+
+        foreach ($backTrace as $trace) {
+            $item = [
+                'function' => $trace['function'] ?? '(closure)'
+            ];
+
+            if (isset($trace['line']) === true) {
+                $item['lineno'] = $trace['line'];
+            }
+
+            if (isset($trace['file']) === true) {
+                $item += [
+                    'filename' => basename($trace['file']),
+                    'abs_path' => $trace['file']
+                ];
+            }
+
+            if (isset($trace['class']) === true) {
+                $item['module'] = $trace['class'];
+            }
+            if (isset($trace['type']) === true) {
+                $item['type'] = $trace['type'];
+            }
+
+            if (!isset($item['lineno'])) {
+                $item['lineno'] = 0;
+            }
+
+            if (!isset($item['filename'])) {
+                $item['filename'] = '(anonymous)';
+            }
+
+            array_push($stacktrace, $item);
+        }
+
+        return $stacktrace;
     }
 }
