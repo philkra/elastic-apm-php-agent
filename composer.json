@@ -1,5 +1,5 @@
 {
-    "name" : "speakol-ads/elastic-apm-php-agent",
+    "name" : "philkra/elastic-apm-php-agent",
     "description": "A php agent for Elastic APM v2 Intake API",
     "license": "MIT",
     "require" : {

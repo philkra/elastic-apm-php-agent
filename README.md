@@ -2,15 +2,16 @@
 
 [![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/speakol-ads/elastic-apm-laravel
+This is a PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution.
 
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
+Please note that this agent supports from now on *only* v2 of the APM intake API, therefore please specify the verioning in your composer.json, to `2.*`.
 
-Run the following composer command
+Run the following composer command:
 
 ```bash
-php composer.phar require speakol-ads/elastic-apm-php-agent
+php composer.phar require philkra/elastic-apm-php-agent:2.*
 ```
 
 After installing, you need to require Composer's autoloader:
