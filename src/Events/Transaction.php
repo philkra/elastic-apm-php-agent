@@ -43,7 +43,7 @@ class Transaction extends EventBean implements \JsonSerializable
     /**
      * The spans for the transaction
      *
-     * @var array
+     * @var Span[]
      */
     private $spans = [];
 
@@ -60,6 +60,11 @@ class Transaction extends EventBean implements \JsonSerializable
      * @var int
      */
     private $backtraceLimit = 0;
+
+    /**
+     * @var array
+     */
+    private $spanStack;
 
     /**
     * Create the Transaction
@@ -94,6 +99,16 @@ class Transaction extends EventBean implements \JsonSerializable
      */
     public function stop(int $duration = null)
     {
+        while($this->spanStack)
+        {
+            /** @var Span $activeSpan */
+            $activeSpan = array_pop($this->spanStack);
+            if ($activeSpan)
+            {
+                $activeSpan->stop();
+            }
+        }
+
         // Stop the Timer
         $this->timer->stop();
 
@@ -136,9 +151,43 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
+     * @param Span $span
+     */
+    public function addSpan(Span $span)
+    {
+        $this->spans[] = $span;
+    }
+
+    public function pushActiveSpan(Span $span)
+    {
+        if ($this->spanStack)
+        {
+            $lastSpan = end($this->spanStack);
+            if ($lastSpan)
+            {
+                $span->setParentSpan($lastSpan);
+            }
+        }
+
+        $this->spanStack[] = $span;
+    }
+
+    public function popActiveSpan(Span $span)
+    {
+        while ($this->spanStack)
+        {
+            $lastElement = array_pop($this->spanStack);
+            if (!$lastElement || $lastElement->getId() === $span->getId())
+            {
+                break;
+            }
+        }
+    }
+
+    /**
      * Set the spans for the transaction
      *
-     * @param array $spans
+     * @param Span[] $spans
      *
      * @return void
      */
@@ -175,14 +224,31 @@ class Transaction extends EventBean implements \JsonSerializable
         $this->backtraceLimit = $limit;
     }
 
+    public function getBacktraceLimit() :int
+    {
+        return $this->backtraceLimit;
+    }
+
     /**
      * Get the spans from the transaction
      *
+     * @param int $dropCount
      * @return array
      */
-    private function getSpans(): array
+    private function getSerializedSpans(int &$dropCount): array
     {
-        return $this->spans;
+        $spans = [];
+        foreach ($this->spans as $span)
+        {
+            if ($span->isDropSpan())
+            {
+                $dropCount++;
+                continue;
+            }
+            $spans[] = $span;
+        }
+
+        return $spans;
     }
 
     /**
@@ -213,6 +279,8 @@ class Transaction extends EventBean implements \JsonSerializable
     */
     public function jsonSerialize() : array
     {
+        $dropCount = 0;
+        $spans = $this->getSerializedSpans($dropCount);
         return [
             'transaction' => [
                 'trace_id'   => $this->getTraceId(),
@@ -225,11 +293,11 @@ class Transaction extends EventBean implements \JsonSerializable
                 'name'       => $this->getTransactionName(),
                 'context'    => $this->getContext(),
                 'errors'     => $this->getErrors(),
-                'spans'      => $this->getSpans(),
+                'spans'      => $spans,
                 'sampled'    => null,
                 'span_count' => [
-                    'started' => count($this->getSpans()),
-                    'dropped' => 0
+                    'started' => count($spans),
+                    'dropped' => $dropCount
                 ],
             ]
         ];

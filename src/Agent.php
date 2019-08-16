@@ -5,15 +5,15 @@ namespace PhilKra;
 use PhilKra\Events\DefaultEventFactory;
 use PhilKra\Events\EventFactoryInterface;
 use PhilKra\Stores\TransactionsStore;
-use PhilKra\Events\Error;
+use PhilKra\Events\Span;
 use PhilKra\Events\Transaction;
 use PhilKra\Events\Metricset;
 use PhilKra\Events\Metadata;
-use PhilKra\Helper\Timer;
-use PhilKra\Helper\Config;
-use PhilKra\Middleware\Connector;
-use PhilKra\Exception\Transaction\DuplicateTransactionNameException;
+use PhilKra\Exception\Transaction\NoTransactionInProgressException;
 use PhilKra\Exception\Transaction\UnknownTransactionException;
+use PhilKra\Helper\Config;
+use PhilKra\Helper\Timer;
+use PhilKra\Middleware\Connector;
 
 /**
  *
@@ -79,6 +79,19 @@ class Agent
      * @var Connector
      */
     private $connector;
+
+    /**
+     * @var \PhilKra\Events\Transaction
+     */
+    private $currentTransaction;
+
+    /**
+     * @return Transaction
+     */
+    public function getCurrentTransaction(): Transaction
+    {
+        return $this->currentTransaction;
+    }
 
     /**
      * Setup the APM Agent
@@ -157,6 +170,8 @@ class Agent
             $transaction->start();
         }
 
+        $this->currentTransaction = $transaction;
+
         return $transaction;
     }
 
@@ -172,9 +187,12 @@ class Agent
      */
     public function stopTransaction(string $name, array $meta = [])
     {
-        $this->getTransaction($name)->setBacktraceLimit($this->config->get('backtraceLimit', 0));
-        $this->getTransaction($name)->stop();
-        $this->getTransaction($name)->setMeta($meta);
+        $transaction = $this->getTransaction($name);
+        $transaction->setBacktraceLimit($this->config->get('backtraceLimit', 0));
+        $transaction->stop();
+        $transaction->setMeta($meta);
+
+        $this->currentTransaction = null;
     }
 
     /**
@@ -194,6 +212,42 @@ class Agent
         }
 
         return $transaction;
+    }
+
+    /**
+     * @param array $context
+     * @param string[] $keys
+     * @return array
+     */
+    private function extractMeta(array &$context, array $keys)
+    {
+        $meta = [];
+        foreach($keys as $key)
+        {
+            if (isset($context[$key]))
+            {
+                $meta[$key] = $context[$key];
+                unset($context[$key]);
+            }
+        }
+
+        return $meta;
+    }
+
+    public function startSpan(string $name, array $context = []): Span
+    {
+        if ($this->currentTransaction === null)
+        {
+            // nested transactions are not supported in the protocol, need to use spans on the current transaction
+            throw new NoTransactionInProgressException($name);
+        }
+
+        $meta = $this->extractMeta($context, ['type', 'action', 'subtype']);
+        $span = $this->eventFactory->createSpan($name, array_replace_recursive($this->sharedContext, $context), $this->currentTransaction);
+        $span->setMeta($meta);
+        $span->start();
+
+        return $span;
     }
 
     /**

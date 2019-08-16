@@ -27,7 +27,7 @@ class EventBean
      * Id of the whole trace forest and is used to uniquely identify a distributed trace through a system
      * @link https://www.w3.org/TR/trace-context/#trace-id
      *
-     * @var string
+     * @var float
      */
     private $traceId;
 
@@ -62,7 +62,7 @@ class EventBean
      *
      * @var array
      */
-    private $contexts = [
+    protected $contexts = [
         'request'  => [],
         'user'     => [],
         'custom'   => [],
@@ -374,7 +374,7 @@ class EventBean
      *
      * @return array
      */
-    final protected function getContext() : array
+    protected function getContext() : array
     {
         $context = [
             'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request']
@@ -404,8 +404,12 @@ class EventBean
      * @param $backTrace
      * @return array
      */
-    protected function mapStacktrace($backTrace) : array
+    protected function mapStacktrace($backTrace) : ?array
     {
+        if (!$backTrace)
+        {
+            return null;
+        }
         $stacktrace = [];
 
         foreach ($backTrace as $trace) {
