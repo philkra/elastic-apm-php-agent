@@ -1,6 +1,6 @@
 {
     "name" : "speakol-ads/elastic-apm-php-agent",
-    "description": "A php agent for Elastic APM v2",
+    "description": "A php agent for Elastic APM v2 Intake API",
     "license": "MIT",
     "require" : {
         "php" : ">= 7.0",
@@ -30,18 +30,18 @@
     },
     "authors" : [
         {
-            "name" : "Mohamed Al Ashaal",
-            "email" : "mohamed.alashaal@speakol.com",
-            "homepage" : "https://github.com/speakol-ads/elastic-apm-agent-php"
-        },
-        {
             "name" : "Philip Krauss",
             "email" : "philip@philipkrauss.at",
-            "homepage" : "https://github.com/philkra/elastic-apm-agent-php"
+            "homepage" : "https://github.com/philkra"
         },
         {
             "name" : "George Boot",
             "email": "george@entryninja.com"
+        },
+        {
+            "name" : "Mohamed Al Ashaal",
+            "email" : "mohamed.alashaal@speakol.com",
+            "homepage" : "https://github.com/speakol-ads"
         }
     ]
 }

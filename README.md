@@ -4,9 +4,6 @@
 
 This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/speakol-ads/elastic-apm-laravel
 
-## Note
-This is a fork from the [original](https://github.com/philkra/elastic-apm-php-agent) package to add the support for APM API `v2`
-
 ## Installation
 The recommended way to install the agent is through [Composer](http://getcomposer.org).
 
@@ -146,7 +143,7 @@ $agent->getTransaction( $trxName )->setUserContext( [
     'foo' => 'bar',
     'bar' => [ 'foo1' => 'bar1', 'foo2' => 'bar2' ]
 ] );
-$agent->getTransaction( $trxName )->setTags( [ 'k1' => 'v1', 'k2' => 'v2' ] );  
+$agent->getTransaction( $trxName )->setTags( [ 'k1' => 'v1', 'k2' => 'v2' ] );
 ```
 
 ### Example of a Transaction
@@ -186,7 +183,6 @@ secretToken   : Secret token for APM Server, Default: null
 hostname      : Hostname to transmit to the APM Server, Default: gethostname()
 active        : Activate the APM Agent, Default: true
 timeout       : Guzzle Client timeout, Default: 5
-apmVersion    : APM Server Intake API version, Default: 'v2'
 env           : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 cookies       : Cookies to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 httpClient    : Extended GuzzleHttp\Client Default: []
