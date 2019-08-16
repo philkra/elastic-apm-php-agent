@@ -49,6 +49,11 @@ class Span extends EventBean implements \JsonSerializable
     private $parentSpan;
 
     /**
+     * @var Transaction
+     */
+    private $transaction;
+
+    /**
      * Create the Transaction
      *
      * @param string      $name
@@ -60,6 +65,7 @@ class Span extends EventBean implements \JsonSerializable
     {
         parent::__construct($contexts, $transaction);
         $this->setSpanName($name);
+        $this->transaction = $transaction;
         $this->parentSpan = $parentSpan;
         $transaction->addSpan($this);
         $this->timer = new Timer();

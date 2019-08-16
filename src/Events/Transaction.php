@@ -245,7 +245,7 @@ class Transaction extends EventBean implements \JsonSerializable
                 $dropCount++;
                 continue;
             }
-            $spans[] = $span;
+            $spans[] = $span->jsonSerialize();
         }
 
         return $spans;
