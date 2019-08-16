@@ -43,14 +43,15 @@ $agent = new \PhilKra\Agent( [ 'appName' => 'with-custom-context' ], [
 ```
 
 ### Capture Errors and Exceptions
-The agent can capture all types or errors and exceptions that are implemented from the interface `Throwable` (http://php.net/manual/en/class.throwable.php).
+The agent can capture all types or errors and exceptions that are implemented from the interface [`Throwable`](http://php.net/manual/en/class.throwable.php).
+When capturing an _error_, you can a context and highly recommended a `transaction` as illustrated in the following snippet.
+By doing so you increase the tracability of the error.
 ```php
 // start a new transaction or use an existing one
 $transaction = $agent->startTransaction($trxName);
-
+// do stuff that generates an exception
 $agent->captureThrowable( new Exception(), [], $transaction );
-
-$agent->send();
+// ...
 ```
 
 ### Adding spans
