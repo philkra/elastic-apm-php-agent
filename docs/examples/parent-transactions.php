@@ -2,7 +2,6 @@
 //
 // This example demonstrates the use of parent transactions to link transactions together.
 //
-
 require __DIR__ . '/vendor/autoload.php';
 
 use PhilKra\Agent;
