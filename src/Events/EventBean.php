@@ -19,6 +19,13 @@ class EventBean
     private $id;
 
     /**
+     * Trace Id
+     *
+     * @var mixed string|null
+     */
+    private $traceId = null;
+
+    /**
      * Error occurred on Timestamp
      *
      * @var string
@@ -90,6 +97,39 @@ class EventBean
     public function getId() : string
     {
         return $this->id;
+    }
+
+    /**
+     * Get the Trace Id (for Distributed Tracing)
+     *
+     * @return mixed: string|null
+     */
+    public function getTraceId()
+    {
+        return $this->traceId;
+    }
+
+    /**
+     * Ensure to return a Trace Id, in case it's not set, generate
+     *
+     * @return string
+     */
+    public function ensureGetTraceId() : string
+    {
+        if($this->traceId === null) {
+            $this->traceId = Uuid::uuid4()->toString();
+        }
+        return $this->traceId;
+    }
+
+    /**
+     * Set the Trace Id
+     *
+     * @param string $traceId
+     */
+    public function setTraceId(string $traceId)
+    {
+        $this->traceId = $traceId;
     }
 
     /**

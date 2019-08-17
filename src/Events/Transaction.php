@@ -60,6 +60,13 @@ class Transaction extends EventBean implements \JsonSerializable
     private $backtraceLimit = 0;
 
     /**
+     * Parent Transaction
+     *
+     * @var Transaction
+     */
+    private $parent = null;
+
+    /**
     * Create the Transaction
     *
     * @param string $name
@@ -133,6 +140,19 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
+     * Set the Parent Transaction
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
+     *
+     * @param Transaction $parent
+     */
+    public function setParent(Transaction $parent)
+    {
+        $this->parent = $parent;
+        $this->setTraceId($this->parent->ensureGetTraceId());
+    }
+
+    /**
      * Set the spans for the transacton
      *
      * @param array $spans
@@ -189,25 +209,32 @@ class Transaction extends EventBean implements \JsonSerializable
     */
     public function jsonSerialize() : array
     {
-        return [
-          'id'        => $this->getId(),
-          'trace_id'  => $this->getId(),
-          'span_count' => [
-              'started' => count($this->getSpans()),
-              'dropped' => 0
-          ],
-          'timestamp' => $this->getTimestamp(),
-          'name'      => $this->getTransactionName(),
-          'duration'  => $this->summary['duration'],
-          'type'      => $this->getMetaType(),
-          'result'    => $this->getMetaResult(),
-          'context'   => $this->getContext(),
-          'spans'     => $this->getSpans(),
-          'errors'    => $this->getErrors(),
-          'processor' => [
-              'event' => 'transaction',
-              'name'  => 'transaction',
-          ]
-      ];
+        // Merge the Optionals
+        $optionals = [];
+        if($this->parent !== null)
+        {
+            $optionals['parent_id'] = $this->parent->getId();
+        }
+
+        return array_merge($optionals, [
+            'id'         => $this->getId(),
+            'trace_id'   => $this->ensureGetTraceId(),
+            'timestamp'  => $this->getTimestamp(),
+            'name'       => $this->getTransactionName(),
+            'duration'   => $this->summary['duration'],
+            'type'       => $this->getMetaType(),
+            'result'     => $this->getMetaResult(),
+            'context'    => $this->getContext(),
+            'errors'     => $this->getErrors(),
+            'spans'      => $this->getSpans(),
+            'span_count' => [
+                'started' => count($this->getSpans()),
+                'dropped' => 0
+            ],
+            'processor'  => [
+                'event' => 'transaction',
+                'name'  => 'transaction',
+            ]
+        ]);
     }
 }
