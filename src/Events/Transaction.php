@@ -60,13 +60,6 @@ class Transaction extends EventBean implements \JsonSerializable
     private $backtraceLimit = 0;
 
     /**
-     * Parent Transaction
-     *
-     * @var Transaction
-     */
-    private $parent = null;
-
-    /**
     * Create the Transaction
     *
     * @param string $name
@@ -137,19 +130,6 @@ class Transaction extends EventBean implements \JsonSerializable
     public function getSummary() : array
     {
         return $this->summary;
-    }
-
-    /**
-     * Set the Parent Transaction
-     *
-     * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
-     *
-     * @param Transaction $parent
-     */
-    public function setParent(Transaction $parent)
-    {
-        $this->parent = $parent;
-        $this->setTraceId($this->parent->ensureGetTraceId());
     }
 
     /**

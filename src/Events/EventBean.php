@@ -39,6 +39,14 @@ class EventBean
      */
     protected $transaction;
 
+
+    /**
+     * Parent Transaction
+     *
+     * @var Transaction
+     */
+    protected $parent = null;
+
     /**
      * Event Metadata
      *
@@ -73,8 +81,9 @@ class EventBean
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/3
      *
      * @param array $contexts
+     * @param ?Transaction $parent
      */
-    public function __construct(array $contexts, ?Transaction $transaction = null)
+    public function __construct(array $contexts, ?Transaction $parent = null)
     {
         // Generate Random UUID
         $this->id = Uuid::uuid4()->toString();
@@ -86,7 +95,11 @@ class EventBean
         $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
         $timestamp->setTimeZone(new \DateTimeZone('UTC'));
         $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
-        $this->transaction = $transaction;
+
+        // Set Parent Transaction
+        if($parent !== null) {
+            $this->setParent($parent);
+        }
     }
 
     /**
@@ -140,6 +153,19 @@ class EventBean
     public function getTimestamp() : int
     {
         return strtotime($this->timestamp) * 1000000;
+    }
+
+    /**
+     * Set the Parent Transaction
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
+     *
+     * @param Transaction $parent
+     */
+    public function setParent(Transaction $parent)
+    {
+        $this->parent = $parent;
+        $this->setTraceId($this->parent->ensureGetTraceId());
     }
 
     /**

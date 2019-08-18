@@ -22,7 +22,7 @@ $childOne = $agent->startTransaction('http.session.get.auth.data');
 $childOne->setParent($parent);
 
 // Do stuff ..
-usleep(rand(10000, 30000));
+usleep(rand(1000, 99999));
 
 $agent->stopTransaction($childOne->getTransactionName());
 
@@ -31,9 +31,16 @@ $childTwo = $agent->startTransaction('elasticsearch.search.active.users');
 $childTwo->setParent($parent);
 
 // Do stuff ..
-usleep(rand(10000, 30000));
+usleep(rand(1000, 99999));
 
 $agent->stopTransaction($childTwo->getTransactionName());
+
+// Create a 3rd child Transaction that is throwing an exception
+$childThree = $agent->startTransaction('division.by.zero');
+$childThree->setParent($parent);
+$agent->captureThrowable( new Exception("division by 0 exception"), [], $childThree );
+$agent->stopTransaction($childThree->getTransactionName());
+
 $agent->stopTransaction($parent->getTransactionName());
 
 var_dump($agent->send());
