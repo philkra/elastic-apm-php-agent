@@ -9,9 +9,7 @@ before_script:
   - composer self-update
   - composer install --prefer-dist --no-interaction --no-suggest
 
-script:
-  - phpunit -v
-  - phpunit # --configuration phpunit.xml.dist
+script: phpunit -v
 
 notifications:
     on_success: never
