@@ -59,6 +59,9 @@ class Transaction extends EventBean implements \JsonSerializable
      */
     private $backtraceLimit = 0;
 
+    private $traceId;
+    private $parentId;
+
     /**
     * Create the Transaction
     *
@@ -98,6 +101,26 @@ class Transaction extends EventBean implements \JsonSerializable
         $this->summary['duration']  = $duration ?? round($this->timer->getDurationInMilliseconds(), 3);
         $this->summary['headers']   = (function_exists('xdebug_get_headers') === true) ? xdebug_get_headers() : [];
         $this->summary['backtrace'] = debug_backtrace($this->backtraceLimit);
+    }
+
+    public function setTraceId(string $traceId)
+    {
+        $this->traceId = $traceId;
+    }
+
+    public function setParentId(string $parentId)
+    {
+        $this->parentId = $parentId;
+    }
+
+    public function getTraceId()
+    {
+        return $this->traceId;
+    }
+
+    public function getParentId()
+    {
+        return $this->parentId;
     }
 
     /**
@@ -191,7 +214,8 @@ class Transaction extends EventBean implements \JsonSerializable
     {
         return [
           'id'        => $this->getId(),
-          'trace_id'  => $this->getId(),
+          'trace_id'  => $this->getTraceId(),
+          'parent_id' => $this->getParentId(),
           'span_count' => [
               'started' => count($this->getSpans()),
               'dropped' => 0

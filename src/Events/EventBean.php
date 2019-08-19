@@ -76,9 +76,10 @@ class EventBean
         $this->contexts = array_merge($this->contexts, $contexts);
 
         // Get UTC timestamp of Now
-        $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
-        $timestamp->setTimeZone(new \DateTimeZone('UTC'));
-        $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
+        $this->timestamp = microtime(true);
+//        $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
+//        $timestamp->setTimeZone(new \DateTimeZone('UTC'));
+//        $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
         $this->transaction = $transaction;
     }
 
@@ -99,7 +100,8 @@ class EventBean
      */
     public function getTimestamp() : int
     {
-        return strtotime($this->timestamp) * 1000000;
+        return $this->timestamp * 1000000;
+//        return strtotime($this->timestamp) * 1000000;
     }
 
     /**
