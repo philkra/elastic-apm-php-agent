@@ -93,7 +93,7 @@ class TraceParent
             throw new InvalidTraceContextHeaderException("InvalidTraceContextHeaderException");
         }
         $parsed = explode('-', $header);
-        return new php($parsed[1], $parsed[2], $parsed[3]);
+        return new TraceParent($parsed[1], $parsed[2], $parsed[3]);
     }
 
     public function __toString()
