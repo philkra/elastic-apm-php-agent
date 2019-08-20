@@ -93,6 +93,11 @@ class EventBean
         return $this->id;
     }
 
+    public function setId(string $id)
+    {
+        $this->id = $id;
+    }
+
     /**
      * Get the Event's Timestamp
      *
