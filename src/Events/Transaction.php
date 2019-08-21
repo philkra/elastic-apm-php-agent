@@ -59,9 +59,6 @@ class Transaction extends EventBean implements \JsonSerializable
      */
     private $backtraceLimit = 0;
 
-    private $traceId;
-    private $parentId;
-
     /**
     * Create the Transaction
     *
@@ -103,26 +100,6 @@ class Transaction extends EventBean implements \JsonSerializable
         $this->summary['backtrace'] = debug_backtrace($this->backtraceLimit);
     }
 
-    public function setTraceId(string $traceId)
-    {
-        $this->traceId = $traceId;
-    }
-
-    public function setParentId(string $parentId)
-    {
-        $this->parentId = $parentId;
-    }
-
-    public function getTraceId()
-    {
-        return $this->traceId;
-    }
-
-    public function getParentId()
-    {
-        return $this->parentId;
-    }
-
     /**
     * Set the Transaction Name
     *
@@ -156,7 +133,7 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
-     * Set the spans for the transacton
+     * Set the spans for the transaction
      *
      * @param array $spans
      *

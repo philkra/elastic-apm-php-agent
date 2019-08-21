@@ -2,21 +2,38 @@
 
 namespace PhilKra\Events;
 
-use Ramsey\Uuid\Uuid;
-
 /**
  *
- * EventBean for occuring events such as Exceptions or Transactions
+ * EventBean for occurring events such as Exceptions or Transactions
  *
  */
 class EventBean
 {
+    const SPAN_ID_SIZE = 64;
+    const TRACE_ID_SIZE = 128;
+
     /**
-     * UUID
+     * Event Id
      *
      * @var string
      */
     private $id;
+
+    /**
+     * Id of the whole trace forest and is used to uniquely identify a distributed trace through a system
+     * @link https://www.w3.org/TR/trace-context/#trace-id
+     *
+     * @var string
+     */
+    private $traceId;
+
+    /**
+     * Id of parent span or parent transaction
+     * @link https://www.w3.org/TR/trace-context/#parent-id
+     *
+     * @var string
+     */
+    private $parentId;
 
     /**
      * Error occurred on Timestamp
@@ -69,17 +86,14 @@ class EventBean
      */
     public function __construct(array $contexts, ?Transaction $transaction = null)
     {
-        // Generate Random UUID
-        $this->id = Uuid::uuid4()->toString();
+        // Generate Random Event Id
+        $this->id = self::generateRandomBitsInHex(self::SPAN_ID_SIZE);
 
         // Merge Initial Context
         $this->contexts = array_merge($this->contexts, $contexts);
 
-        // Get UTC timestamp of Now
+        // Get current Unix timestamp with seconds
         $this->timestamp = microtime(true);
-//        $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
-//        $timestamp->setTimeZone(new \DateTimeZone('UTC'));
-//        $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
         $this->transaction = $transaction;
     }
 
@@ -93,9 +107,44 @@ class EventBean
         return $this->id;
     }
 
-    public function setId(string $id)
+    /**
+     * Get the Trace Id
+     *
+     * @return string $traceId
+     */
+    public function getTraceId() : String
     {
-        $this->id = $id;
+        return $this->traceId;
+    }
+
+    /**
+     * Set the Trace Id
+     *
+     * @param string $traceId
+     */
+    public function setTraceId(string $traceId)
+    {
+        $this->traceId = $traceId;
+    }
+
+    /**
+     * Get the Parent Id
+     *
+     * @return string $parentId
+     */
+    public function getParentId() : String
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * Set the Parent Id
+     *
+     * @param string $parentId
+     */
+    public function setParentId(string $parentId)
+    {
+        $this->parentId = $parentId;
     }
 
     /**
@@ -106,7 +155,6 @@ class EventBean
     public function getTimestamp() : int
     {
         return $this->timestamp * 1000000;
-//        return strtotime($this->timestamp) * 1000000;
     }
 
     /**
@@ -312,5 +360,10 @@ class EventBean
         }
 
         return $context;
+    }
+
+    public static function generateRandomBitsInHex(int $bits): string
+    {
+        return bin2hex(random_bytes($bits/8));
     }
 }
