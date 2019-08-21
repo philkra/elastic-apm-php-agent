@@ -132,7 +132,7 @@ class EventBean
      *
      * @return string $parentId
      */
-    public function getParentId() : String
+    public function getParentId() : ?String
     {
         return $this->parentId;
     }
