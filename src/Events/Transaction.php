@@ -2,7 +2,9 @@
 
 namespace PhilKra\Events;
 
+use PhilKra\Exception\InvalidTraceContextHeaderException;
 use PhilKra\Helper\Timer;
+use PhilKra\TraceParent;
 
 /**
  *
@@ -69,6 +71,7 @@ class Transaction extends EventBean implements \JsonSerializable
     {
         parent::__construct($contexts);
         $this->setTransactionName($name);
+        $this->setTraceContext();
         $this->timer = new Timer($start);
     }
 
@@ -180,6 +183,28 @@ class Transaction extends EventBean implements \JsonSerializable
     private function getSpans(): array
     {
         return $this->spans;
+    }
+
+    /**
+     * Set Trace context
+     *
+     * @throws \Exception
+     */
+    private function setTraceContext()
+    {
+        $headers = getallheaders();
+        $traceParentHeader = $headers[TraceParent::HEADER_NAME] ?? null;
+        if ($traceParentHeader !== null) {
+            try {
+                $traceParent = TraceParent::createFromHeader($traceParentHeader);
+                $this->setTraceId($traceParent->getTraceId());
+                $this->setParentId($traceParent->getSpanId());
+            } catch (InvalidTraceContextHeaderException $e) {
+                $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+            }
+        } else {
+            $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+        }
     }
 
     /**

@@ -83,6 +83,7 @@ class EventBean
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/3
      *
      * @param array $contexts
+     * @param Transaction|null $transaction
      */
     public function __construct(array $contexts, ?Transaction $transaction = null)
     {
@@ -262,6 +263,18 @@ class EventBean
     }
 
     /**
+     * Generate random bits in hexadecimal representation
+     *
+     * @param int $bits
+     * @return string
+     * @throws \Exception
+     */
+    final public function generateRandomBitsInHex(int $bits): string
+    {
+        return bin2hex(random_bytes($bits/8));
+    }
+
+    /**
      * Get Type defined in Meta
      *
      * @return string
@@ -360,10 +373,5 @@ class EventBean
         }
 
         return $context;
-    }
-
-    public static function generateRandomBitsInHex(int $bits): string
-    {
-        return bin2hex(random_bytes($bits/8));
     }
 }
