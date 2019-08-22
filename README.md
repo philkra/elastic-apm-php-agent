@@ -232,9 +232,9 @@ $request->withHeader(
     $traceparent->__toString()
 );
 ```
-If you are using Guzzle client, you can use `TracingGuzzleMiddleware` which will inject header for you.
+If you are using Guzzle client, you can use `TracingGuzzleMiddleware` which will inject header for you. `transaction` is the caller who makes the request.
 ```php
-$middleware = new TracingGuzzleMiddleware($agent)
+$middleware = new TracingGuzzleMiddleware($transaction)
 
 $stack = HandlerStack::create();
 $stack->push($middleware());
