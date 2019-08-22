@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yuzhen.xie
- * Date: 2019/08/19
- * Time: 15:49
- */
 
-namespace PhilKra\Middleware;
+namespace PhilKra\Tracing;
 
 use PhilKra\Events\Transaction;
 use Psr\Http\Message\RequestInterface;
 use PhilKra\TraceParent;
-
 
 class TracingGuzzleMiddleware
 {
