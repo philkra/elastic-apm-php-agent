@@ -218,6 +218,31 @@ $agent = new \PhilKra\Agent($config);
 vendor/bin/phpunit
 ```
 
+## Distributed tracing
+Distributed tracing headers are automatically handled by the agent, the only thing you have to do is to send `Elastic-Traceparent-Header` in request which you want to track.
+```php
+$traceparent = new TraceParent(
+    $transaction->getTraceId(),
+    $transaction->getId(),
+    '01'
+);
+
+$request->withHeader(
+    TraceParent::HEADER_NAME,
+    $traceparent->__toString()
+);
+```
+If you are using Guzzle client, you can use `TracingGuzzleMiddleware` which will inject header for you.
+```php
+$middleware = new TracingGuzzleMiddleware($agent)
+
+$stack = HandlerStack::create();
+$stack->push($middleware());
+$client = new Client(['handler' => $stack])
+```
+
+Big thanks to [samuelbednarcik](https://github.com/samuelbednarcik) because the idea comes from his [elastic-apm-php-agent](https://github.com/samuelbednarcik/elastic-apm-php-agent).
+
 ## Knowledgebase
 
 ### Disable Agent for CLI
