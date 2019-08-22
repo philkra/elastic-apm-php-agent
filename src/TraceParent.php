@@ -6,7 +6,7 @@ use PhilKra\Exception\InvalidTraceContextHeaderException;
 
 class TraceParent
 {
-    const HEADER_NAME = 'elastic-apm-traceparent';
+    const HEADER_NAME = 'Elastic-Apm-Traceparent';
     /**
      * @var string
      */
