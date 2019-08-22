@@ -8,14 +8,26 @@
 
 namespace PhilKra\Middleware;
 
+use PhilKra\Events\Transaction;
 use Psr\Http\Message\RequestInterface;
 use PhilKra\TraceParent;
 
 
 class TracingGuzzleMiddleware
 {
-    public function __construct()
+    /**
+     * @var Transaction
+     */
+    private $transaction;
+
+    /**
+     * TracingGuzzleMiddleware constructor.
+     *
+     * @param Transaction|null $transaction
+     */
+    public function __construct(?Transaction $transaction = null)
     {
+        $this->transaction = $transaction;
     }
 
     /**
@@ -25,9 +37,8 @@ class TracingGuzzleMiddleware
     public function __invoke(callable $handler)
     {
         return function (RequestInterface $request, array $options) use ($handler) {
-            $transaction = app('request')->__apm__();
-            if ($transaction !== null && $transaction->getTraceId() !== null && $transaction->getId() !== null) {
-                $header = new TraceParent($transaction->getTraceId(), $transaction->getId(), '01');
+            if ($this->transaction !== null && $this->transaction->getTraceId() !== null && $this->transaction->getId() !== null) {
+                $header = new TraceParent($this->transaction->getTraceId(), $this->transaction->getId(), '01');
                 $request = $request->withHeader(TraceParent::HEADER_NAME, $header->__toString());
             }
             return $handler($request, $options);
