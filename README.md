@@ -4,7 +4,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/philkra/elastic-apm-php-agent.svg?style=flat)](https://packagist.org/philkra/elastic-apm-php-agent)
 
 
-This is a PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API.
+This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API. Please note: This agent is not offically supported by [Elastic](https://www.elastic.co/).
 
 ## Documentation
 * [Installation](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/install.md)
@@ -17,7 +17,7 @@ This is a PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm)
 * [Capture Throwable](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/capture-throwable.md)
 * [Spans](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/spans.php)
 * [Parent Transactions](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/parent-transactions.php)
-* Distributed Tracing -- `TODO`
+* Distributed Tracing - `TODO`
 
 ## Tests
 ```bash
