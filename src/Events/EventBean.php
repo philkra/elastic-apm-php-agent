@@ -321,7 +321,7 @@ class EventBean
      */
     final protected function getCookies() : array
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
         return empty($cookieMask)
             ? $_COOKIE
             : array_intersect_key($_COOKIE, array_flip($cookieMask));
