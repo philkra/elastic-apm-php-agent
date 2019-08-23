@@ -4,7 +4,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/philkra/elastic-apm-php-agent.svg?style=flat)](https://packagist.org/philkra/elastic-apm-php-agent)
 
 
-This is a PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution.
+This is a PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API.
 
 ## Documentation
 * [Installation](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/install.md)
