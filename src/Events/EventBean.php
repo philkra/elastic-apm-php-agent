@@ -336,7 +336,7 @@ class EventBean
      */
     final protected function getCookieHeader(string $cookieHeader) : string
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
 
         // Returns an empty string if cookies are masked.
         return empty($cookieMask) ? $cookieHeader : '';
