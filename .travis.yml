@@ -9,7 +9,7 @@ before_script:
   - composer self-update
   - composer install --prefer-dist --no-interaction --no-suggest
 
-script: phpunit -v
+script: vendor/bin/phpunit -v
 
 notifications:
     on_success: never
