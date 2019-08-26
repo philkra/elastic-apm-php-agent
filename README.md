@@ -1,257 +1,32 @@
 # Elastic APM: PHP Agent
 
 [![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
+[![Total Downloads](https://img.shields.io/packagist/dt/philkra/elastic-apm-php-agent.svg?style=flat)](https://packagist.org/philkra/elastic-apm-php-agent)
 
-This is a PHP agent for Elastic.co's APM product: https://www.elastic.co/solutions/apm. Laravel & Lumen package https://github.com/speakol-ads/elastic-apm-laravel
 
-## Note
-This is a fork from the [original](https://github.com/philkra/elastic-apm-php-agent) package to add the support for APM API `v2`
+This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API. Please note: This agent is not offically supported by [Elastic](https://www.elastic.co/).
 
-## Installation
-The recommended way to install the agent is through [Composer](http://getcomposer.org).
+## Documentation
+* [Installation](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/install.md)
+* [Configuration](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/config.md)
+* [Knowledgebase](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/knowledgebase.md)
 
-Run the following composer command
-
-```bash
-php composer.phar require speakol-ads/elastic-apm-php-agent
-```
-
-After installing, you need to require Composer's autoloader:
-
-```php
-require 'vendor/autoload.php';
-```
-
-## Usage
-
-### Initialize the Agent with minimal Config
-```php
-$agent = new \PhilKra\Agent( [ 'appName' => 'demo' ] );
-```
-When creating the agent, you can directly inject shared contexts such as user, tags and custom.
-```php
-$agent = new \PhilKra\Agent( [ 'appName' => 'with-custom-context' ], [
-  'user' => [
-    'id'    => 12345,
-    'email' => 'email@acme.com',
-  ],
-  'tags' => [
-    // ... more key-values
-  ],
-  'custom' => [
-    // ... more key-values
-  ]
-] );
-```
-
-### Capture Errors and Exceptions
-The agent can capture all types or errors and exceptions that are implemented from the interface `Throwable` (http://php.net/manual/en/class.throwable.php).
-```php
-// start a new transaction or use an existing one
-$transaction = $agent->startTransaction($trxName);
-
-$agent->captureThrowable( new Exception(), [], $transaction );
-
-$agent->send();
-```
-
-### Adding spans
-Addings spans (https://www.elastic.co/guide/en/apm/server/current/transactions.html#transaction-spans) is easy.
-Please consult the documentation for your exact needs. Below is an example for adding a MySQL span.
-
-```php
-$trxName = 'GET /some/transaction/name';
-
-// create the agent
-$agent = new \PhilKra\Agent(['appName' => 'Demo with Spans']);
-
-// start a new transaction
-$transaction = $agent->startTransaction($trxName);
-
-// create a span
-$spans = [];
-$spans[] = [
-  'name' => 'Your Span Name. eg: ORM Query',
-  'type' => 'db.mysql.query',
-  'start' => 300, // when did tht query start, relative to the transaction start, in milliseconds
-  'duration' => 23, // duration, in milliseconds
-  'stacktrace' => [
-    [
-      'function' => "\\YourOrMe\\Library\\Class::methodCall()",
-      'abs_path' => '/full/path/to/file.php',
-      'filename' => 'file.php',
-      'lineno' => 30,
-      'library_frame' => false, // indicated whether this code is 'owned' by an (external) library or not
-      'vars' => [
-        'arg1' => 'value',
-        'arg2' => 'value2',
-      ],
-      'pre_context' => [ // lines of code leading to the context line
-        '<?php',
-        '',
-        '// executing query below',
-      ],
-      'context_line' => '$result = mysql_query("select * from non_existing_table")', // source code of context line
-      'post_context' => [// lines of code after to the context line
-        '',
-        '$table = $fakeTableBuilder->buildWithResult($result);',
-        'return $table;',
-      ],
-    ],
-  ],
-  'context' => [
-    'db' => [
-      'instance' => 'my_database', // the database name
-      'statement' => 'select * from non_existing_table', // the query being executed
-      'type' => 'sql',
-      'user' => 'root', // the user executing the query (don't use root!)
-    ],
-  ],
-];
-
-// add the array of spans to the transaction
-$transaction->setSpans($spans);
-
-// Do some stuff you want to watch ...
-sleep(1);
-
-$agent->stopTransaction($trxName);
-
-// send our transactions to te apm
-$agent->send();
-```
-
-### Transaction without minimal Meta data and Context
-```php
-$trxName = 'Demo Simple Transaction';
-$agent->startTransaction( $trxName );
-// Do some stuff you want to watch ...
-$agent->stopTransaction( $trxName );
-```
-
-### Transaction with Meta data and Contexts
-```php
-$trxName = 'Demo Transaction with more Data';
-$agent->startTransaction( $trxName );
-// Do some stuff you want to watch ...
-$agent->stopTransaction( $trxName, [
-    'result' => '200',
-    'type'   => 'demo'
-] );
-$agent->getTransaction( $trxName )->setUserContext( [
-    'id'    => 12345,
-    'email' => "hello@acme.com",
- ] );
- $agent->getTransaction( $trxName )->setCustomContext( [
-    'foo' => 'bar',
-    'bar' => [ 'foo1' => 'bar1', 'foo2' => 'bar2' ]
-] );
-$agent->getTransaction( $trxName )->setTags( [ 'k1' => 'v1', 'k2' => 'v2' ] );  
-```
-
-### Example of a Transaction
-This example illustrates how you can monitor a call to another web service.
-```php
-$agent = new \PhilKra\Agent( [ 'appName' => 'example' ] );
-
-$endpoint = 'https://acme.com/api/';
-$payload  = [ 'foo' => 'bar' ];
-$trxName  = sprintf('POST %s', $endpoint);
-$client   = new GuzzleHttp\Client();
-
-// Start the Transaction
-$agent->startTransaction( $trxName );
-
-// Do the call via curl/Guzzle e.g.
-$response = $client->request('POST', $endpoint, [
-    'json' => $payload
-]);
-
-// Stop the Transaction tracing, attach the Status and the sent Payload
-$agent->stopTransaction( $trxName, [
-    'status'  => $response->getStatusCode(),
-    'payload' => $payload,
-] );
-
-// Send the collected Traces to the APM server
-$agent->send();
-```
-
-### Configuration
-```
-appName       : Name of this application, Required
-appVersion    : Application version, Default: ''
-serverUrl     : APM Server Endpoint, Default: 'http://127.0.0.1:8200'
-secretToken   : Secret token for APM Server, Default: null
-hostname      : Hostname to transmit to the APM Server, Default: gethostname()
-active        : Activate the APM Agent, Default: true
-timeout       : Guzzle Client timeout, Default: 5
-apmVersion    : APM Server Intake API version, Default: 'v2'
-env           : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
-cookies       : Cookies to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
-httpClient    : Extended GuzzleHttp\Client Default: []
-backtraceLimit: Depth of a transaction backtrace, Default: unlimited
-```
-
-Detailed `GuzzleHttp\Client` options can be found [here](http://docs.guzzlephp.org/en/stable/request-options.html#request-options).
-
-#### Example of an extended Configuration
-```php
-$config = [
-    'appName'     => 'My WebApp',
-    'appVersion'  => '1.0.42',
-    'serverUrl'   => 'http://apm-server.example.com',
-    'secretToken' => 'DKKbdsupZWEEzYd4LX34TyHF36vDKRJP',
-    'hostname'    => 'node-24.app.network.com',
-    'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR'],
-    'cookies'     => ['my-cookie'],
-    'httpClient'  => [
-        'verify' => false,
-        'proxy'  => 'tcp://localhost:8125'
-    ],
-];
-$agent = new \PhilKra\Agent($config);
-```
+## Examples
+* [Agent Initialization](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/agent-init.md)
+* [Basic Usage](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/basic-usage.md)
+* [Capture Throwable](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/capture-throwable.md)
+* [Spans](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/spans.php)
+* [Parent Transactions](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/parent-transactions.php)
+* Distributed Tracing - `TODO`
 
 ## Tests
 ```bash
 vendor/bin/phpunit
 ```
 
-## Distributed tracing
-Distributed tracing headers are automatically handled by the agent, the only thing you have to do is to send `Elastic-Traceparent-Header` in request which you want to track.
-```php
-$traceparent = new TraceParent(
-    $transaction->getTraceId(),
-    $transaction->getId(),
-    '01'
-);
-
-$request->withHeader(
-    TraceParent::HEADER_NAME,
-    $traceparent->__toString()
-);
-```
-If you are using Guzzle client, you can use `TracingGuzzleMiddleware` which will inject header for you. `transaction` is the caller who makes the request.
-```php
-$middleware = new TracingGuzzleMiddleware($transaction)
-
-$stack = HandlerStack::create();
-$stack->push($middleware());
-$client = new Client(['handler' => $stack])
-```
-
-Big thanks to [samuelbednarcik](https://github.com/samuelbednarcik) because the idea comes from his [elastic-apm-php-agent](https://github.com/samuelbednarcik/elastic-apm-php-agent).
-
-## Knowledgebase
-
-### Disable Agent for CLI
-In case you want to disable the agent dynamically for hybrid SAPI usage, please use the following snippet.
-```php
-'active' => PHP_SAPI !== 'cli'
-```
-In case for the Laravel APM provider:
-```php
-'active' => PHP_SAPI !== 'cli' && env('ELASTIC_APM_ACTIVE', false)
-```
-Thank you to @jblotus, (https://github.com/philkra/elastic-apm-laravel/issues/19)
+## Contributors
+A big thank you goes out to every contributor of this repo, special thanks goes out to:
+* [dstepe](https://github.com/dstepe)
+* [georgeboot](https://github.com/georgeboot)
+* [alash3al](https://github.com/alash3al)
+* [thinkspill](https://github.com/thinkspill)

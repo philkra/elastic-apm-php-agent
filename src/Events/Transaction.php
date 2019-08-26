@@ -228,6 +228,7 @@ class Transaction extends EventBean implements \JsonSerializable
           'type'      => $this->getMetaType(),
           'result'    => $this->getMetaResult(),
           'context'   => $this->getContext(),
+          'errors'     => $this->getErrors(),
           'spans'     => $this->getSpans(),
           'errors'    => $this->getErrors(),
           'processor' => [

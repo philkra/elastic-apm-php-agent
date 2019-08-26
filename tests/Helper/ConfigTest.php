@@ -28,7 +28,6 @@ final class ConfigTest extends TestCase {
     $this->assertArrayHasKey( 'hostname', $config );
     $this->assertArrayHasKey( 'active', $config );
     $this->assertArrayHasKey( 'timeout', $config );
-    $this->assertArrayHasKey( 'apmVersion', $config );
     $this->assertArrayHasKey( 'appVersion', $config );
     $this->assertArrayHasKey( 'env', $config );
     $this->assertArrayHasKey( 'cookies', $config );
@@ -42,7 +41,6 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertTrue( $config['active'] );
     $this->assertEquals( $config['timeout'], 5 );
-    $this->assertEquals( $config['apmVersion'], 'v1' );
     $this->assertEquals( $config['env'], [] );
     $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );

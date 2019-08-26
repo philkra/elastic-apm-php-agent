@@ -43,13 +43,6 @@ class EventBean
     private $timestamp;
 
     /**
-     * The parent transaction
-     *
-     * @var Transaction
-     */
-    protected $transaction;
-
-    /**
      * Event Metadata
      *
      * @var array
@@ -83,9 +76,9 @@ class EventBean
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/3
      *
      * @param array $contexts
-     * @param Transaction|null $transaction
+     * @param ?Transaction $parent
      */
-    public function __construct(array $contexts, ?Transaction $transaction = null)
+    public function __construct(array $contexts, ?Transaction $parent = null)
     {
         // Generate Random Event Id
         $this->id = self::generateRandomBitsInHex(self::SPAN_ID_SIZE);
@@ -95,7 +88,11 @@ class EventBean
 
         // Get current Unix timestamp with seconds
         $this->timestamp = microtime(true);
-        $this->transaction = $transaction;
+
+        // Set Parent Transaction
+        if ($parent !== null) {
+            $this->setParent($parent);
+        }
     }
 
     /**
@@ -156,6 +153,19 @@ class EventBean
     public function getTimestamp() : int
     {
         return $this->timestamp * 1000000;
+    }
+
+    /**
+     * Set the Parent Id and Trace Id
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
+     *
+     * @param Transaction $parent
+     */
+    public function setParent(Transaction $parent)
+    {
+        $this->setParentId($parent->getId());
+        $this->setTraceId($parent->getTraceId());
     }
 
     /**
@@ -323,7 +333,7 @@ class EventBean
      */
     final protected function getCookies() : array
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
         return empty($cookieMask)
             ? $_COOKIE
             : array_intersect_key($_COOKIE, array_flip($cookieMask));
@@ -338,7 +348,7 @@ class EventBean
      */
     final protected function getCookieHeader(string $cookieHeader) : string
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
 
         // Returns an empty string if cookies are masked.
         return empty($cookieMask) ? $cookieHeader : '';
