@@ -38,7 +38,7 @@ class EventBean
     /**
      * Error occurred on Timestamp
      *
-     * @var string
+     * @var float
      */
     private $timestamp;
 
@@ -152,7 +152,7 @@ class EventBean
      */
     public function getTimestamp() : int
     {
-        return $this->timestamp * 1000000;
+        return (int) $this->timestamp * 1000000;
     }
 
     /**

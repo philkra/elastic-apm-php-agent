@@ -16,14 +16,14 @@ final class TransactionTest extends TestCase {
      * @covers \PhilKra\Events\Transaction::setTransactionName
      */
     public function testParentConstructor() {
-        $now = strtotime('now') * 1000000;
+        $now = microtime(true) * 1000000;
 
         $name = 'testerus-grandes';
         $transaction = new Transaction($name, []);
 
         $this->assertEquals($name, $transaction->getTransactionName());
         $this->assertNotNull($transaction->getId());
-        $this->assertNull($transaction->getTraceId());
+        $this->assertNotNull($transaction->getTraceId());
         $this->assertNotNull($transaction->getTimestamp());
         $this->assertGreaterThanOrEqual($transaction->getTimestamp(), $now);
     }
