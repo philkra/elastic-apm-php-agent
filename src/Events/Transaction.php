@@ -189,25 +189,32 @@ class Transaction extends EventBean implements \JsonSerializable
     */
     public function jsonSerialize() : array
     {
-        return [
-          'id'        => $this->getId(),
-          'trace_id'  => $this->getId(),
-          'span_count' => [
-              'started' => count($this->getSpans()),
-              'dropped' => 0
-          ],
-          'timestamp' => $this->getTimestamp(),
-          'name'      => $this->getTransactionName(),
-          'duration'  => $this->summary['duration'],
-          'type'      => $this->getMetaType(),
-          'result'    => $this->getMetaResult(),
-          'context'   => $this->getContext(),
-          'spans'     => $this->getSpans(),
-          'errors'    => $this->getErrors(),
-          'processor' => [
-              'event' => 'transaction',
-              'name'  => 'transaction',
-          ]
-      ];
+        // Merge the Optionals
+        $optionals = [];
+        if($this->parent !== null)
+        {
+            $optionals['parent_id'] = $this->parent->getId();
+        }
+
+        return array_merge($optionals, [
+            'id'         => $this->getId(),
+            'trace_id'   => $this->ensureGetTraceId(),
+            'timestamp'  => $this->getTimestamp(),
+            'name'       => $this->getTransactionName(),
+            'duration'   => $this->summary['duration'],
+            'type'       => $this->getMetaType(),
+            'result'     => $this->getMetaResult(),
+            'context'    => $this->getContext(),
+            'errors'     => $this->getErrors(),
+            'spans'      => $this->getSpans(),
+            'span_count' => [
+                'started' => count($this->getSpans()),
+                'dropped' => 0
+            ],
+            'processor'  => [
+                'event' => 'transaction',
+                'name'  => 'transaction',
+            ]
+        ]);
     }
 }

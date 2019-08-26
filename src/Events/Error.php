@@ -37,7 +37,18 @@ class Error extends EventBean implements \JsonSerializable
      */
     public function jsonSerialize() : array
     {
-        $result = [
+        // Merge Optionals
+        $optionals = [];
+
+        if($this->parent !== null) {
+            $optionals = [
+                'transaction_id' => $this->parent->getId(),
+                'parent_id'      => $this->parent->getId(),
+                'trace_id'       => $this->parent->ensureGetTraceId(),
+            ];
+        }
+
+        return array_merge($optionals, [
             'id'        => $this->getId(),
             'timestamp' => $this->getTimestamp(),
             'context'   => $this->getContext(),
@@ -52,15 +63,7 @@ class Error extends EventBean implements \JsonSerializable
                 'event' => 'error',
                 'name'  => 'error',
             ]
-        ];
-
-        if ( ! empty($this->transaction) ) {
-            $result['transaction_id'] = $this->transaction->getId();
-            $result['parent_id'] = $this->transaction->getId();
-            $result['trace_id'] = $this->transaction->getId();
-        }
-
-        return $result;
+        ]);
     }
 
     /**

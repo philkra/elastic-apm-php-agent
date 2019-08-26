@@ -143,11 +143,7 @@ class Connector
      */
     private function getEndpoint() : string
     {
-        return sprintf(
-            '%s/intake/v2/%s',
-            $this->config->get('serverUrl'),
-            'events'
-        );
+        return sprintf('%s/intake/v2/events', $this->config->get('serverUrl'));
     }
 
     /**
@@ -160,8 +156,8 @@ class Connector
         // Default Headers Set
         $headers = [
             'Content-Type' => 'application/x-ndjson',
-            'User-Agent'   => sprintf('elasticapm-php/%s', Agent::VERSION),
-            'Accept'       => 'application/json'
+            'User-Agent'   => sprintf('elastic-apm-php/%s', Agent::VERSION),
+            'Accept'       => 'application/json',
         ];
 
         // Add Secret Token to Header

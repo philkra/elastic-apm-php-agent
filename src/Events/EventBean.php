@@ -19,6 +19,13 @@ class EventBean
     private $id;
 
     /**
+     * Trace Id
+     *
+     * @var mixed string|null
+     */
+    private $traceId = null;
+
+    /**
      * Error occurred on Timestamp
      *
      * @var string
@@ -31,6 +38,14 @@ class EventBean
      * @var Transaction
      */
     protected $transaction;
+
+
+    /**
+     * Parent Transaction
+     *
+     * @var Transaction
+     */
+    protected $parent = null;
 
     /**
      * Event Metadata
@@ -66,8 +81,9 @@ class EventBean
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/3
      *
      * @param array $contexts
+     * @param ?Transaction $parent
      */
-    public function __construct(array $contexts, ?Transaction $transaction = null)
+    public function __construct(array $contexts, ?Transaction $parent = null)
     {
         // Generate Random UUID
         $this->id = Uuid::uuid4()->toString();
@@ -79,7 +95,11 @@ class EventBean
         $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
         $timestamp->setTimeZone(new \DateTimeZone('UTC'));
         $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
-        $this->transaction = $transaction;
+
+        // Set Parent Transaction
+        if($parent !== null) {
+            $this->setParent($parent);
+        }
     }
 
     /**
@@ -93,6 +113,39 @@ class EventBean
     }
 
     /**
+     * Get the Trace Id (for Distributed Tracing)
+     *
+     * @return mixed: string|null
+     */
+    public function getTraceId()
+    {
+        return $this->traceId;
+    }
+
+    /**
+     * Ensure to return a Trace Id, in case it's not set, generate
+     *
+     * @return string
+     */
+    public function ensureGetTraceId() : string
+    {
+        if($this->traceId === null) {
+            $this->traceId = Uuid::uuid4()->toString();
+        }
+        return $this->traceId;
+    }
+
+    /**
+     * Set the Trace Id
+     *
+     * @param string $traceId
+     */
+    public function setTraceId(string $traceId)
+    {
+        $this->traceId = $traceId;
+    }
+
+    /**
      * Get the Event's Timestamp
      *
      * @return int
@@ -100,6 +153,19 @@ class EventBean
     public function getTimestamp() : int
     {
         return strtotime($this->timestamp) * 1000000;
+    }
+
+    /**
+     * Set the Parent Transaction
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
+     *
+     * @param Transaction $parent
+     */
+    public function setParent(Transaction $parent)
+    {
+        $this->parent = $parent;
+        $this->setTraceId($this->parent->ensureGetTraceId());
     }
 
     /**
@@ -255,7 +321,7 @@ class EventBean
      */
     final protected function getCookies() : array
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
         return empty($cookieMask)
             ? $_COOKIE
             : array_intersect_key($_COOKIE, array_flip($cookieMask));
@@ -270,7 +336,7 @@ class EventBean
      */
     final protected function getCookieHeader(string $cookieHeader) : string
     {
-        $cookieMask = $this->contexts['cookies'];
+        $cookieMask = $this->contexts['cookies'] ?? [];
 
         // Returns an empty string if cookies are masked.
         return empty($cookieMask) ? $cookieHeader : '';
