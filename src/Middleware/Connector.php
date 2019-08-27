@@ -91,6 +91,21 @@ class Connector
     }
 
     /**
+     * Get the Server Informations
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
+     *
+     * @return Response
+     */
+    public function getInfo() : \GuzzleHttp\Psr7\Response
+    {
+        return $this->client->get(
+            $this->config->get('serverUrl'),
+            ['headers' => $this->getRequestHeaders(),]
+        );
+    }
+
+    /**
      * Transform the incoming entity to v2 ndjson style
      *
      * @param PhilKra\Serializers\Entity $entity
@@ -167,4 +182,5 @@ class Connector
 
         return $headers;
     }
+
 }

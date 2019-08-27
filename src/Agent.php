@@ -120,6 +120,19 @@ class Agent
     }
 
     /**
+     * Query the Info endpoint of the APM Server
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
+     *
+     * @return Response
+     */
+    public function info() : \GuzzleHttp\Psr7\Response
+    {
+        $connector = new Connector($this->config);
+        return $connector->getInfo();
+    }
+
+    /**
      * Start the Transaction capturing
      *
      * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException

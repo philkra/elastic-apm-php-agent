@@ -17,6 +17,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 * [Capture Throwable](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/capture-throwable.md)
 * [Spans](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/spans.php)
 * [Parent Transactions](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/parent-transactions.php)
+* [Getting the Server Info](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/server-info.php)
 * [Distributed Tracing](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/distributed-tracing.md)
 
 ## Tests
