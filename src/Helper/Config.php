@@ -70,7 +70,7 @@ class Config
             'appVersion'     => '',
             'active'         => true,
             'timeout'        => 5,
-            'env'            => [],
+            'env'            => ['REMOTE_ADDR', 'SERVER_SOFTWARE'],
             'cookies'        => [],
             'httpClient'     => [],
             'environment'    => 'development',

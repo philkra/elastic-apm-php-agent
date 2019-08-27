@@ -41,7 +41,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertTrue( $config['active'] );
     $this->assertEquals( $config['timeout'], 5 );
-    $this->assertEquals( $config['env'], [] );
+    $this->assertEquals( $config['env'], ['REMOTE_ADDR', 'SERVER_SOFTWARE'] );
     $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );
     $this->assertEquals( $config['environment'], 'development' );

@@ -10,7 +10,7 @@ secretToken   : Secret token for APM Server, Default: null
 hostname      : Hostname to transmit to the APM Server, Default: gethostname()
 active        : Activate the APM Agent, Default: true
 timeout       : Guzzle Client timeout, Default: 5
-env           : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
+env           : $_SERVER vars to send to the APM Server, empty set sends all. Keys are case sensitive, Default: ['REMOTE_ADDR', 'SERVER_SOFTWARE']
 cookies       : Cookies to send to the APM Server, empty set sends all. Keys are case sensitive, Default: []
 httpClient    : Extended GuzzleHttp\Client Default: []
 backtraceLimit: Depth of a transaction backtrace, Default: unlimited
@@ -26,7 +26,7 @@ $config = [
     'serverUrl'   => 'http://apm-server.example.com',
     'secretToken' => 'DKKbdsupZWEEzYd4LX34TyHF36vDKRJP',
     'hostname'    => 'node-24.app.network.com',
-    'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR'],
+    'env'         => ['DOCUMENT_ROOT', 'REMOTE_ADDR', 'REMOTE_USER'],
     'cookies'     => ['my-cookie'],
     'httpClient'  => [
         'verify' => false,
