@@ -40,7 +40,7 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $config['serverUrl'], 'http://127.0.0.1:8200' );
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertTrue( $config['active'] );
-    $this->assertEquals( $config['timeout'], 5 );
+    $this->assertEquals( $config['timeout'], 10 );
     $this->assertEquals( $config['env'], ['SERVER_SOFTWARE'] );
     $this->assertEquals( $config['cookies'], [] );
     $this->assertEquals( $config['httpClient'], [] );

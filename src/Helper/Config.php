@@ -69,7 +69,7 @@ class Config
             'hostname'       => gethostname(),
             'appVersion'     => '',
             'active'         => true,
-            'timeout'        => 5,
+            'timeout'        => 10,
             'env'            => ['SERVER_SOFTWARE'],
             'cookies'        => [],
             'httpClient'     => [],
