@@ -110,7 +110,7 @@ class EventBean
      *
      * @return string $traceId
      */
-    public function getTraceId() : String
+    public function getTraceId() : string
     {
         return $this->traceId;
     }
@@ -130,7 +130,7 @@ class EventBean
      *
      * @return string $parentId
      */
-    public function getParentId() : ?String
+    public function getParentId() : ?string
     {
         return $this->parentId;
     }
