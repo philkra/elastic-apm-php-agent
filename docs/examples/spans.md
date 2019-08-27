@@ -61,6 +61,6 @@ sleep(1);
 
 $agent->stopTransaction($trxName);
 
-// send our transactions to te apm
+// send our transactions to the apm
 $agent->send();
 ```
