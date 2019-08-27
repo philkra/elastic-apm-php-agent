@@ -192,8 +192,8 @@ class Transaction extends EventBean implements \JsonSerializable
      */
     private function setTraceContext()
     {
-        $headers = getallheaders();
-        $traceParentHeader = $headers[TraceParent::HEADER_NAME] ?? null;
+        $traceParentHeader = $_SERVER['HTTP_' . strtoupper(str_replace('-', '_',TraceParent::HEADER_NAME))] ?? null;
+
         if ($traceParentHeader !== null) {
             try {
                 $traceParent = TraceParent::createFromHeader($traceParentHeader);
