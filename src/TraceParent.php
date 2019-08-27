@@ -6,7 +6,7 @@ use PhilKra\Exception\InvalidTraceContextHeaderException;
 
 class TraceParent
 {
-    const HEADER_NAME = 'Elastic-Apm-Traceparent';
+    const HEADER_NAME = 'elastic-apm-traceparent';
     /**
      * @var string
      */
@@ -84,7 +84,7 @@ class TraceParent
 
     /**
      * @param string $header
-     * @return php
+     * @return TraceParent
      * @throws InvalidTraceContextHeaderException
      */
     public static function createFromHeader(string $header)
