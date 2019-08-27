@@ -198,7 +198,7 @@ class Transaction extends EventBean implements \JsonSerializable
             try {
                 $traceParent = TraceParent::createFromHeader($traceParentHeader);
                 $this->setTraceId($traceParent->getTraceId());
-                $this->setParentId($traceParent->getSpanId());
+                $this->setParentId($traceParent->getParentId());
             } catch (InvalidTraceContextHeaderException $e) {
                 $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
             }

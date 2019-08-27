@@ -7,29 +7,39 @@ use PhilKra\Exception\InvalidTraceContextHeaderException;
 class TraceParent
 {
     const HEADER_NAME = 'elastic-apm-traceparent';
+
+    /**
+     * @link https://www.w3.org/TR/trace-context/#version
+     */
+    const VERSION = '00';
+
     /**
      * @var string
      */
     private $traceId;
+
     /**
      * @var string
      */
-    private $spanId;
+    private $parentId;
+
     /**
      * @var string
      */
     private $traceFlags;
+
     /**
      * @param string $traceId
-     * @param string $spanId
+     * @param string $parentId
      * @param string $traceFlags
      */
-    public function __construct(string $traceId, string $spanId, string $traceFlags)
+    public function __construct(string $traceId, string $parentId, string $traceFlags)
     {
         $this->traceId = $traceId;
-        $this->spanId = $spanId;
+        $this->parentId = $parentId;
         $this->traceFlags = $traceFlags;
     }
+
     /**
      * @return string
      */
@@ -37,6 +47,7 @@ class TraceParent
     {
         return $this->traceId;
     }
+
     /**
      * @param string $traceId
      */
@@ -44,20 +55,23 @@ class TraceParent
     {
         $this->traceId = $traceId;
     }
+
     /**
      * @return string
      */
-    public function getSpanId()
+    public function getParentId()
     {
-        return $this->spanId;
+        return $this->parentId;
     }
+
     /**
-     * @param string $spanId
+     * @param string $parentId
      */
-    public function setSpanId(string $spanId)
+    public function setParentId(string $parentId)
     {
-        $this->spanId = $spanId;
+        $this->parentId = $parentId;
     }
+
     /**
      * @return string
      */
@@ -65,6 +79,7 @@ class TraceParent
     {
         return $this->traceFlags;
     }
+
     /**
      * @param string $traceFlags
      */
@@ -75,11 +90,12 @@ class TraceParent
 
     /**
      * @param string $header
+     * @link https://www.w3.org/TR/trace-context/#version-format
      * @return bool
      */
     public static function isValidHeader(string $header)
     {
-        return preg_match('/^00-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$/', $header) === 1;
+        return preg_match('/^'.self::VERSION.'-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$/', $header) === 1;
     }
 
     /**
@@ -100,9 +116,9 @@ class TraceParent
     {
         return sprintf(
             '%s-%s-%s-%s',
-            '00',
+            self::VERSION,
             $this->getTraceId(),
-            $this->getSpanId(),
+            $this->getParentId(),
             $this->getTraceFlags()
         );
     }
