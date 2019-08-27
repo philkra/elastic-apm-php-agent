@@ -17,7 +17,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 * [Capture Throwable](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/capture-throwable.md)
 * [Spans](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/spans.php)
 * [Parent Transactions](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/parent-transactions.php)
-* Distributed Tracing - `TODO`
+* [Distributed Tracing](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/distributed-tracing.md)
 
 ## Tests
 ```bash
@@ -30,3 +30,4 @@ A big thank you goes out to every contributor of this repo, special thanks goes 
 * [georgeboot](https://github.com/georgeboot)
 * [alash3al](https://github.com/alash3al)
 * [thinkspill](https://github.com/thinkspill)
+* [YuZhenXie](https://github.com/YuZhenXie)

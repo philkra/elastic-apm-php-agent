@@ -2,7 +2,9 @@
 
 namespace PhilKra\Events;
 
+use PhilKra\Exception\InvalidTraceContextHeaderException;
 use PhilKra\Helper\Timer;
+use PhilKra\TraceParent;
 
 /**
  *
@@ -69,6 +71,7 @@ class Transaction extends EventBean implements \JsonSerializable
     {
         parent::__construct($contexts);
         $this->setTransactionName($name);
+        $this->setTraceContext();
         $this->timer = new Timer($start);
     }
 
@@ -133,7 +136,7 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
-     * Set the spans for the transacton
+     * Set the spans for the transaction
      *
      * @param array $spans
      *
@@ -183,38 +186,55 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
+     * Set Trace context
+     *
+     * @throws \Exception
+     */
+    private function setTraceContext()
+    {
+        $traceParentHeader = $_SERVER['HTTP_' . strtoupper(str_replace('-', '_',TraceParent::HEADER_NAME))] ?? null;
+
+        if ($traceParentHeader !== null) {
+            try {
+                $traceParent = TraceParent::createFromHeader($traceParentHeader);
+                $this->setTraceId($traceParent->getTraceId());
+                $this->setParentId($traceParent->getParentId());
+            } catch (InvalidTraceContextHeaderException $e) {
+                $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+            }
+        } else {
+            $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+        }
+    }
+
+    /**
     * Serialize Transaction Event
     *
     * @return array
     */
     public function jsonSerialize() : array
     {
-        // Merge the Optionals
-        $optionals = [];
-        if($this->parent !== null)
-        {
-            $optionals['parent_id'] = $this->parent->getId();
-        }
-
-        return array_merge($optionals, [
-            'id'         => $this->getId(),
-            'trace_id'   => $this->ensureGetTraceId(),
-            'timestamp'  => $this->getTimestamp(),
-            'name'       => $this->getTransactionName(),
-            'duration'   => $this->summary['duration'],
-            'type'       => $this->getMetaType(),
-            'result'     => $this->getMetaResult(),
-            'context'    => $this->getContext(),
-            'errors'     => $this->getErrors(),
-            'spans'      => $this->getSpans(),
-            'span_count' => [
-                'started' => count($this->getSpans()),
-                'dropped' => 0
-            ],
-            'processor'  => [
-                'event' => 'transaction',
-                'name'  => 'transaction',
-            ]
-        ]);
+        return [
+          'id'        => $this->getId(),
+          'trace_id'  => $this->getTraceId(),
+          'parent_id' => $this->getParentId(),
+          'span_count' => [
+              'started' => count($this->getSpans()),
+              'dropped' => 0
+          ],
+          'timestamp' => $this->getTimestamp(),
+          'name'      => $this->getTransactionName(),
+          'duration'  => $this->summary['duration'],
+          'type'      => $this->getMetaType(),
+          'result'    => $this->getMetaResult(),
+          'context'   => $this->getContext(),
+          'errors'     => $this->getErrors(),
+          'spans'     => $this->getSpans(),
+          'errors'    => $this->getErrors(),
+          'processor' => [
+              'event' => 'transaction',
+              'name'  => 'transaction',
+          ]
+      ];
     }
 }

@@ -2,50 +2,45 @@
 
 namespace PhilKra\Events;
 
-use Ramsey\Uuid\Uuid;
-
 /**
  *
- * EventBean for occuring events such as Exceptions or Transactions
+ * EventBean for occurring events such as Exceptions or Transactions
  *
  */
 class EventBean
 {
+    const SPAN_ID_SIZE = 64;
+    const TRACE_ID_SIZE = 128;
+
     /**
-     * UUID
+     * Event Id
      *
      * @var string
      */
     private $id;
 
     /**
-     * Trace Id
+     * Id of the whole trace forest and is used to uniquely identify a distributed trace through a system
+     * @link https://www.w3.org/TR/trace-context/#trace-id
      *
-     * @var mixed string|null
+     * @var string
      */
-    private $traceId = null;
+    private $traceId;
+
+    /**
+     * Id of parent span or parent transaction
+     * @link https://www.w3.org/TR/trace-context/#parent-id
+     *
+     * @var string
+     */
+    private $parentId;
 
     /**
      * Error occurred on Timestamp
      *
-     * @var string
+     * @var float
      */
     private $timestamp;
-
-    /**
-     * The parent transaction
-     *
-     * @var Transaction
-     */
-    protected $transaction;
-
-
-    /**
-     * Parent Transaction
-     *
-     * @var Transaction
-     */
-    protected $parent = null;
 
     /**
      * Event Metadata
@@ -85,19 +80,17 @@ class EventBean
      */
     public function __construct(array $contexts, ?Transaction $parent = null)
     {
-        // Generate Random UUID
-        $this->id = Uuid::uuid4()->toString();
+        // Generate Random Event Id
+        $this->id = self::generateRandomBitsInHex(self::SPAN_ID_SIZE);
 
         // Merge Initial Context
         $this->contexts = array_merge($this->contexts, $contexts);
 
-        // Get UTC timestamp of Now
-        $timestamp = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)));
-        $timestamp->setTimeZone(new \DateTimeZone('UTC'));
-        $this->timestamp = $timestamp->format('Y-m-d\TH:i:s.u\Z');
+        // Get current Unix timestamp with seconds
+        $this->timestamp = microtime(true);
 
         // Set Parent Transaction
-        if($parent !== null) {
+        if ($parent !== null) {
             $this->setParent($parent);
         }
     }
@@ -113,25 +106,12 @@ class EventBean
     }
 
     /**
-     * Get the Trace Id (for Distributed Tracing)
+     * Get the Trace Id
      *
-     * @return mixed: string|null
+     * @return string $traceId
      */
-    public function getTraceId()
+    public function getTraceId() : string
     {
-        return $this->traceId;
-    }
-
-    /**
-     * Ensure to return a Trace Id, in case it's not set, generate
-     *
-     * @return string
-     */
-    public function ensureGetTraceId() : string
-    {
-        if($this->traceId === null) {
-            $this->traceId = Uuid::uuid4()->toString();
-        }
         return $this->traceId;
     }
 
@@ -146,17 +126,37 @@ class EventBean
     }
 
     /**
+     * Get the Parent Id
+     *
+     * @return string $parentId
+     */
+    public function getParentId() : ?string
+    {
+        return $this->parentId;
+    }
+
+    /**
+     * Set the Parent Id
+     *
+     * @param string $parentId
+     */
+    public function setParentId(string $parentId)
+    {
+        $this->parentId = $parentId;
+    }
+
+    /**
      * Get the Event's Timestamp
      *
      * @return int
      */
     public function getTimestamp() : int
     {
-        return strtotime($this->timestamp) * 1000000;
+        return (int) $this->timestamp * 1000000;
     }
 
     /**
-     * Set the Parent Transaction
+     * Set the Parent Id and Trace Id
      *
      * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
      *
@@ -164,8 +164,8 @@ class EventBean
      */
     public function setParent(Transaction $parent)
     {
-        $this->parent = $parent;
-        $this->setTraceId($this->parent->ensureGetTraceId());
+        $this->setParentId($parent->getId());
+        $this->setTraceId($parent->getTraceId());
     }
 
     /**
@@ -270,6 +270,18 @@ class EventBean
             'env' => (object)$this->getEnv(),
             'cookies' => (object)$this->getCookies(),
         ];
+    }
+
+    /**
+     * Generate random bits in hexadecimal representation
+     *
+     * @param int $bits
+     * @return string
+     * @throws \Exception
+     */
+    final protected function generateRandomBitsInHex(int $bits): string
+    {
+        return bin2hex(random_bytes($bits/8));
     }
 
     /**
