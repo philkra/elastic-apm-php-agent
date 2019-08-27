@@ -279,7 +279,7 @@ class EventBean
      * @return string
      * @throws \Exception
      */
-    final public function generateRandomBitsInHex(int $bits): string
+    final protected function generateRandomBitsInHex(int $bits): string
     {
         return bin2hex(random_bytes($bits/8));
     }
