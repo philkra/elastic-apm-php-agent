@@ -35,7 +35,7 @@ class Agent
      *
      * @var string
      */
-    const NAME = 'elastic-php';
+    const NAME = 'elasticapm-contrib-php';
 
     /**
      * Config Store
