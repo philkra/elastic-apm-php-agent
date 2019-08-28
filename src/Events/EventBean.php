@@ -23,7 +23,7 @@ class EventBean
      * Id of the whole trace forest and is used to uniquely identify a distributed trace through a system
      * @link https://www.w3.org/TR/trace-context/#trace-id
      *
-     * @var string
+     * @var mixed string|null
      */
     private $traceId;
 
@@ -31,7 +31,7 @@ class EventBean
      * Id of parent span or parent transaction
      * @link https://www.w3.org/TR/trace-context/#parent-id
      *
-     * @var string
+     * @var mixed string|null
      */
     private $parentId;
 
@@ -108,9 +108,9 @@ class EventBean
     /**
      * Get the Trace Id
      *
-     * @return string $traceId
+     * @return mixed: string|null
      */
-    public function getTraceId() : string
+    public function getTraceId() : ?string
     {
         return $this->traceId;
     }
@@ -128,7 +128,7 @@ class EventBean
     /**
      * Get the Parent Id
      *
-     * @return string $parentId
+     * @return mixed: string|null
      */
     public function getParentId() : ?string
     {
@@ -344,6 +344,7 @@ class EventBean
      *
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/30
      *
+     * @param string $cookieHeader
      * @return string
      */
     final protected function getCookieHeader(string $cookieHeader) : string
