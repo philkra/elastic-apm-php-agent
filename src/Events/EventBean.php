@@ -125,9 +125,19 @@ class EventBean
      *
      * @param string $traceId
      */
-    public function setTraceId(string $traceId)
+    final public function setTraceId(string $traceId)
     {
         $this->traceId = $traceId;
+    }
+
+    /**
+     * Set the Parent Id
+     *
+     * @param string $parentId
+     */
+    final public function setParentId(string $parentId)
+    {
+        $this->parentId = $parentId;
     }
 
     /**
@@ -135,7 +145,7 @@ class EventBean
      *
      * @return string $parentId
      */
-    public function getParentId() : ?string
+    final public function getParentId() : ?string
     {
         return $this->parentId;
     }

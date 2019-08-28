@@ -193,11 +193,11 @@ class Transaction extends EventBean implements \JsonSerializable
     private function setTraceContext()
     {
         $traceParentHeader = $_SERVER['HTTP_' . strtoupper(str_replace('-', '_',TraceParent::HEADER_NAME))] ?? null;
-
         if ($traceParentHeader !== null) {
             try {
                 $traceParent = TraceParent::createFromHeader($traceParentHeader);
-                $this->setParent($traceParent);
+                $this->setTraceId($traceParent->getTraceId());
+                $this->setParentId($traceParent->getParentId());
             } catch (InvalidTraceContextHeaderException $e) {
                 $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
             }
