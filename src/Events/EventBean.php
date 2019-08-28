@@ -92,7 +92,7 @@ class EventBean
         $this->contexts = array_merge($this->contexts, $contexts);
 
         // Get current Unix timestamp with seconds
-        $this->timestamp = (int)(microtime(true) * 1000000);
+        $this->timestamp = round(microtime(true) * 1000000);
 
         // Set Parent Transaction
         if ($parent !== null) {
