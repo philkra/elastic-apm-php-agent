@@ -1,37 +1,41 @@
 <?php
 
-namespace PhilKra\Serializers;
+namespace PhilKra\Events;
 
 use PhilKra\Agent;
 use PhilKra\Helper\Config;
 
 /**
  *
- * Base Class with Common Settings for the Serializers
+ * Metadata Event
+ *
+ * @link https://www.elastic.co/guide/en/apm/server/7.3/metadata-api.html
  *
  */
-class Entity
+class Metadata extends EventBean implements \JsonSerializable
 {
-    /**
-     * @var \PhilKra\Helper\Config
-     */
-    protected $config;
 
     /**
-     * @param Config $config
-     * @param Store  $transactions
+     * @var Config
      */
-    public function __construct(Config $config)
+    private $config;
+
+    /**
+     * @param array $contexts
+     * @param Config $config
+     */
+    public function __construct(array $contexts, Config $config)
     {
+        parent::__construct($contexts);
         $this->config = $config;
     }
 
     /**
-     * Get the shared Schema Skeleton
+     * Generate request data
      *
      * @return array
      */
-    protected function getSkeleton() : array
+    final public function jsonSerialize(): array
     {
         return [
             'metadata' => [
@@ -63,4 +67,5 @@ class Entity
             ]
         ];
     }
+
 }

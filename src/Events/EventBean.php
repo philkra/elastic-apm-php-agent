@@ -9,8 +9,12 @@ namespace PhilKra\Events;
  */
 class EventBean
 {
-    const SPAN_ID_SIZE = 64;
-    const TRACE_ID_SIZE = 128;
+    /**
+     * Bit Size of ID's
+     */
+    const
+        EVENT_ID_BITS  = 64,
+        TRACE_ID_BITS = 128;
 
     /**
      * Event Id
@@ -29,11 +33,12 @@ class EventBean
 
     /**
      * Id of parent span or parent transaction
+     *
      * @link https://www.w3.org/TR/trace-context/#parent-id
      *
      * @var string
      */
-    private $parentId;
+    private $parentId = null;
 
     /**
      * Error occurred on Timestamp
@@ -81,7 +86,7 @@ class EventBean
     public function __construct(array $contexts, ?Transaction $parent = null)
     {
         // Generate Random Event Id
-        $this->id = self::generateRandomBitsInHex(self::SPAN_ID_SIZE);
+        $this->id = self::generateRandomBitsInHex(self::EVENT_ID_BITS);
 
         // Merge Initial Context
         $this->contexts = array_merge($this->contexts, $contexts);
@@ -110,7 +115,7 @@ class EventBean
      *
      * @return string $traceId
      */
-    public function getTraceId() : string
+    public function getTraceId() : ?string
     {
         return $this->traceId;
     }
@@ -136,16 +141,6 @@ class EventBean
     }
 
     /**
-     * Set the Parent Id
-     *
-     * @param string $parentId
-     */
-    public function setParentId(string $parentId)
-    {
-        $this->parentId = $parentId;
-    }
-
-    /**
      * Get the Event's Timestamp
      *
      * @return int
@@ -164,7 +159,7 @@ class EventBean
      */
     public function setParent(Transaction $parent)
     {
-        $this->setParentId($parent->getId());
+        $this->parentId = $parent->getId();
         $this->setTraceId($parent->getTraceId());
     }
 

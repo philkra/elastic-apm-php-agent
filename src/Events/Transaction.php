@@ -197,13 +197,12 @@ class Transaction extends EventBean implements \JsonSerializable
         if ($traceParentHeader !== null) {
             try {
                 $traceParent = TraceParent::createFromHeader($traceParentHeader);
-                $this->setTraceId($traceParent->getTraceId());
-                $this->setParentId($traceParent->getParentId());
+                $this->setParent($traceParent);
             } catch (InvalidTraceContextHeaderException $e) {
-                $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+                $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
             }
         } else {
-            $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_SIZE));
+            $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
         }
     }
 
@@ -215,26 +214,24 @@ class Transaction extends EventBean implements \JsonSerializable
     public function jsonSerialize() : array
     {
         return [
-          'id'        => $this->getId(),
-          'trace_id'  => $this->getTraceId(),
-          'parent_id' => $this->getParentId(),
-          'span_count' => [
-              'started' => count($this->getSpans()),
-              'dropped' => 0
-          ],
-          'timestamp' => $this->getTimestamp(),
-          'name'      => $this->getTransactionName(),
-          'duration'  => $this->summary['duration'],
-          'type'      => $this->getMetaType(),
-          'result'    => $this->getMetaResult(),
-          'context'   => $this->getContext(),
-          'errors'     => $this->getErrors(),
-          'spans'     => $this->getSpans(),
-          'errors'    => $this->getErrors(),
-          'processor' => [
-              'event' => 'transaction',
-              'name'  => 'transaction',
-          ]
-      ];
+            'transaction' => [
+                'trace_id'   => $this->getTraceId(),
+                'id'         => $this->getId(),
+                'parent_id'  => $this->getParentId(),
+                'type'       => $this->getMetaType(),
+                'duration'   => $this->summary['duration'],
+                'timestamp'  => $this->getTimestamp(),
+                'result'     => $this->getMetaResult(),
+                'name'       => $this->getTransactionName(),
+                'context'    => $this->getContext(),
+                'errors'     => $this->getErrors(),
+                'spans'      => $this->getSpans(),
+                'sampled'    => null,
+                'span_count' => [
+                    'started' => count($this->getSpans()),
+                    'dropped' => 0
+                ],
+            ]
+        ];
     }
 }

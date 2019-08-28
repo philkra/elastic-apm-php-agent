@@ -42,9 +42,9 @@ final class TransactionTest extends TestCase {
 
         $arr = json_decode(json_encode($child), true);
 
-        $this->assertEquals($arr['id'], $child->getId());
-        $this->assertEquals($arr['parent_id'], $parent->getId());
-        $this->assertEquals($arr['trace_id'], $parent->getTraceId());
+        $this->assertEquals($arr['transaction']['id'], $child->getId());
+        $this->assertEquals($arr['transaction']['parent_id'], $parent->getId());
+        $this->assertEquals($arr['transaction']['trace_id'], $parent->getTraceId());
         $this->assertEquals($child->getTraceId(), $parent->getTraceId());
     }
 

@@ -3,12 +3,9 @@
 namespace PhilKra\Middleware;
 
 use PhilKra\Agent;
-use PhilKra\Stores\ErrorsStore;
+use PhilKra\Events\EventBean;
 use PhilKra\Stores\TransactionsStore;
-use PhilKra\Serializers\Errors;
-use PhilKra\Serializers\Transactions;
 use GuzzleHttp\Client;
-use PhilKra\Serializers\Entity;
 
 /**
  *
@@ -30,13 +27,27 @@ class Connector
     private $client;
 
     /**
+     * @var array
+     */
+    private $payload = [];
+
+    /**
      * @param \PhilKra\Helper\Config $config
      */
     public function __construct(\PhilKra\Helper\Config $config)
     {
         $this->config = $config;
-
         $this->configureHttpClient();
+    }
+
+    /**
+     * Is the Payload Queue populated?
+     *
+     * @return bool
+     */
+    public function isPayloadSet() : bool
+    {
+        return (empty($this->payload) === false);
     }
 
     /**
@@ -56,37 +67,30 @@ class Connector
     }
 
     /**
-     * Push the Transactions to APM Server
-     *
-     * @param \PhilKra\Stores\TransactionsStore $store
-     *
-     * @return bool
+     * Put Events to the Payload Queue
      */
-    public function sendTransactions(TransactionsStore $store) : bool
+    public function putEvent(EventBean $event)
     {
-        $response = $this->client->post($this->getEndpoint(), [
-            'headers' => $this->getRequestHeaders(),
-            'body' => $this->buildEventPayload(new Transactions($this->config, $store), 'transactions', 'transaction')
-        ]);
-
-        return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
+        $this->payload[] = json_encode($event);
     }
 
     /**
-     * Push the Errors to APM Server
-     *
-     * @param \PhilKra\Stores\ErrorsStore $store
+     * Commit the Events to the APM server
      *
      * @return bool
      */
-    public function sendErrors(ErrorsStore $store) : bool
+    public function commit() : bool
     {
-        // dd($this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error'));
+        $body = '';
+        foreach($this->payload as $line) {
+            $body .= $line . "\n";
+        }
+        var_dump($body);
+        $this->payload = [];
         $response = $this->client->post($this->getEndpoint(), [
             'headers' => $this->getRequestHeaders(),
-            'body' => $this->buildEventPayload(new Errors($this->config, $store), 'errors', 'error')
+            'body'    => $body,
         ]);
-
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
     }
 
@@ -103,50 +107,6 @@ class Connector
             $this->config->get('serverUrl'),
             ['headers' => $this->getRequestHeaders(),]
         );
-    }
-
-    /**
-     * Transform the incoming entity to v2 ndjson style
-     *
-     * @param PhilKra\Serializers\Entity $entity
-     * @param string $extractEvent the old event key
-     * @param string $as the new event key
-     *
-     * @return string
-     */
-    private function buildEventPayload(Entity $entity, string $extractEvent, string $as): string {
-        $data = $entity->jsonSerialize();
-        $body = json_encode(['metadata' => $data['metadata']]);
-
-        foreach ( $data[$extractEvent]->list() as $item ) {
-            $obj = $item->jsonSerialize();
-            $errors = $obj['errors'] ?? [];
-            $spans = $obj['spans'] ?? [];
-
-            unset($obj['spans'], $obj['errors']);
-
-            $body .= "\n" . json_encode([$as => $item]);
-
-            if ( !empty($errors) ) {
-                foreach ( $errors as $i => $error ) {
-                    $body .= "\n" . json_encode(['error' => $error]);
-                }
-            }
-
-            if ( !empty($spans) ) {
-                foreach ( $spans as $i => $span ) {
-                    $span = array_merge($span, [
-                        'id' => $obj['id'] . '-' . $i,
-                        'parent_id' => $obj['id'],
-                        'transaction_id' => $obj['id'],
-                        'trace_id' => $obj['trace_id'],
-                    ]);
-                    $body .= "\n" . json_encode(['span' => $span]);
-                }
-            }
-        }
-
-        return $body;
     }
 
     /**

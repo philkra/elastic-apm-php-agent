@@ -4,10 +4,11 @@ namespace PhilKra;
 
 use PhilKra\Events\DefaultEventFactory;
 use PhilKra\Events\EventFactoryInterface;
-use PhilKra\Stores\ErrorsStore;
 use PhilKra\Stores\TransactionsStore;
-use PhilKra\Events\Transaction;
 use PhilKra\Events\Error;
+use PhilKra\Events\Transaction;
+use PhilKra\Events\Metricset;
+use PhilKra\Events\Metadata;
 use PhilKra\Helper\Timer;
 use PhilKra\Helper\Config;
 use PhilKra\Middleware\Connector;
@@ -52,13 +53,6 @@ class Agent
     private $transactionsStore;
 
     /**
-     * Error Events Store
-     *
-     * @var \PhilKra\Stores\ErrorsStore
-     */
-    private $errorsStore;
-
-    /**
      * Apm Timer
      *
      * @var \PhilKra\Helper\Timer
@@ -82,6 +76,11 @@ class Agent
     private $eventFactory;
 
     /**
+     * @var Connector
+     */
+    private $connector;
+
+    /**
      * Setup the APM Agent
      *
      * @param array                 $config
@@ -90,7 +89,7 @@ class Agent
      *
      * @return void
      */
-    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null, TransactionsStore $transactionsStore = null, ErrorsStore $errorsStore = null)
+    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null, TransactionsStore $transactionsStore = null)
     {
         // Init Agent Config
         $this->config = new Config($config);
@@ -112,7 +111,10 @@ class Agent
 
         // Initialize Event Stores
         $this->transactionsStore = $transactionsStore ?? new TransactionsStore();
-        $this->errorsStore       = $errorsStore ?? new ErrorsStore();
+
+        // Init the Transport "Layer"
+        $this->connector = new Connector($this->config);
+        $this->connector->putEvent(new Metadata([], $this->config));
 
         // Start Global Agent Timer
         $this->timer = new Timer();
@@ -128,8 +130,7 @@ class Agent
      */
     public function info() : \GuzzleHttp\Psr7\Response
     {
-        $connector = new Connector($this->config);
-        return $connector->getInfo();
+        return $this->connector->getInfo();
     }
 
     /**
@@ -200,23 +201,33 @@ class Agent
      *
      * @link http://php.net/manual/en/class.throwable.php
      *
-     * @param \Throwable $thrown
-     * @param array      $context
+     * @param \Throwable  $thrown
+     * @param array       $context, Def: []
+     * @param Transaction $parent, Def: null
      *
      * @return void
      */
-    public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $transaction = null)
+    public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $parent = null)
     {
-        $err = $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $transaction);
-
-        if ( ! empty($transaction) ) {
-            $transaction->addError($err);
-            return;
+        $error = $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $parent);
+        if ($parent !== null) {
+            $parent->addError($error);
         }
+        $this->connector->putEvent($error);
+    }
 
-        $this->errorsStore->register(
-            $err
-        );
+    /**
+     * Register Metricset
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/7.3/metricset-api.html
+     * @link https://github.com/elastic/apm-server/blob/master/docs/spec/metricsets/metricset.json
+     *
+     * @param array $set, k-v pair ['sys.avg.load' => 89]
+     * @param array $tags, Default []
+     */
+    public function putMetricset(array $set, array $tags = [])
+    {
+        $this->connector->putEvent(new Metricset($set, $tags));
     }
 
     /**
@@ -241,30 +252,22 @@ class Agent
     {
         // Is the Agent enabled ?
         if ($this->config->get('active') === false) {
-            $this->errorsStore->reset();
             $this->transactionsStore->reset();
             return true;
         }
 
-        $connector = new Connector($this->config);
-        $status = true;
-
-        // Commit the Errors
-        if ($this->errorsStore->isEmpty() === false) {
-            $status = $status && $connector->sendErrors($this->errorsStore);
-            if ($status === true) {
-                $this->errorsStore->reset();
-            }
+        // Put the preceding Metadata
+        // TODO -- add context ?
+        if($this->connector->isPayloadSet() === false) {
+            $this->connector->putEvent(new Metadata([], $this->config));
         }
 
-        // Commit the Transactions
-        if ($this->transactionsStore->isEmpty() === false) {
-            $status = $status && $connector->sendTransactions($this->transactionsStore);
-            if ($status === true) {
-                $this->transactionsStore->reset();
-            }
+        // Start Payload commitment
+        foreach($this->transactionsStore->list() as $event) {
+            $this->connector->putEvent($event);
         }
+        $this->transactionsStore->reset();
 
-        return $status;
+        return $this->connector->commit();
     }
 }
