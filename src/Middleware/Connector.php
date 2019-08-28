@@ -85,7 +85,6 @@ class Connector
         foreach($this->payload as $line) {
             $body .= $line . "\n";
         }
-        var_dump($body);
         $this->payload = [];
         $response = $this->client->post($this->getEndpoint(), [
             'headers' => $this->getRequestHeaders(),
