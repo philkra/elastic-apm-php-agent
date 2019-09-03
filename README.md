@@ -1,7 +1,7 @@
 # Elastic APM: PHP Agent
 
 [![Build Status](https://travis-ci.com/philkra/elastic-apm-php-agent.svg?branch=master)](https://travis-ci.org/philkra/elastic-apm-php-agent)
-[![Total Downloads](https://img.shields.io/packagist/dt/philkra/elastic-apm-php-agent.svg?style=flat)](https://packagist.org/philkra/elastic-apm-php-agent)
+[![Total Downloads](https://img.shields.io/packagist/dt/philkra/elastic-apm-php-agent.svg?style=flat)](https://packagist.org/packages/philkra/elastic-apm-php-agent)
 
 This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API. Please note: This agent is not offically supported by [Elastic](https://www.elastic.co/).
 
