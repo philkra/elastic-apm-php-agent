@@ -41,13 +41,6 @@ class EventBean
     private $parentId = null;
 
     /**
-     * Offset between the current Event and the parent Event's
-     *
-     * @var number
-     */
-    private $parentTimestampOffset = null;
-
-    /**
      * Error occurred on Timestamp
      *
      * @var float
@@ -188,7 +181,6 @@ class EventBean
     {
         $this->setParentId($parent->getId());
         $this->setTraceId($parent->getTraceId());
-        $this->parentTimestampOffset = ($this->getTimestamp() - $parent->getTimestamp());
     }
 
     /**
