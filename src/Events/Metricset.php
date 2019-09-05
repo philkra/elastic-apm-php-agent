@@ -24,6 +24,7 @@ class Metricset extends EventBean implements \JsonSerializable
 
     /**
      * @param array $set
+     * @param array $tags
      */
     public function __construct(array $set, array $tags)
     {

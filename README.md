@@ -7,6 +7,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 
 ## Documentation
 * [Installation](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/install.md)
+* [Breaking Changes](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/breaking-changes.md)
 * [Configuration](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/config.md)
 * [Knowledgebase](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/knowledgebase.md)
 

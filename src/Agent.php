@@ -5,9 +5,9 @@ namespace PhilKra;
 use PhilKra\Events\DefaultEventFactory;
 use PhilKra\Events\EventFactoryInterface;
 use PhilKra\Stores\TransactionsStore;
+use PhilKra\Events\EventBean;
 use PhilKra\Events\Error;
 use PhilKra\Events\Transaction;
-use PhilKra\Events\Metricset;
 use PhilKra\Events\Metadata;
 use PhilKra\Helper\Timer;
 use PhilKra\Helper\Config;
@@ -29,7 +29,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '7.0.0-beta2';
+    const VERSION = '7.0.0-beta3';
 
     /**
      * Agent Name
@@ -122,6 +122,16 @@ class Agent
     }
 
     /**
+     * Event Factory
+     *
+     * @return EventFactoryInterface
+     */
+    public function factory() : EventFactoryInterface
+    {
+        return $this->eventFactory;
+    }
+
+    /**
      * Query the Info endpoint of the APM Server
      *
      * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
@@ -147,7 +157,7 @@ class Agent
     {
         // Create and Store Transaction
         $this->transactionsStore->register(
-            $this->eventFactory->createTransaction($name, array_replace_recursive($this->sharedContext, $context), $start)
+            $this->factory()->newTransaction($name, array_replace_recursive($this->sharedContext, $context), $start)
         );
 
         // Start the Transaction
@@ -209,25 +219,15 @@ class Agent
      */
     public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $parent = null)
     {
-        $error = $this->eventFactory->createError($thrown, array_replace_recursive($this->sharedContext, $context), $parent);
-        if ($parent !== null) {
-            $parent->addError($error);
-        }
-        $this->connector->putEvent($error);
+        $this->putEvent($this->factory()->newError($thrown, array_replace_recursive($this->sharedContext, $context), $parent));
     }
 
     /**
-     * Register Metricset
-     *
-     * @link https://www.elastic.co/guide/en/apm/server/7.3/metricset-api.html
-     * @link https://github.com/elastic/apm-server/blob/master/docs/spec/metricsets/metricset.json
-     *
-     * @param array $set, k-v pair ['sys.avg.load' => 89]
-     * @param array $tags, Default []
+     * Put an Event to the Events Pool
      */
-    public function putMetricset(array $set, array $tags = [])
+    public function putEvent(EventBean $event)
     {
-        $this->connector->putEvent(new Metricset($set, $tags));
+        $this->connector->putEvent($event);
     }
 
     /**
@@ -259,7 +259,7 @@ class Agent
         // Put the preceding Metadata
         // TODO -- add context ?
         if($this->connector->isPayloadSet() === false) {
-            $this->connector->putEvent(new Metadata([], $this->config));
+            $this->putEvent(new Metadata([], $this->config));
         }
 
         // Start Payload commitment
@@ -267,7 +267,7 @@ class Agent
             $this->connector->putEvent($event);
         }
         $this->transactionsStore->reset();
-
         return $this->connector->commit();
     }
+
 }

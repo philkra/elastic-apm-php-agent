@@ -1,7 +1,7 @@
 
 # Knowledgebase
 
-# Disable Agent for CLI
+## Disable Agent for CLI
 In case you want to disable the agent dynamically for hybrid SAPI usage, please use the following snippet.
 ```php
 'active' => PHP_SAPI !== 'cli'

@@ -1,25 +1,79 @@
 # Adding spans
-Addings spans (https://www.elastic.co/guide/en/apm/server/current/transactions.html#transaction-spans) is easy.
+Please consult the documentation for your exact needs.
+Below is an example to add spans for MySQL, Redis and generic request wraped by a parent span.
 
-Please consult the documentation for your exact needs. Below is an example for adding a MySQL span.
+![Dashboard](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_dashboard.png "Spans Dashboard") ![Stacktrace](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_stacktrace.png "Span Stacktrace")
 
 ```php
-$trxName = 'GET /some/transaction/name';
-
 // create the agent
-$agent = new \PhilKra\Agent(['appName' => 'Demo with Spans']);
+$agent = new \PhilKra\Agent(['appName' => 'examples']);
 
+$agent = new Agent($config);
+
+// Span
 // start a new transaction
-$transaction = $agent->startTransaction($trxName);
+$parent = $agent->startTransaction('POST /auth/examples/spans');
 
-// create a span
-$spans = [];
-$spans[] = [
-  'name' => 'Your Span Name. eg: ORM Query',
-  'type' => 'db.mysql.query',
-  'start' => 300, // when did tht query start, relative to the transaction start, in milliseconds
-  'duration' => 23, // duration, in milliseconds
-  'stacktrace' => [
+// burn some time
+usleep(rand(10, 25));
+
+// Create Span
+$spanParent = $agent->factory()->newSpan('Authenication Workflow', $parent);
+$spanParent->start();
+
+// Lookup the User 'foobar' in the database
+$spanDb = $agent->factory()->newSpan('DB User Lookup', $spanParent);
+$spanDb->setType('db.mysql.query');
+$spanDb->setAction('query');
+$spanDb->start();
+
+// do some db.mysql.query action ..
+usleep(rand(100, 300));
+
+$spanDb->stop();
+// Attach addition/optional Context
+$spanDb->setContext(['db' => [
+    'instance'  => 'my_database', // the database name
+    'statement' => 'select * from non_existing_table where username = "foobar"', // the query being executed
+    'type'      => 'sql',
+    'user'      => 'user',
+]]);
+$agent->putEvent($spanDb);
+
+// Stach the record into Redis
+$spanCache = $agent->factory()->newSpan('DB User Lookup', $spanParent);
+$spanCache->setType('db.redis.query');
+$spanCache->setAction('query');
+$spanCache->start();
+
+
+// do some db.mysql.query action ..
+usleep(rand(10, 30));
+
+$spanCache->stop();
+$spanCache->setContext(['db' => [
+    'instance'  => 'redis01.example.foo',
+    'statement' => 'SET user_foobar "12345"',
+]]);
+$agent->putEvent($spanCache);
+
+// Create another Span that is a parent span
+$spanHash = $agent->factory()->newSpan('Validate Credentials', $spanParent);
+$spanHash->start();
+
+// do some password hashing and matching ..
+usleep(rand(50, 100));
+
+$spanHash->stop();
+$agent->putEvent($spanHash);
+
+// Create another Span that is a parent span
+$spanSt = $agent->factory()->newSpan('Span with stacktrace', $spanParent);
+$spanSt->start();
+
+// burn some fictive time ..
+usleep(rand(250, 350));
+$spanSt->setStackTrace([
     [
       'function' => "\\YourOrMe\\Library\\Class::methodCall()",
       'abs_path' => '/full/path/to/file.php',
@@ -41,25 +95,20 @@ $spans[] = [
         '$table = $fakeTableBuilder->buildWithResult($result);',
         'return $table;',
       ],
-    ],
-  ],
-  'context' => [
-    'db' => [
-      'instance' => 'my_database', // the database name
-      'statement' => 'select * from non_existing_table', // the query being executed
-      'type' => 'sql',
-      'user' => 'root', // the user executing the query (don't use root!)
-    ],
-  ],
-];
+    ]
+]);
 
-// add the array of spans to the transaction
-$transaction->setSpans($spans);
+$spanSt->stop();
+$agent->putEvent($spanSt);
+
+$spanParent->stop();
 
 // Do some stuff you want to watch ...
-sleep(1);
+usleep(rand(100, 250));
 
-$agent->stopTransaction($trxName);
+$agent->putEvent($spanParent);
+
+$agent->stopTransaction($parent->getTransactionName());
 
 // send our transactions to the apm
 $agent->send();
