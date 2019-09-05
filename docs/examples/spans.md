@@ -2,8 +2,14 @@
 Please consult the documentation for your exact needs.
 Below is an example to add spans for MySQL, Redis and generic request wraped by a parent span.
 
-![Dashboard](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_dashboard.png "Spans Dashboard") ![Stacktrace](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_stacktrace.png "Span Stacktrace")
+## Screenshots
+**Transactions Dashboard showing the Spans**
+![Dashboard](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_overview.png "Spans Dashboard")
 
+**Stacktrace of a Span**
+![Stacktrace](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/blob/span_stacktrace.png "Span Stacktrace")
+
+## Example Code
 ```php
 // create the agent
 $agent = new \PhilKra\Agent(['appName' => 'examples']);
