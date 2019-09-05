@@ -45,6 +45,6 @@ interface EventFactoryInterface
      *
      * @return Metricset
      */
-    public function newMetricset($set, $tags): Metricset;
+    public function newMetricset(array $set, array $tags = []): Metricset;
 
 }

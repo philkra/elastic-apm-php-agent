@@ -26,7 +26,7 @@ class Metricset extends EventBean implements \JsonSerializable
      * @param array $set
      * @param array $tags
      */
-    public function __construct(array $set, array $tags)
+    public function __construct(array $set, array $tags = [])
     {
         parent::__construct([]);
         foreach($set as $k => $v) {
@@ -47,6 +47,7 @@ class Metricset extends EventBean implements \JsonSerializable
         return [
             'metricset' => [
                 'samples'   => $this->samples,
+//                'tags'      => $this->tags,
                 'timestamp' => $this->getTimestamp(),
             ]
         ];
