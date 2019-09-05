@@ -15,9 +15,9 @@ $config = [
 ];
 
 $agent = new Agent($config);
-$agent->putMetricset([
+$agent->putEvent($agent->factory->newMetricset([
     'system.cpu.total.norm.pct' => min(sys_getloadavg()[0]/100, 1),
-]);
+]));
 
 // more Events to trace ..
 

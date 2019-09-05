@@ -7,16 +7,33 @@ final class DefaultEventFactory implements EventFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createError(\Throwable $throwable, array $contexts, ?Transaction $transaction = null): Error
+    public function newError(\Throwable $throwable, array $contexts, ?Transaction $parent = null): Error
     {
-        return new Error($throwable, $contexts, $transaction);
+        return new Error($throwable, $contexts, $parent);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createTransaction(string $name, array $contexts, float $start = null): Transaction
+    public function newTransaction(string $name, array $contexts, float $start = null): Transaction
     {
         return new Transaction($name, $contexts, $start);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function newSpan(string $name, EventBean $parent): Span
+    {
+        return new Span($name, $parent, $contexts, $start);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function newMetricset($set, $tags): Metricset
+    {
+        return new Metricset($set, $tags);
+    }
+
 }

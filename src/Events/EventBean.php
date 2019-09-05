@@ -41,6 +41,13 @@ class EventBean
     private $parentId = null;
 
     /**
+     * Offset between the current Event and the parent Event's
+     *
+     * @var number
+     */
+    private $parentTimestampOffset = null;
+
+    /**
      * Error occurred on Timestamp
      *
      * @var float
@@ -143,11 +150,21 @@ class EventBean
     /**
      * Get the Parent Id
      *
-     * @return string $parentId
+     * @return string
      */
     final public function getParentId() : ?string
     {
         return $this->parentId;
+    }
+
+    /**
+     * Get the Offset between the Parent's timestamp and this Event's
+     *
+     * @return int
+     */
+    final public function getParentTimestampOffset(): ?int
+    {
+        return $this->parentTimestampOffset;
     }
 
     /**
@@ -161,16 +178,17 @@ class EventBean
     }
 
     /**
-     * Set the Parent Id and Trace Id
+     * Set the Parent Id and Trace Id based on the Parent Event
      *
      * @link https://www.elastic.co/guide/en/apm/server/current/transaction-api.html
      *
-     * @param Transaction $parent
+     * @param EventBean $parent
      */
-    public function setParent(Transaction $parent)
+    public function setParent(EventBean $parent)
     {
-        $this->parentId = $parent->getId();
+        $this->setParentId($parent->getId());
         $this->setTraceId($parent->getTraceId());
+        $this->parentTimestampOffset = ($this->getTimestamp() - $parent->getTimestamp());
     }
 
     /**
