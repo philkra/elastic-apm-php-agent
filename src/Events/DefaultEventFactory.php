@@ -31,7 +31,7 @@ final class DefaultEventFactory implements EventFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function newMetricset($set, $tags): Metricset
+    public function newMetricset(array $set, array $tags = []): Metricset
     {
         return new Metricset($set, $tags);
     }
