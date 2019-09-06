@@ -19,7 +19,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 * [Parent Transactions](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/parent-transactions.php)
 * [Metricset](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/metricset.php)
 * [Getting the Server Info](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/server-info.php)
-* [Distributed Tracing](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/distributed-tracing.md) -- Incomplete (TODO)
+* [Distributed Tracing](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/distributed-tracing.md)
 
 ## Tests
 ```bash
