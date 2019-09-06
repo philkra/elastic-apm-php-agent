@@ -1,12 +1,18 @@
 <?php
 
-namespace PhilKra;
+namespace PhilKra\Helper;
 
 use PhilKra\Exception\InvalidTraceContextHeaderException;
 
-class TraceParent
+class DistributedTracing
 {
-    const HEADER_NAME = 'elastic-apm-traceparent';
+
+    /**
+     * Supporting Elastic's Traceparent Header until W3C goes GA
+     *
+     * @link https://www.w3.org/TR/trace-context/#header-name
+     */
+    const HEADER_NAME = 'ELASTIC-APM-TRACEPARENT';
 
     /**
      * @link https://www.w3.org/TR/trace-context/#version
@@ -33,7 +39,7 @@ class TraceParent
      * @param string $parentId
      * @param string $traceFlags
      */
-    public function __construct(string $traceId, string $parentId, string $traceFlags)
+    public function __construct(string $traceId, string $parentId, string $traceFlags = '00')
     {
         $this->traceId = $traceId;
         $this->parentId = $parentId;
@@ -49,14 +55,6 @@ class TraceParent
     }
 
     /**
-     * @param string $traceId
-     */
-    public function setTraceId(string $traceId)
-    {
-        $this->traceId = $traceId;
-    }
-
-    /**
      * @return string
      */
     public function getParentId()
@@ -65,17 +63,9 @@ class TraceParent
     }
 
     /**
-     * @param string $parentId
-     */
-    public function setParentId(string $parentId)
-    {
-        $this->parentId = $parentId;
-    }
-
-    /**
      * @return string
      */
-    public function getTraceFlags()
+    public function getTraceFlags() : string
     {
         return $this->traceFlags;
     }
@@ -89,11 +79,15 @@ class TraceParent
     }
 
     /**
-     * @param string $header
+     * Check if the Header Value is valid
+     *
      * @link https://www.w3.org/TR/trace-context/#version-format
+     *
+     * @param string $header
+     *
      * @return bool
      */
-    public static function isValidHeader(string $header)
+    public static function isValidHeader(string $header) : bool
     {
         return preg_match('/^'.self::VERSION.'-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$/', $header) === 1;
     }
@@ -109,9 +103,14 @@ class TraceParent
             throw new InvalidTraceContextHeaderException("InvalidTraceContextHeaderException");
         }
         $parsed = explode('-', $header);
-        return new TraceParent($parsed[1], $parsed[2], $parsed[3]);
+        return new self($parsed[1], $parsed[2], $parsed[3]);
     }
 
+    /**
+     * Get Distributed Tracing Id
+     *
+     * @return string
+     */
     public function __toString()
     {
         return sprintf(

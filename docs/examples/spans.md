@@ -25,10 +25,12 @@ usleep(rand(10, 25));
 
 // Create Span
 $spanParent = $agent->factory()->newSpan('Authenication Workflow', $parent);
+// $parent->incSpanCount();
 $spanParent->start();
 
 // Lookup the User 'foobar' in the database
 $spanDb = $agent->factory()->newSpan('DB User Lookup', $spanParent);
+// $parent->incSpanCount();
 $spanDb->setType('db.mysql.query');
 $spanDb->setAction('query');
 $spanDb->start();
@@ -48,6 +50,7 @@ $agent->putEvent($spanDb);
 
 // Stach the record into Redis
 $spanCache = $agent->factory()->newSpan('DB User Lookup', $spanParent);
+// $parent->incSpanCount();
 $spanCache->setType('db.redis.query');
 $spanCache->setAction('query');
 $spanCache->start();
@@ -65,6 +68,7 @@ $agent->putEvent($spanCache);
 
 // Create another Span that is a parent span
 $spanHash = $agent->factory()->newSpan('Validate Credentials', $spanParent);
+// $parent->incSpanCount();
 $spanHash->start();
 
 // do some password hashing and matching ..
@@ -75,6 +79,7 @@ $agent->putEvent($spanHash);
 
 // Create another Span that is a parent span
 $spanSt = $agent->factory()->newSpan('Span with stacktrace', $spanParent);
+// $parent->incSpanCount();
 $spanSt->start();
 
 // burn some fictive time ..

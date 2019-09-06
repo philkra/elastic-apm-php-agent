@@ -2,18 +2,16 @@
 
 namespace PhilKra\Events;
 
-use PhilKra\Exception\InvalidTraceContextHeaderException;
 use PhilKra\Helper\Timer;
-use PhilKra\TraceParent;
 
 /**
  *
- * Abstract Transaction class for all inheriting Transactions
+ * Transaction Event
  *
  * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
  *
  */
-class Transaction extends EventBean implements \JsonSerializable
+class Transaction extends TraceableEvent implements \JsonSerializable
 {
     /**
      * Transaction Name
@@ -23,8 +21,6 @@ class Transaction extends EventBean implements \JsonSerializable
     private $name;
 
     /**
-     * Transaction Timer
-     *
      * @var \PhilKra\Helper\Timer
      */
     private $timer;
@@ -41,22 +37,6 @@ class Transaction extends EventBean implements \JsonSerializable
     ];
 
     /**
-     * The spans for the transaction
-     *
-     * @var array
-     */
-    private $spans = [];
-
-    /**
-     * The errors for the transaction
-     *
-     * @var array
-     */
-    private $errors = [];
-
-    /**
-     * Backtrace Depth
-     *
      * @var int
      */
     private $backtraceLimit = 0;
@@ -71,7 +51,6 @@ class Transaction extends EventBean implements \JsonSerializable
     {
         parent::__construct($contexts);
         $this->setTransactionName($name);
-        $this->setTraceContext();
         $this->timer = new Timer($start);
     }
 
@@ -136,53 +115,21 @@ class Transaction extends EventBean implements \JsonSerializable
     }
 
     /**
-     * Set the spans for the transaction
-     *
-     * @param array $spans
-     *
-     * @return void
-     */
-    public function setSpans(array $spans)
-    {
-        $this->spans = $spans;
-    }
-
-    public function addError(Error $error)
-    {
-        $this->errors[] = $error;
-    }
-
-    public function setErrors(array $errors)
-    {
-        $this->errors = $errors;
-    }
-
-    public function getErrors()
-    {
-        return $this->errors ?? [];
-    }
-
-    /**
      * Set the Max Depth/Limit of the debug_backtrace method
      *
      * @link http://php.net/manual/en/function.debug-backtrace.php
      * @link https://github.com/philkra/elastic-apm-php-agent/issues/55
      *
-     * @param int $limit [description]
+     * @param int $limit
      */
     public function setBacktraceLimit(int $limit)
     {
         $this->backtraceLimit = $limit;
     }
 
-    /**
-     * Get the spans from the transaction
-     *
-     * @return array
-     */
-    private function getSpans(): array
+    public function getDistributedTracing() : string
     {
-        return $this->spans;
+        return new DistributedTracing($this->getTraceId(), $this->getParentId());
     }
 
     /**
@@ -192,25 +139,29 @@ class Transaction extends EventBean implements \JsonSerializable
      */
     private function setTraceContext()
     {
-        $traceParentHeader = $_SERVER['HTTP_' . strtoupper(str_replace('-', '_',TraceParent::HEADER_NAME))] ?? null;
-        if ($traceParentHeader !== null) {
+        // Is one of the Traceparent Headers populated ?
+        $header = $_SERVER['HTTP_' . DistributedTracing::HEADER_NAME] ?? ($_SERVER['HTTP_TRACEPARENT'] ?? null);
+        if ($header !== null && DistributedTracing::isValidHeader($header) === true) {
             try {
-                $traceParent = TraceParent::createFromHeader($traceParentHeader);
+                $traceParent = DistributedTracing::createFromHeader($header);
+
                 $this->setTraceId($traceParent->getTraceId());
                 $this->setParentId($traceParent->getParentId());
-            } catch (InvalidTraceContextHeaderException $e) {
+            }
+            catch (InvalidTraceContextHeaderException $e) {
                 $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
             }
-        } else {
+        }
+        else {
             $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
         }
     }
 
     /**
-    * Serialize Transaction Event
-    *
-    * @return array
-    */
+     * Serialize Transaction Event
+     *
+     * @return array
+     */
     public function jsonSerialize() : array
     {
         return [
@@ -224,12 +175,10 @@ class Transaction extends EventBean implements \JsonSerializable
                 'result'     => $this->getMetaResult(),
                 'name'       => $this->getTransactionName(),
                 'context'    => $this->getContext(),
-                'errors'     => $this->getErrors(),
-                'spans'      => $this->getSpans(),
                 'sampled'    => null,
                 'span_count' => [
-                    'started' => count($this->getSpans()),
-                    'dropped' => 0
+                    'started' => 0,
+                    'dropped' => 0,
                 ],
             ]
         ];
