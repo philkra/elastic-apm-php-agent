@@ -11,7 +11,7 @@ use PhilKra\Helper\Timer;
  * @link https://www.elastic.co/guide/en/apm/server/master/span-api.html
  *
  */
-class Span extends EventBean implements \JsonSerializable
+class Span extends TraceableEvent implements \JsonSerializable
 {
 
     /**
@@ -56,7 +56,7 @@ class Span extends EventBean implements \JsonSerializable
     public function __construct(string $name, EventBean $parent)
     {
         parent::__construct([]);
-        $this->name = trim($name);
+        $this->name  = trim($name);
         $this->timer = new Timer();
         $this->setParent($parent);
     }

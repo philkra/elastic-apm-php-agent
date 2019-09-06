@@ -1,23 +1,24 @@
 <?php
 
-namespace PhilKra\Tests;
+namespace PhilKra\Tests\Helper;
 
-use PhilKra\TraceParent;
+use PhilKra\Helper\DistributedTracing;
+use PhilKra\Tests\TestCase;
 
 /**
- * Test Case for @see \PhilKra\TraceParent
+ * Test Case for @see \PhilKra\Helper\DistributedTracing
  */
-final class TraceParentTest extends TestCase {
+final class DistributedTracingTest extends TestCase {
 
     /**
-     * @covers \PhilKra\TraceParent::__construct
-     * @covers \PhilKra\TraceParent::isValidHeader
-     * @covers \PhilKra\TraceParent::createFromHeader
-     * @covers \PhilKra\TraceParent::__toString
+     * @covers \PhilKra\Helper\DistributedTracing::__construct
+     * @covers \PhilKra\Helper\DistributedTracing::isValidHeader
+     * @covers \PhilKra\Helper\DistributedTracing::createFromHeader
+     * @covers \PhilKra\Helper\DistributedTracing::__toString
      */
     public function testCanCreateFromValidHeader() {
         $header = "00-0bfda6be83a31fb66a455cbb74a70344-6b84fae6bd7064af-01";
-        $traceParent = TraceParent::createFromHeader($header);
+        $traceParent = DistributedTracing::createFromHeader($header);
 
         $this->assertEquals("0bfda6be83a31fb66a455cbb74a70344", $traceParent->getTraceId());
         $this->assertEquals("6b84fae6bd7064af", $traceParent->getParentId());
@@ -26,8 +27,8 @@ final class TraceParentTest extends TestCase {
     }
 
     /**
-     * @covers \PhilKra\TraceParent::isValidHeader
-     * @covers \PhilKra\TraceParent::createFromHeader
+     * @covers \PhilKra\Helper\DistributedTracing::isValidHeader
+     * @covers \PhilKra\Helper\DistributedTracing::createFromHeader
      */
     public function testCannotCreateFromInvalidHeader() {
         $invalidHeaders = [
@@ -38,7 +39,7 @@ final class TraceParentTest extends TestCase {
         $this->expectException( \PhilKra\Exception\InvalidTraceContextHeaderException::class );
 
         foreach ($invalidHeaders as $header) {
-            TraceParent::createFromHeader($header);
+            DistributedTracing::createFromHeader($header);
         }
     }
 }

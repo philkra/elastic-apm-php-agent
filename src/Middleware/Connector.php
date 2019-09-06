@@ -130,7 +130,6 @@ class Connector
         // Default Headers Set
         $headers = [
             'Content-Type'     => 'application/x-ndjson',
-            'Content-Encoding' => 'gzip',
             'User-Agent'       => sprintf('elasticapm-php/%s', Agent::VERSION),
             'Accept'           => 'application/json',
         ];
