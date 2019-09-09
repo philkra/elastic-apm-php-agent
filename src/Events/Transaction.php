@@ -3,6 +3,7 @@
 namespace PhilKra\Events;
 
 use PhilKra\Helper\Timer;
+use PhilKra\Helper\DistributedTracing;
 
 /**
  *
@@ -129,7 +130,7 @@ class Transaction extends TraceableEvent implements \JsonSerializable
 
     public function getDistributedTracing() : string
     {
-        return new DistributedTracing($this->getTraceId(), $this->getParentId());
+        return (new DistributedTracing($this->getTraceId(), $this->getParentId()))->__toString();
     }
 
     /**
