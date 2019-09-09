@@ -3,7 +3,6 @@
 namespace PhilKra\Events;
 
 use PhilKra\Helper\Timer;
-use PhilKra\Helper\DistributedTracing;
 
 /**
  *
