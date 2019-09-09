@@ -127,36 +127,6 @@ class Transaction extends TraceableEvent implements \JsonSerializable
         $this->backtraceLimit = $limit;
     }
 
-    public function getDistributedTracing() : string
-    {
-        return new DistributedTracing($this->getTraceId(), $this->getParentId());
-    }
-
-    /**
-     * Set Trace context
-     *
-     * @throws \Exception
-     */
-    private function setTraceContext()
-    {
-        // Is one of the Traceparent Headers populated ?
-        $header = $_SERVER['HTTP_' . DistributedTracing::HEADER_NAME] ?? ($_SERVER['HTTP_TRACEPARENT'] ?? null);
-        if ($header !== null && DistributedTracing::isValidHeader($header) === true) {
-            try {
-                $traceParent = DistributedTracing::createFromHeader($header);
-
-                $this->setTraceId($traceParent->getTraceId());
-                $this->setParentId($traceParent->getParentId());
-            }
-            catch (InvalidTraceContextHeaderException $e) {
-                $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
-            }
-        }
-        else {
-            $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
-        }
-    }
-
     /**
      * Serialize Transaction Event
      *
