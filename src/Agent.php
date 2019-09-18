@@ -24,12 +24,13 @@ use PhilKra\Exception\Transaction\UnknownTransactionException;
  */
 class Agent
 {
+
     /**
      * Agent Version
      *
      * @var string
      */
-    const VERSION = '7.0.0-rc1';
+    const VERSION = '7.0.0-rc2';
 
     /**
      * Agent Name
