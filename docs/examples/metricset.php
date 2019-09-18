@@ -20,5 +20,3 @@ $agent->putEvent($agent->factory->newMetricset([
 ]));
 
 // more Events to trace ..
-
-$agent->send();

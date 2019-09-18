@@ -43,4 +43,4 @@ $agent->stopTransaction($childThree->getTransactionName());
 
 $agent->stopTransaction($parent->getTransactionName());
 
-var_dump($agent->send());
+// $agent->send();

@@ -271,4 +271,13 @@ class Agent
         return $this->connector->commit();
     }
 
+    /**
+     * Flush the Queue Payload
+     *
+     * @link https://www.php.net/manual/en/language.oop5.decon.php#object.destruct
+     */
+    function __destruct() {
+        $this->send();
+    }
+
 }
