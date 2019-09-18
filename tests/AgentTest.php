@@ -5,7 +5,6 @@ use \PhilKra\Agent;
 use PhilKra\Stores\TransactionsStore;
 use \PhilKra\Transaction\Summary;
 use PHPUnit\Framework\MockObject\MockObject;
-use Yaoi\Mock;
 
 /**
  * Test Case for @see \PhilKra\Agent
