@@ -17,7 +17,7 @@ final class ConfigTest extends TestCase {
    */
   public function testControlDefaultConfig() {
     $appName = sprintf( 'app_name_%d', rand( 10, 99 ) );
-    $agent = new Agent( [ 'appName' => $appName ] );
+    $agent = new Agent( [ 'appName' => $appName, 'active' => false, ] );
 
     // Control Default Config
     $config = $agent->getConfig()->asArray();
@@ -39,7 +39,7 @@ final class ConfigTest extends TestCase {
     $this->assertNull( $config['secretToken'] );
     $this->assertEquals( $config['serverUrl'], 'http://127.0.0.1:8200' );
     $this->assertEquals( $config['hostname'], gethostname() );
-    $this->assertTrue( $config['active'] );
+    $this->assertFalse( $config['active'] );
     $this->assertEquals( $config['timeout'], 10 );
     $this->assertEquals( $config['env'], ['SERVER_SOFTWARE'] );
     $this->assertEquals( $config['cookies'], [] );
@@ -88,6 +88,7 @@ final class ConfigTest extends TestCase {
   public function testGetConfig() {
     $init = [
       'appName' => sprintf( 'app_name_%d', rand( 10, 99 ) ),
+      'active'  => false,
     ];
 
     $agent = new Agent( $init );
