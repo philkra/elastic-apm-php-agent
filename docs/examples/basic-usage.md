@@ -48,6 +48,7 @@ $agent->stopTransaction($transaction->getTransactionName(), [
     'payload' => $payload,
 ]);
 
-// Send the collected Traces to the APM server
-$agent->send();
+// The collected traces will be send to the APM server as soon as
+// the Agent object is destroyed. But, you can manually flush the
+// playload queue with $agent->send();
 ```

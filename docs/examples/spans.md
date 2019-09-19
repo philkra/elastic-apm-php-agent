@@ -121,6 +121,6 @@ $agent->putEvent($spanParent);
 
 $agent->stopTransaction($parent->getTransactionName());
 
-// send our transactions to the apm
-$agent->send();
+// Force manual flush if needed
+// $agent->send();
 ```

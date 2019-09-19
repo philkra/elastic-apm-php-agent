@@ -24,12 +24,13 @@ use PhilKra\Exception\Transaction\UnknownTransactionException;
  */
 class Agent
 {
+
     /**
      * Agent Version
      *
      * @var string
      */
-    const VERSION = '7.0.0-rc1';
+    const VERSION = '7.0.0-rc2';
 
     /**
      * Agent Name
@@ -268,6 +269,15 @@ class Agent
         }
         $this->transactionsStore->reset();
         return $this->connector->commit();
+    }
+
+    /**
+     * Flush the Queue Payload
+     *
+     * @link https://www.php.net/manual/en/language.oop5.decon.php#object.destruct
+     */
+    function __destruct() {
+        $this->send();
     }
 
 }
