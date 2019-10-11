@@ -2,6 +2,8 @@
 
 namespace PhilKra\Events;
 
+use PhilKra\Helper\Encoding;
+
 /**
  *
  * EventBean for occurring events such as Exceptions or Transactions
@@ -272,11 +274,11 @@ class EventBean
             'response' => $this->contexts['response'],
             'url'          => [
                 'protocol' => $http_or_https,
-                'hostname' => $_SERVER['SERVER_NAME'] ?? '',
+                'hostname' => Encoding::keywordField($_SERVER['SERVER_NAME'] ?? ''),
                 'port'     => $_SERVER['SERVER_PORT'] ?? 0,
-                'pathname' => $_SERVER['SCRIPT_NAME'] ?? '',
-                'search'   => '?' . (($_SERVER['QUERY_STRING'] ?? '') ?? ''),
-                'full' => isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : '',
+                'pathname' => Encoding::keywordField($_SERVER['SCRIPT_NAME'] ?? ''),
+                'search'   => Encoding::keywordField('?' . (($_SERVER['QUERY_STRING'] ?? '') ?? '')),
+                'full' => Encoding::keywordField(isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : ''),
             ],
             'headers' => [
                 'user-agent' => $headers['User-Agent'] ?? '',

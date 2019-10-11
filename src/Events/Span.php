@@ -2,6 +2,7 @@
 
 namespace PhilKra\Events;
 
+use PhilKra\Helper\Encoding;
 use PhilKra\Helper\Timer;
 
 /**
@@ -153,11 +154,11 @@ class Span extends TraceableEvent implements \JsonSerializable
                 'transaction_id' => $this->getParentId(),
                 'trace_id'       => $this->getTraceId(),
                 'parent_id'      => $this->getParentId(),
-                'type'           => $this->type,
-                'action'         => $this->action,
+                'type'           => Encoding::keywordField($this->type),
+                'action'         => Encoding::keywordField($this->action),
                 'context'        => $this->context,
                 'duration'       => $this->duration,
-                'name'           => $this->getName(),
+                'name'           => Encoding::keywordField($this->getName()),
                 'stacktrace'     => $this->stacktrace,
                 'sync'           => false,
                 'timestamp'      => $this->getTimestamp(),

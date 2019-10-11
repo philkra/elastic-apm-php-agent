@@ -2,6 +2,8 @@
 
 namespace PhilKra\Events;
 
+use PhilKra\Helper\Encoding;
+
 /**
  *
  * Event Bean for Error wrapping
@@ -45,10 +47,10 @@ class Error extends EventBean implements \JsonSerializable
                 'trace_id'       => $this->getTraceId(),
                 'timestamp'      => $this->getTimestamp(),
                 'context'        => $this->getContext(),
-                'culprit'        => sprintf('%s:%d', $this->throwable->getFile(), $this->throwable->getLine()),
+                'culprit'        => Encoding::keywordField(sprintf('%s:%d', $this->throwable->getFile(), $this->throwable->getLine())),
                 'exception'      => [
                     'message'    => $this->throwable->getMessage(),
-                    'type'       => get_class($this->throwable),
+                    'type'       => Encoding::keywordField(get_class($this->throwable)),
                     'code'       => $this->throwable->getCode(),
                     'stacktrace' => $this->mapStacktrace(),
                 ],
