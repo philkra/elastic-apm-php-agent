@@ -3,6 +3,7 @@
 namespace PhilKra\Events;
 
 use PhilKra\Helper\Timer;
+use PhilKra\Helper\Encoding;
 
 /**
  *
@@ -139,11 +140,11 @@ class Transaction extends TraceableEvent implements \JsonSerializable
                 'trace_id'   => $this->getTraceId(),
                 'id'         => $this->getId(),
                 'parent_id'  => $this->getParentId(),
-                'type'       => $this->getMetaType(),
+                'type'       => Encoding::keywordField($this->getMetaType()),
                 'duration'   => $this->summary['duration'],
                 'timestamp'  => $this->getTimestamp(),
                 'result'     => $this->getMetaResult(),
-                'name'       => $this->getTransactionName(),
+                'name'       => Encoding::keywordField($this->getTransactionName()),
                 'context'    => $this->getContext(),
                 'sampled'    => null,
                 'span_count' => [
