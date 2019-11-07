@@ -4,6 +4,7 @@ namespace PhilKra\Events;
 
 use PhilKra\Agent;
 use PhilKra\Helper\Config;
+use PhilKra\Helper\Encoding;
 
 /**
  *
@@ -40,8 +41,8 @@ class Metadata extends EventBean implements \JsonSerializable
         return [
             'metadata' => [
                 'service' => [
-                    'name'    => $this->config->get('appName'),
-                    'version' => $this->config->get('appVersion'),
+                    'name'    => Encoding::keywordField($this->config->get('appName')),
+                    'version' => Encoding::keywordField($this->config->get('appVersion')),
                     'framework' => [
                         'name' => $this->config->get('framework') ?? '',
                         'version' => $this->config->get('frameworkVersion') ?? '',
@@ -57,10 +58,10 @@ class Metadata extends EventBean implements \JsonSerializable
                         'name'    => Agent::NAME,
                         'version' => Agent::VERSION
                     ],
-                    'environment' => $this->config->get('environment')
+                    'environment' => Encoding::keywordField($this->config->get('environment'))
                 ],
                 'system' => [
-                    'hostname'     => $this->config->get('hostname'),
+                    'hostname'     => Encoding::keywordField($this->config->get('hostname')),
                     'architecture' => php_uname('m'),
                     'platform'     => php_uname('s')
                 ]
