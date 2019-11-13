@@ -275,7 +275,7 @@ class EventBean
             'url'          => [
                 'protocol' => $http_or_https,
                 'hostname' => Encoding::keywordField($_SERVER['SERVER_NAME'] ?? ''),
-                'port'     => $_SERVER['SERVER_PORT'] ?? 0,
+                'port'     => $_SERVER['SERVER_PORT'] ?? null,
                 'pathname' => Encoding::keywordField($_SERVER['SCRIPT_NAME'] ?? ''),
                 'search'   => Encoding::keywordField('?' . (($_SERVER['QUERY_STRING'] ?? '') ?? '')),
                 'full' => Encoding::keywordField(isset($_SERVER['HTTP_HOST']) ? $http_or_https . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] : ''),
