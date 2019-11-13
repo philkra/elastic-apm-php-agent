@@ -2,12 +2,13 @@
 
 There is a function on a span to set a stack trace but it uses a different format from PHP's `debug_backtrace()`.
 
-In order to convert between the two you can use the helper function.
+In order to convert between the two you can use the setDebugBacktrace function.  It will convert details in the 
+background and set the stack trace for you.
 
 A simple example would be:
 
 ```php
-$spanSt->setStackTrace(StackTrace::convertBacktraceToStackFrames(debug_backtrace());
+$spanSt->setDebugBacktrace(debug_backtrace());
 ```
 
 ## Example Code
@@ -38,7 +39,7 @@ $spanSt->start();
 
 // burn some fictive time ..
 usleep(rand(250, 350));
-$spanSt->setStackTrace(StackTrace::convertBacktraceToStackFrames(debug_backtrace());
+$spanSt->setDebugBacktrace(debug_backtrace());
 
 $spanSt->stop();
 $agent->putEvent($spanSt);
