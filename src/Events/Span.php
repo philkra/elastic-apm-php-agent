@@ -149,7 +149,7 @@ class Span extends TraceableEvent implements \JsonSerializable
      */
     public function setDebugBacktrace(array $backtrace)
     {
-        $this->setStackTrace(StackTrace::convertBacktraceToStackFrames(debug_backtrace()));
+        $this->setStackTrace(StackTrace::convertBacktraceToStackFrames($backtrace));
     }
 
     /**
