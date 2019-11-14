@@ -8,7 +8,7 @@ background and set the stack trace for you.
 A simple example would be:
 
 ```php
-$spanSt->setDebugBacktrace(debug_backtrace());
+$spanSt->setDebugBacktrace();
 ```
 
 ## Example Code
@@ -39,7 +39,7 @@ $spanSt->start();
 
 // burn some fictive time ..
 usleep(rand(250, 350));
-$spanSt->setDebugBacktrace(debug_backtrace());
+$spanSt->setDebugBacktrace();
 
 $spanSt->stop();
 $agent->putEvent($spanSt);

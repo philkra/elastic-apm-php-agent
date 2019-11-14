@@ -141,14 +141,17 @@ class Span extends TraceableEvent implements \JsonSerializable
     }
 
     /**
-     * Takes a backtrace, converts it to a stacktrace and sets the Stacktrace for the span
+     * Creates a backtrace, converts it to a stacktrace and sets the Stacktrace for the span
      *
      * @link https://www.elastic.co/guide/en/apm/server/master/span-api.html
      *
-     * @param array $backtrace
      */
-    public function setDebugBacktrace(array $backtrace)
+    public function setDebugBacktrace()
     {
+        $backtrace = debug_backtrace(); // Create a new backtrace
+
+        array_shift($backtrace); // Remove this function from the backtrace
+
         $this->setStackTrace(StackTrace::convertBacktraceToStackFrames($backtrace));
     }
 
