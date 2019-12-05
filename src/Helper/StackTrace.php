@@ -2,10 +2,11 @@
 
 namespace PhilKra\Helper;
 
-/*
+/**
+ *
  * Stack Trace manipulation and creation functions
+ *
  */
-
 class StackTrace
 {
 

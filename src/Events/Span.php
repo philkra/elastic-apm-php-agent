@@ -4,6 +4,7 @@ namespace PhilKra\Events;
 
 use PhilKra\Helper\Encoding;
 use PhilKra\Helper\Timer;
+use PhilKra\Traits\Events\Stacktrace;
 
 /**
  *
@@ -14,6 +15,7 @@ use PhilKra\Helper\Timer;
  */
 class Span extends TraceableEvent implements \JsonSerializable
 {
+    use Stacktrace;
 
     /**
      * @var string

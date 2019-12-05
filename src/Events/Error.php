@@ -3,6 +3,7 @@
 namespace PhilKra\Events;
 
 use PhilKra\Helper\Encoding;
+use PhilKra\Traits\Events\Stacktrace;
 
 /**
  *
@@ -13,6 +14,8 @@ use PhilKra\Helper\Encoding;
  */
 class Error extends EventBean implements \JsonSerializable
 {
+    use Stacktrace;
+
     /**
      * Error | Exception
      *
