@@ -30,7 +30,7 @@ class Agent
      *
      * @var string
      */
-    const VERSION = '7.0.0-rc2';
+    const VERSION = '7.0.0';
 
     /**
      * Agent Name
