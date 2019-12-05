@@ -20,6 +20,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 * [Metricset](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/metricset.php)
 * [Getting the Server Info](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/server-info.php)
 * [Distributed Tracing](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/distributed-tracing.md)
+* [Converting debug_backtrace to a stack trace](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/examples/convert-backtrace.md)
 
 ## Tests
 ```bash
