@@ -3,7 +3,6 @@
 namespace PhilKra\Events;
 
 use PhilKra\Helper\Encoding;
-use PhilKra\Helper\StackTrace;
 use PhilKra\Helper\Timer;
 
 /**
@@ -141,21 +140,6 @@ class Span extends TraceableEvent implements \JsonSerializable
     }
 
     /**
-     * Creates a backtrace, converts it to a stacktrace and sets the Stacktrace for the span
-     *
-     * @link https://www.elastic.co/guide/en/apm/server/master/span-api.html
-     *
-     */
-    public function setDebugBacktrace()
-    {
-        $backtrace = debug_backtrace(); // Create a new backtrace
-
-        array_shift($backtrace); // Remove this function from the backtrace
-
-        $this->setStackTrace(StackTrace::convertBacktraceToStackFrames($backtrace));
-    }
-
-    /**
      * Serialize Span Event
      *
      * @link https://www.elastic.co/guide/en/apm/server/master/span-api.html
@@ -172,7 +156,7 @@ class Span extends TraceableEvent implements \JsonSerializable
                 'parent_id'      => $this->getParentId(),
                 'type'           => Encoding::keywordField($this->type),
                 'action'         => Encoding::keywordField($this->action),
-                'context'        => $this->context,
+                'context'        => $this->getContext(),
                 'duration'       => $this->duration,
                 'name'           => Encoding::keywordField($this->getName()),
                 'stacktrace'     => $this->stacktrace,
