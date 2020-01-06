@@ -95,4 +95,29 @@ final class ConfigTest extends TestCase {
     $this->assertEquals( $agent->getConfig()->get( 'appName' ), $init['appName'] );
   }
 
+    /**
+     * @depends testControlDefaultConfig
+     *
+     * @covers \PhilKra\Helper\Config::__construct
+     * @covers \PhilKra\Agent::getConfig
+     * @covers \PhilKra\Helper\Config::getDefaultConfig
+     * @covers \PhilKra\Helper\Config::asArray
+     */
+    public function testTrimElasticServerUrl() {
+        $init = [
+            'serverUrl' => 'http://foo.bar/',
+            'appName' => sprintf( 'app_name_%d', rand( 10, 99 ) ),
+            'active'  => false,
+        ];
+
+        $agent = new Agent( $init );
+        $config = $agent->getConfig()->asArray();
+        foreach( $init as $key => $value ) {
+            if ('serverUrl' === $key) {
+                $this->assertEquals('http://foo.bar', $config[$key]);
+            } else {
+                $this->assertEquals( $config[$key], $init[$key], 'key: ' . $key );
+            }
+        }
+    }
 }

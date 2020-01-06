@@ -29,6 +29,7 @@ class Config
 
         // Register Merged Config
         $this->config = array_merge($this->getDefaultConfig(), $config);
+        $this->config['serverUrl'] = rtrim ($this->config['serverUrl'], "/");
     }
 
     /**
