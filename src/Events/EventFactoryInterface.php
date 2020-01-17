@@ -27,12 +27,13 @@ interface EventFactoryInterface
     /**
      * Creates a new Span
      *
-     * @param string    $name
-     * @param EventBean $parent
+     * @param string     $name
+     * @param EventBean  $parent
+     * @param float|null $startTime
      *
      * @return Span
      */
-    public function newSpan(string $name, EventBean $parent): Span;
+    public function newSpan(string $name, EventBean $parent, float $startTime = null): Span;
 
     /**
      * Creates a new Metricset

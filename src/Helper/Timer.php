@@ -62,6 +62,38 @@ class Timer
     }
 
     /**
+     * Get the start time of this Timer in MicroSeconds
+     *
+     * @throws \PhilKra\Exception\Timer\NotStartedException
+     *
+     * @return float
+     */
+    public function getStartTime() : float
+    {
+        if ($this->startedOn === null) {
+            throw new NotStartedException();
+        }
+
+        return $this->toMicro($this->startedOn);
+    }
+
+    /**
+     * Get the start time of this Timer in MilliSeconds
+     *
+     * @throws \PhilKra\Exception\Timer\NotStartedException
+     *
+     * @return float
+     */
+    public function getStartTimeInMilliseconds() : float
+    {
+        if ($this->startedOn === null) {
+            throw new NotStartedException();
+        }
+
+        return $this->toMilli($this->startedOn);
+    }
+
+    /**
      * Get the elapsed Duration of this Timer in MicroSeconds
      *
      * @throws \PhilKra\Exception\Timer\NotStoppedException

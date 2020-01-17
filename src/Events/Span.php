@@ -53,14 +53,15 @@ class Span extends TraceableEvent implements \JsonSerializable
     private $stacktrace = [];
 
     /**
-     * @param string $name
-     * @param EventBean $parent
+     * @param string     $name
+     * @param EventBean  $parent
+     * @param float|null $startTime
      */
-    public function __construct(string $name, EventBean $parent)
+    public function __construct(string $name, EventBean $parent, float $startTime = null)
     {
         parent::__construct([]);
         $this->name  = trim($name);
-        $this->timer = new Timer();
+        $this->timer = new Timer($startTime);
         $this->setParent($parent);
     }
 
@@ -159,6 +160,7 @@ class Span extends TraceableEvent implements \JsonSerializable
                 'type'           => Encoding::keywordField($this->type),
                 'action'         => Encoding::keywordField($this->action),
                 'context'        => $this->getContext(),
+                'start'          => $this->timer->getStartTimeInMilliseconds(),
                 'duration'       => $this->duration,
                 'name'           => Encoding::keywordField($this->getName()),
                 'stacktrace'     => $this->stacktrace,

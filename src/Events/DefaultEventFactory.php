@@ -23,9 +23,9 @@ final class DefaultEventFactory implements EventFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function newSpan(string $name, EventBean $parent): Span
+    public function newSpan(string $name, EventBean $parent, float $startTime = null): Span
     {
-        return new Span($name, $parent);
+        return new Span($name, $parent, $startTime);
     }
 
     /**
