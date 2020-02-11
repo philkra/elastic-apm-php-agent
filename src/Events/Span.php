@@ -45,11 +45,6 @@ class Span extends TraceableEvent implements \JsonSerializable
     /**
      * @var mixed array|null
      */
-    private $context = null;
-
-    /**
-     * @var mixed array|null
-     */
     private $stacktrace = [];
 
     /**
@@ -115,18 +110,6 @@ class Span extends TraceableEvent implements \JsonSerializable
     public function setType(string $type)
     {
         $this->type = trim($type);
-    }
-
-    /**
-     * Provide additional Context to the Span
-     *
-     * @link https://www.elastic.co/guide/en/apm/server/master/span-api.html
-     *
-     * @param array $context
-     */
-    public function setContext(array $context)
-    {
-        $this->context = $context;
     }
 
     /**
