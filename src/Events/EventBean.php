@@ -43,6 +43,15 @@ class EventBean
     private $parentId = null;
 
     /**
+     * Trace Flag of parent span or parent transaction
+     *
+     * @link https://www.w3.org/TR/trace-context/#trace-flags
+     *
+     * @var string
+     */
+    private $traceFlags = null;
+    
+    /**
      * Error occurred on Timestamp
      *
      * @var float
@@ -143,6 +152,16 @@ class EventBean
     }
 
     /**
+     * Set the Trace Flags
+     *
+     * @param string $traceFlags
+     */
+    final public function setTraceFlags(string $traceFlags)
+    {
+        $this->traceFlags = $traceFlags;
+    }
+
+    /**
      * Get the Parent Id
      *
      * @return string
@@ -150,6 +169,16 @@ class EventBean
     final public function getParentId() : ?string
     {
         return $this->parentId;
+    }
+
+    /**
+     * Get the Trace Flags
+     *
+     * @return string
+     */
+    final public function getTraceFlags() : ?string
+    {
+        return $this->traceFlags;
     }
 
     /**
