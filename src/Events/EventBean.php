@@ -380,10 +380,9 @@ class EventBean
     final protected function getContext() : array
     {
         $context = [
-            'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request']
+            'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request'],
+            'response' => $this->contexts['response']
         ];
-
-        $context['response'] = $this->contexts['response'];
 
         // Add User Context
         if (empty($this->contexts['user']) === false) {
