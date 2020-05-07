@@ -2,6 +2,7 @@
 
 namespace PhilKra\Events;
 
+use JsonSerializable;
 use PhilKra\Agent;
 use PhilKra\Helper\Config;
 use PhilKra\Helper\Encoding;
@@ -13,7 +14,7 @@ use PhilKra\Helper\Encoding;
  * @link https://www.elastic.co/guide/en/apm/server/7.3/metadata-api.html
  *
  */
-class Metadata extends EventBean implements \JsonSerializable
+class Metadata extends EventBean implements JsonSerializable
 {
 
     /**
@@ -41,31 +42,31 @@ class Metadata extends EventBean implements \JsonSerializable
         return [
             'metadata' => [
                 'service' => [
-                    'name'    => Encoding::keywordField($this->config->get('appName')),
+                    'name' => Encoding::keywordField($this->config->get('appName')),
                     'version' => Encoding::keywordField($this->config->get('appVersion')),
                     'framework' => [
                         'name' => $this->config->get('framework') ?? '',
                         'version' => $this->config->get('frameworkVersion') ?? '',
                     ],
                     'language' => [
-                        'name'    => 'php',
-                        'version' => phpversion()
+                        'name' => 'php',
+                        'version' => phpversion(),
                     ],
                     'process' => [
                         'pid' => getmypid(),
                     ],
                     'agent' => [
-                        'name'    => Agent::NAME,
-                        'version' => Agent::VERSION
+                        'name' => Agent::NAME,
+                        'version' => Agent::VERSION,
                     ],
-                    'environment' => Encoding::keywordField($this->config->get('environment'))
+                    'environment' => Encoding::keywordField($this->config->get('environment')),
                 ],
                 'system' => [
-                    'hostname'     => Encoding::keywordField($this->config->get('hostname')),
+                    'hostname' => Encoding::keywordField($this->config->get('hostname')),
                     'architecture' => php_uname('m'),
-                    'platform'     => php_uname('s')
-                ]
-            ]
+                    'platform' => php_uname('s'),
+                ],
+            ],
         ];
     }
 

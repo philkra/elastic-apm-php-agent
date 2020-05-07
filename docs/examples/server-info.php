@@ -9,7 +9,7 @@ require __DIR__ . '/vendor/autoload.php';
 use PhilKra\Agent;
 
 $config = [
-    'appName'    => 'examples',
+    'appName' => 'examples',
     'appVersion' => '1.0.0-beta',
 ];
 
@@ -18,4 +18,4 @@ $agent = new Agent($config);
 $info = $agent->info();
 
 var_dump($info->getStatusCode());
-var_dump($info->getBody());
+var_dump($info->getBody()->getContents());

@@ -4,8 +4,13 @@ namespace PhilKra\Middleware;
 
 use PhilKra\Agent;
 use PhilKra\Events\EventBean;
-use PhilKra\Stores\TransactionsStore;
-use GuzzleHttp\Client;
+use PhilKra\Helper\Config;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  *
@@ -15,16 +20,24 @@ use GuzzleHttp\Client;
 class Connector
 {
     /**
-     * Agent Config
-     *
-     * @var \PhilKra\Helper\Config
-     */
-    private $config;
-
-    /**
-     * @var \GuzzleHttp\Client
+     * @var ClientInterface
      */
     private $client;
+
+    /**
+     * @var RequestFactoryInterface
+     */
+    private $requestFactory;
+
+    /**
+     * @var StreamFactoryInterface
+     */
+    private $streamFactory;
+
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
      * @var array
@@ -32,12 +45,17 @@ class Connector
     private $payload = [];
 
     /**
-     * @param \PhilKra\Helper\Config $config
+     * @param ClientInterface $client
+     * @param RequestFactoryInterface $requestFactory
+     * @param StreamFactoryInterface $streamFactory
+     * @param Config $config
      */
-    public function __construct(\PhilKra\Helper\Config $config)
+    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, Config $config)
     {
+        $this->client = $client;
+        $this->requestFactory = $requestFactory;
+        $this->streamFactory = $streamFactory;
         $this->config = $config;
-        $this->configureHttpClient();
     }
 
     /**
@@ -45,31 +63,17 @@ class Connector
      *
      * @return bool
      */
-    public function isPayloadSet() : bool
+    public function isPayloadSet(): bool
     {
         return (empty($this->payload) === false);
     }
 
     /**
-     * Create and configure the HTTP client
-     *
-     * @return void
-     */
-    private function configureHttpClient()
-    {
-        $httpClientDefaults = [
-            'timeout' => $this->config->get('timeout'),
-        ];
-
-        $httpClientConfig = $this->config->get('httpClient') ?? [];
-
-        $this->client = new Client(array_merge($httpClientDefaults, $httpClientConfig));
-    }
-
-    /**
      * Put Events to the Payload Queue
+     *
+     * @param EventBean $event
      */
-    public function putEvent(EventBean $event)
+    public function putEvent(EventBean $event): void
     {
         $this->payload[] = json_encode($event);
     }
@@ -78,46 +82,49 @@ class Connector
      * Commit the Events to the APM server
      *
      * @return bool
+     * @throws ClientExceptionInterface
      */
-    public function commit() : bool
+    public function commit(): bool
     {
         $body = '';
-        foreach($this->payload as $line) {
+        foreach ($this->payload as $line) {
             $body .= $line . "\n";
         }
         $this->payload = [];
-        $response = $this->client->post($this->getEndpoint(), [
-            'headers' => $this->getRequestHeaders(),
-            'body'    => $body,
-        ]);
-        return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
-    }
 
-    /**
-     * Get the Server Informations
-     *
-     * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
-     *
-     * @return Response
-     */
-    public function getInfo() : \GuzzleHttp\Psr7\Response
-    {
-        return $this->client->get(
-            $this->config->get('serverUrl'),
-            ['headers' => $this->getRequestHeaders(),]
-        );
+        $request = $this->requestFactory
+            ->createRequest('POST', $this->getEndpoint())
+            ->withBody($this->streamFactory->createStream($body));
+
+        $request = $this->populateRequestWithHeaders($request);
+
+        $response = $this->client->sendRequest($request);
+
+        return ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300);
     }
 
     /**
      * Get the Endpoint URI of the APM Server
      *
-     * @param string $endpoint
-     *
      * @return string
      */
-    private function getEndpoint() : string
+    private function getEndpoint(): string
     {
         return sprintf('%s/intake/v2/events', $this->config->get('serverUrl'));
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return RequestInterface
+     */
+    private function populateRequestWithHeaders(RequestInterface $request): RequestInterface
+    {
+        foreach ($this->getRequestHeaders() as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        return $request;
     }
 
     /**
@@ -125,13 +132,13 @@ class Connector
      *
      * @return array
      */
-    private function getRequestHeaders() : array
+    private function getRequestHeaders(): array
     {
         // Default Headers Set
         $headers = [
-            'Content-Type'     => 'application/x-ndjson',
-            'User-Agent'       => sprintf('elasticapm-php/%s', Agent::VERSION),
-            'Accept'           => 'application/json',
+            'Content-Type' => 'application/x-ndjson',
+            'User-Agent' => sprintf('elasticapm-php/%s', Agent::VERSION),
+            'Accept' => 'application/json',
         ];
 
         // Add Secret Token to Header
@@ -142,4 +149,23 @@ class Connector
         return $headers;
     }
 
+    /**
+     * Get the Server Informations
+     *
+     * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
+     *
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     */
+    public function getInfo(): ResponseInterface
+    {
+        $request = $this->populateRequestWithHeaders(
+            $this->requestFactory->createRequest(
+                'GET',
+                $this->config->get('serverUrl')
+            )
+        );
+
+        return $this->client->sendRequest($request);
+    }
 }

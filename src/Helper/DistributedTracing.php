@@ -47,6 +47,52 @@ class DistributedTracing
     }
 
     /**
+     * @param string $header
+     *
+     * @return TraceParent
+     * @throws InvalidTraceContextHeaderException
+     */
+    public static function createFromHeader(string $header)
+    {
+        if (!self::isValidHeader($header)) {
+            throw new InvalidTraceContextHeaderException("InvalidTraceContextHeaderException");
+        }
+        $parsed = explode('-', $header);
+
+        return new self($parsed[1], $parsed[2], $parsed[3]);
+    }
+
+    /**
+     * Check if the Header Value is valid
+     *
+     * @link https://www.w3.org/TR/trace-context/#version-format
+     *
+     * @param string $header
+     *
+     * @return bool
+     */
+    public static function isValidHeader(string $header): bool
+    {
+        return preg_match('/^' . self::VERSION . '-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$/', $header) === 1;
+    }
+
+    /**
+     * Get Distributed Tracing Id
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf(
+            '%s-%s-%s-%s',
+            self::VERSION,
+            $this->getTraceId(),
+            $this->getParentId(),
+            $this->getTraceFlags()
+        );
+    }
+
+    /**
      * @return string
      */
     public function getTraceId()
@@ -65,7 +111,7 @@ class DistributedTracing
     /**
      * @return string
      */
-    public function getTraceFlags() : string
+    public function getTraceFlags(): string
     {
         return $this->traceFlags;
     }
@@ -76,49 +122,5 @@ class DistributedTracing
     public function setTraceFlags(string $traceFlags)
     {
         $this->traceFlags = $traceFlags;
-    }
-
-    /**
-     * Check if the Header Value is valid
-     *
-     * @link https://www.w3.org/TR/trace-context/#version-format
-     *
-     * @param string $header
-     *
-     * @return bool
-     */
-    public static function isValidHeader(string $header) : bool
-    {
-        return preg_match('/^'.self::VERSION.'-[\da-f]{32}-[\da-f]{16}-[\da-f]{2}$/', $header) === 1;
-    }
-
-    /**
-     * @param string $header
-     * @return TraceParent
-     * @throws InvalidTraceContextHeaderException
-     */
-    public static function createFromHeader(string $header)
-    {
-        if (!self::isValidHeader($header)) {
-            throw new InvalidTraceContextHeaderException("InvalidTraceContextHeaderException");
-        }
-        $parsed = explode('-', $header);
-        return new self($parsed[1], $parsed[2], $parsed[3]);
-    }
-
-    /**
-     * Get Distributed Tracing Id
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return sprintf(
-            '%s-%s-%s-%s',
-            self::VERSION,
-            $this->getTraceId(),
-            $this->getParentId(),
-            $this->getTraceFlags()
-        );
     }
 }

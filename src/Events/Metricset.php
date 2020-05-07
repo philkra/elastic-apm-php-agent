@@ -2,6 +2,8 @@
 
 namespace PhilKra\Events;
 
+use JsonSerializable;
+
 /**
  *
  * Event Bean for Metricset
@@ -10,7 +12,7 @@ namespace PhilKra\Events;
  * @link https://www.elastic.co/guide/en/apm/server/current/exported-fields-system.html
  *
  */
-class Metricset extends EventBean implements \JsonSerializable
+class Metricset extends EventBean implements JsonSerializable
 {
     /**
      * @var array
@@ -29,7 +31,7 @@ class Metricset extends EventBean implements \JsonSerializable
     public function __construct(array $set, array $tags = [])
     {
         parent::__construct([]);
-        foreach($set as $k => $v) {
+        foreach ($set as $k => $v) {
             $this->samples[$k] = ['value' => $v];
         }
         $this->tags = $tags;
@@ -42,14 +44,14 @@ class Metricset extends EventBean implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
             'metricset' => [
-                'samples'   => $this->samples,
-//                'tags'      => $this->tags,
+                'samples' => $this->samples,
+                //                'tags'      => $this->tags,
                 'timestamp' => $this->getTimestamp(),
-            ]
+            ],
         ];
     }
 

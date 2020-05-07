@@ -2,12 +2,14 @@
 
 namespace PhilKra\Events;
 
+use Throwable;
+
 final class DefaultEventFactory implements EventFactoryInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function newError(\Throwable $throwable, array $contexts, ?Transaction $parent = null): Error
+    public function newError(Throwable $throwable, array $contexts, ?Transaction $parent = null): Error
     {
         return new Error($throwable, $contexts, $parent);
     }

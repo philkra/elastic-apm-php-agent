@@ -2,6 +2,7 @@
 
 namespace PhilKra\Events;
 
+use Exception;
 use PhilKra\Exception\InvalidTraceContextHeaderException;
 use PhilKra\Helper\DistributedTracing;
 
@@ -14,11 +15,11 @@ class TraceableEvent extends EventBean
 {
 
     /**
-    * Create the Transaction
-    *
-    * @param string $name
-    * @param array $contexts
-    */
+     * Create the Transaction
+     *
+     * @param string $name
+     * @param array $contexts
+     */
     public function __construct(array $contexts)
     {
         parent::__construct($contexts);
@@ -26,19 +27,9 @@ class TraceableEvent extends EventBean
     }
 
     /**
-     * Get the Distributed Tracing Value of this Event
-     *
-     * @return string
-     */
-    public function getDistributedTracing() : string
-    {
-        return (new DistributedTracing($this->getTraceId(), $this->getParentId()))->__toString();
-    }
-
-    /**
      * Set Trace context
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function setTraceContext()
     {
@@ -50,14 +41,22 @@ class TraceableEvent extends EventBean
 
                 $this->setTraceId($traceParent->getTraceId());
                 $this->setParentId($traceParent->getParentId());
-            }
-            catch (InvalidTraceContextHeaderException $e) {
+            } catch (InvalidTraceContextHeaderException $e) {
                 $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
             }
-        }
-        else {
+        } else {
             $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
         }
+    }
+
+    /**
+     * Get the Distributed Tracing Value of this Event
+     *
+     * @return string
+     */
+    public function getDistributedTracing(): string
+    {
+        return (new DistributedTracing($this->getTraceId(), $this->getParentId()))->__toString();
     }
 
 }

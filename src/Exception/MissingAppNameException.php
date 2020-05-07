@@ -2,10 +2,12 @@
 
 namespace PhilKra\Exception;
 
+use Exception;
+
 /**
  * Application Tear Up has missing App Name in Config
  */
-class MissingAppNameException extends \Exception
+class MissingAppNameException extends Exception
 {
     public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
     {

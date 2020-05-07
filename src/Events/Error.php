@@ -2,8 +2,10 @@
 
 namespace PhilKra\Events;
 
+use JsonSerializable;
 use PhilKra\Helper\Encoding;
 use PhilKra\Traits\Events\Stacktrace;
+use Throwable;
 
 /**
  *
@@ -12,7 +14,7 @@ use PhilKra\Traits\Events\Stacktrace;
  * @link https://www.elastic.co/guide/en/apm/server/6.2/errors.html
  *
  */
-class Error extends EventBean implements \JsonSerializable
+class Error extends EventBean implements JsonSerializable
 {
     use Stacktrace;
 
@@ -29,7 +31,7 @@ class Error extends EventBean implements \JsonSerializable
      * @param Throwable $throwable
      * @param array $contexts
      */
-    public function __construct(\Throwable $throwable, array $contexts, ?Transaction $transaction = null)
+    public function __construct(Throwable $throwable, array $contexts, ?Transaction $transaction = null)
     {
         parent::__construct($contexts, $transaction);
         $this->throwable = $throwable;
@@ -40,24 +42,24 @@ class Error extends EventBean implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
             'error' => [
-                'id'             => $this->getId(),
+                'id' => $this->getId(),
                 'transaction_id' => $this->getParentId(),
-                'parent_id'      => $this->getParentId(),
-                'trace_id'       => $this->getTraceId(),
-                'timestamp'      => $this->getTimestamp(),
-                'context'        => $this->getContext(),
-                'culprit'        => Encoding::keywordField(sprintf('%s:%d', $this->throwable->getFile(), $this->throwable->getLine())),
-                'exception'      => [
-                    'message'    => $this->throwable->getMessage(),
-                    'type'       => Encoding::keywordField(get_class($this->throwable)),
-                    'code'       => $this->throwable->getCode(),
+                'parent_id' => $this->getParentId(),
+                'trace_id' => $this->getTraceId(),
+                'timestamp' => $this->getTimestamp(),
+                'context' => $this->getContext(),
+                'culprit' => Encoding::keywordField(sprintf('%s:%d', $this->throwable->getFile(), $this->throwable->getLine())),
+                'exception' => [
+                    'message' => $this->throwable->getMessage(),
+                    'type' => Encoding::keywordField(get_class($this->throwable)),
+                    'code' => $this->throwable->getCode(),
                     'stacktrace' => $this->mapStacktrace(),
                 ],
-            ]
+            ],
         ];
     }
 
@@ -66,13 +68,13 @@ class Error extends EventBean implements \JsonSerializable
      *
      * @return array
      */
-    final private function mapStacktrace() : array
+    final private function mapStacktrace(): array
     {
         $stacktrace = [];
 
         foreach ($this->throwable->getTrace() as $trace) {
             $item = [
-              'function' => $trace['function'] ?? '(closure)'
+                'function' => $trace['function'] ?? '(closure)',
             ];
 
             if (isset($trace['line']) === true) {
@@ -82,7 +84,7 @@ class Error extends EventBean implements \JsonSerializable
             if (isset($trace['file']) === true) {
                 $item += [
                     'filename' => basename($trace['file']),
-                    'abs_path' => $trace['file']
+                    'abs_path' => $trace['file'],
                 ];
             }
 
