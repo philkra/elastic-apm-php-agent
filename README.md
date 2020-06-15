@@ -5,6 +5,14 @@
 
 This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solutions/apm) solution, supporting the `v2` Intake API. Please note: This agent is not officially supported by [Elastic](https://www.elastic.co/).
 
+---
+
+**NOTE**
+
+Elastic is working on an official APM agent for PHP, [read more](https://discuss.elastic.co/t/elastic-apm-php-agent/229373)! Go ahead and fill out [this](https://forms.gle/dnjpdXEduLVC4Ede7) survey to give Elastic your input and help shape the future of the agent!
+
+---
+
 ## Documentation
 * [Installation](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/install.md)
 * [Breaking Changes](https://github.com/philkra/elastic-apm-php-agent/blob/master/docs/breaking-changes.md)
