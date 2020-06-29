@@ -9,7 +9,7 @@ This is a community PHP agent for Elastic.co's [APM](https://www.elastic.co/solu
 
 **NOTE**
 
-Elastic is working on an official APM agent for PHP, [read more](https://discuss.elastic.co/t/elastic-apm-php-agent/229373)! Go ahead and fill out [this](https://forms.gle/dnjpdXEduLVC4Ede7) survey to give Elastic your input and help shape the future of the agent!
+Elastic is working on an [official APM agent](https://github.com/elastic/apm-agent-php) for PHP, [read more](https://discuss.elastic.co/t/elastic-apm-php-agent/229373)! Go ahead and fill out [this](https://forms.gle/dnjpdXEduLVC4Ede7) survey to give Elastic your input and help shape the future of the agent!
 
 ---
 
