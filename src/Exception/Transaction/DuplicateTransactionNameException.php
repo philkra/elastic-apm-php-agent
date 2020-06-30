@@ -2,10 +2,12 @@
 
 namespace PhilKra\Exception\Transaction;
 
+use Exception;
+
 /**
  * Trying to register a already registered Transaction
  */
-class DuplicateTransactionNameException extends \Exception
+class DuplicateTransactionNameException extends Exception
 {
     public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
     {

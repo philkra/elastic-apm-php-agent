@@ -5,6 +5,7 @@ namespace PhilKra\Helper;
 /*
  * Functions to convert values for transmission to ElasticSearch.
  */
+
 class Encoding
 {
 
@@ -18,6 +19,7 @@ class Encoding
      * Limit the size of keyword fields. This is the same approach used by the Python APM client.
      *
      * @param string $value
+     *
      * @return string
      */
     public static function keywordField($value)

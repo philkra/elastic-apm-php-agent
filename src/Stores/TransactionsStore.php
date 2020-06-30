@@ -15,11 +15,11 @@ class TransactionsStore extends Store
     /**
      * Register a Transaction
      *
-     * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
-     *
-     * @param \PhilKra\Events\Transaction $transaction
+     * @param Transaction $transaction
      *
      * @return void
+     * @throws DuplicateTransactionNameException
+     *
      */
     public function register(Transaction $transaction)
     {
@@ -51,7 +51,7 @@ class TransactionsStore extends Store
      *
      * @return array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return array_values($this->store);
     }

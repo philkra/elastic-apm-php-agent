@@ -2,10 +2,12 @@
 
 namespace PhilKra\Exception\Transaction;
 
+use Exception;
+
 /**
  * Trying to fetch an unregistered Transaction
  */
-class UnknownTransactionException extends \Exception
+class UnknownTransactionException extends Exception
 {
     public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
     {

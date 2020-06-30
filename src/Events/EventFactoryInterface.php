@@ -2,23 +2,25 @@
 
 namespace PhilKra\Events;
 
+use Throwable;
+
 interface EventFactoryInterface
 {
     /**
      * Creates a new error.
      *
-     * @param \Throwable $throwable
-     * @param array      $contexts
+     * @param Throwable $throwable
+     * @param array $contexts
      *
      * @return Error
      */
-    public function newError(\Throwable $throwable, array $contexts, ?Transaction $parent = null): Error;
+    public function newError(Throwable $throwable, array $contexts, ?Transaction $parent = null): Error;
 
     /**
      * Creates a new transaction
      *
      * @param string $name
-     * @param array  $contexts
+     * @param array $contexts
      *
      * @return Transaction
      */
@@ -27,7 +29,7 @@ interface EventFactoryInterface
     /**
      * Creates a new Span
      *
-     * @param string    $name
+     * @param string $name
      * @param EventBean $parent
      *
      * @return Span
@@ -40,8 +42,8 @@ interface EventFactoryInterface
      * @link https://www.elastic.co/guide/en/apm/server/7.3/metricset-api.html
      * @link https://github.com/elastic/apm-server/blob/master/docs/spec/metricsets/metricset.json
      *
-     * @param array $set, k-v pair ['sys.avg.load' => 89]
-     * @param array $tags, Default []
+     * @param array $set , k-v pair ['sys.avg.load' => 89]
+     * @param array $tags , Default []
      *
      * @return Metricset
      */

@@ -41,16 +41,16 @@ class Timer
         if (null !== $this->startedOn) {
             throw new AlreadyRunningException();
         }
-        
+
         $this->startedOn = microtime(true);
     }
 
     /**
      * Stop the Timer
      *
-     * @throws \PhilKra\Exception\Timer\NotStartedException
-     *
      * @return void
+     * @throws NotStartedException
+     *
      */
     public function stop()
     {
@@ -62,45 +62,13 @@ class Timer
     }
 
     /**
-     * Get the elapsed Duration of this Timer in MicroSeconds
-     *
-     * @throws \PhilKra\Exception\Timer\NotStoppedException
-     *
-     * @return float
-     */
-    public function getDuration() : float
-    {
-        if ($this->stoppedOn === null) {
-            throw new NotStoppedException();
-        }
-
-        return $this->toMicro($this->stoppedOn - $this->startedOn);
-    }
-
-    /**
-     * Get the elapsed Duration of this Timer in MilliSeconds
-     *
-     * @throws \PhilKra\Exception\Timer\NotStoppedException
-     *
-     * @return float
-     */
-    public function getDurationInMilliseconds() : float
-    {
-        if ($this->stoppedOn === null) {
-            throw new NotStoppedException();
-        }
-
-        return $this->toMilli($this->stoppedOn - $this->startedOn);
-    }
-
-    /**
      * Get the current elapsed Interval of the Timer in MicroSeconds
      *
-     * @throws \PhilKra\Exception\Timer\NotStartedException
-     *
      * @return float
+     * @throws NotStartedException
+     *
      */
-    public function getElapsed() : float
+    public function getElapsed(): float
     {
         if ($this->startedOn === null) {
             throw new NotStartedException();
@@ -112,13 +80,41 @@ class Timer
     }
 
     /**
-     * Get the current elapsed Interval of the Timer in MilliSeconds
+     * Convert the Duration from Seconds to Micro-Seconds
      *
-     * @throws \PhilKra\Exception\Timer\NotStartedException
+     * @param float $num
      *
      * @return float
      */
-    public function getElapsedInMilliseconds() : float
+    private function toMicro(float $num): float
+    {
+        return $num * 1000000;
+    }
+
+    /**
+     * Get the elapsed Duration of this Timer in MicroSeconds
+     *
+     * @return float
+     * @throws NotStoppedException
+     *
+     */
+    public function getDuration(): float
+    {
+        if ($this->stoppedOn === null) {
+            throw new NotStoppedException();
+        }
+
+        return $this->toMicro($this->stoppedOn - $this->startedOn);
+    }
+
+    /**
+     * Get the current elapsed Interval of the Timer in MilliSeconds
+     *
+     * @return float
+     * @throws NotStartedException
+     *
+     */
+    public function getElapsedInMilliseconds(): float
     {
         if ($this->startedOn === null) {
             throw new NotStartedException();
@@ -130,26 +126,30 @@ class Timer
     }
 
     /**
-     * Convert the Duration from Seconds to Micro-Seconds
+     * Convert the Duration from Seconds to Milli-Seconds
      *
-     * @param  float $num
+     * @param float $num
      *
      * @return float
      */
-    private function toMicro(float $num) : float
+    private function toMilli(float $num): float
     {
-        return $num * 1000000;
+        return $num * 1000;
     }
 
     /**
-     * Convert the Duration from Seconds to Milli-Seconds
-     *
-     * @param  float $num
+     * Get the elapsed Duration of this Timer in MilliSeconds
      *
      * @return float
+     * @throws NotStoppedException
+     *
      */
-    private function toMilli(float $num) : float
+    public function getDurationInMilliseconds(): float
     {
-        return $num * 1000;
+        if ($this->stoppedOn === null) {
+            throw new NotStoppedException();
+        }
+
+        return $this->toMilli($this->stoppedOn - $this->startedOn);
     }
 }

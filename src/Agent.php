@@ -2,18 +2,25 @@
 
 namespace PhilKra;
 
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\Psr17FactoryDiscovery;
 use PhilKra\Events\DefaultEventFactory;
-use PhilKra\Events\EventFactoryInterface;
-use PhilKra\Stores\TransactionsStore;
 use PhilKra\Events\EventBean;
-use PhilKra\Events\Error;
-use PhilKra\Events\Transaction;
+use PhilKra\Events\EventFactoryInterface;
 use PhilKra\Events\Metadata;
-use PhilKra\Helper\Timer;
-use PhilKra\Helper\Config;
-use PhilKra\Middleware\Connector;
+use PhilKra\Events\Transaction;
 use PhilKra\Exception\Transaction\DuplicateTransactionNameException;
 use PhilKra\Exception\Transaction\UnknownTransactionException;
+use PhilKra\Helper\Config;
+use PhilKra\Helper\Timer;
+use PhilKra\Middleware\Connector;
+use PhilKra\Stores\TransactionsStore;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Throwable;
 
 /**
  *
@@ -24,7 +31,6 @@ use PhilKra\Exception\Transaction\UnknownTransactionException;
  */
 class Agent
 {
-
     /**
      * Agent Version
      *
@@ -42,21 +48,21 @@ class Agent
     /**
      * Config Store
      *
-     * @var \PhilKra\Helper\Config
+     * @var Config
      */
     private $config;
 
     /**
      * Transactions Store
      *
-     * @var \PhilKra\Stores\TransactionsStore
+     * @var TransactionsStore
      */
     private $transactionsStore;
 
     /**
      * Apm Timer
      *
-     * @var \PhilKra\Helper\Timer
+     * @var Timer
      */
     private $timer;
 
@@ -66,9 +72,9 @@ class Agent
      * @var array
      */
     private $sharedContext = [
-      'user'   => [],
-      'custom' => [],
-      'tags'   => []
+        'user' => [],
+        'custom' => [],
+        'tags' => [],
     ];
 
     /**
@@ -84,24 +90,40 @@ class Agent
     /**
      * Setup the APM Agent
      *
-     * @param array                 $config
-     * @param array                 $sharedContext Set shared contexts such as user and tags
-     * @param EventFactoryInterface $eventFactory  Alternative factory to use when creating event objects
+     * @param array $config
+     * @param array $sharedContext Set shared contexts such as user and tags
+     * @param EventFactoryInterface $eventFactory Alternative factory to use when creating event objects
+     * @param TransactionsStore|null $transactionsStore
+     * @param ClientInterface $client
+     * @param RequestFactoryInterface $requestFactory
+     * @param StreamFactoryInterface $streamFactory
      *
-     * @return void
+     * @throws Exception\MissingAppNameException
+     * @throws Exception\Timer\AlreadyRunningException
      */
-    public function __construct(array $config, array $sharedContext = [], EventFactoryInterface $eventFactory = null, TransactionsStore $transactionsStore = null)
-    {
+    public function __construct(
+        array $config,
+        array $sharedContext = [],
+        EventFactoryInterface $eventFactory = null,
+        TransactionsStore $transactionsStore = null,
+        ClientInterface $client = null,
+        RequestFactoryInterface $requestFactory = null,
+        StreamFactoryInterface $streamFactory = null
+    ) {
         // Init Agent Config
         $this->config = new Config($config);
+
+        $client = $client ?: HttpClientDiscovery::find();
+        $requestFactory = $requestFactory ?: Psr17FactoryDiscovery::findRequestFactory();
+        $streamFactory = $streamFactory ?: Psr17FactoryDiscovery::findStreamFactory();
 
         // Use the custom event factory or create a default one
         $this->eventFactory = $eventFactory ?? new DefaultEventFactory();
 
         // Init the Shared Context
-        $this->sharedContext['user']   = $sharedContext['user'] ?? [];
+        $this->sharedContext['user'] = $sharedContext['user'] ?? [];
         $this->sharedContext['custom'] = $sharedContext['custom'] ?? [];
-        $this->sharedContext['tags']   = $sharedContext['tags'] ?? [];
+        $this->sharedContext['tags'] = $sharedContext['tags'] ?? [];
 
         // Let's misuse the context to pass the environment variable and cookies
         // config to the EventBeans and the getContext method
@@ -114,7 +136,7 @@ class Agent
         $this->transactionsStore = $transactionsStore ?? new TransactionsStore();
 
         // Init the Transport "Layer"
-        $this->connector = new Connector($this->config);
+        $this->connector = new Connector($client, $requestFactory, $streamFactory, $this->config);
         $this->connector->putEvent(new Metadata([], $this->config));
 
         // Start Global Agent Timer
@@ -123,23 +145,14 @@ class Agent
     }
 
     /**
-     * Event Factory
-     *
-     * @return EventFactoryInterface
-     */
-    public function factory() : EventFactoryInterface
-    {
-        return $this->eventFactory;
-    }
-
-    /**
      * Query the Info endpoint of the APM Server
      *
      * @link https://www.elastic.co/guide/en/apm/server/7.3/server-info.html
      *
-     * @return Response
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
      */
-    public function info() : \GuzzleHttp\Psr7\Response
+    public function info(): ResponseInterface
     {
         return $this->connector->getInfo();
     }
@@ -147,12 +160,12 @@ class Agent
     /**
      * Start the Transaction capturing
      *
-     * @throws \PhilKra\Exception\Transaction\DuplicateTransactionNameException
-     *
      * @param string $name
-     * @param array  $context
+     * @param array $context
      *
      * @return Transaction
+     * @throws DuplicateTransactionNameException
+     *
      */
     public function startTransaction(string $name, array $context = [], float $start = null): Transaction
     {
@@ -172,14 +185,24 @@ class Agent
     }
 
     /**
+     * Event Factory
+     *
+     * @return EventFactoryInterface
+     */
+    public function factory(): EventFactoryInterface
+    {
+        return $this->eventFactory;
+    }
+
+    /**
      * Stop the Transaction
      *
-     * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
-     *
      * @param string $name
-     * @param array $meta, Def: []
+     * @param array $meta , Def: []
      *
      * @return void
+     * @throws UnknownTransactionException
+     *
      */
     public function stopTransaction(string $name, array $meta = [])
     {
@@ -191,11 +214,11 @@ class Agent
     /**
      * Get a Transaction
      *
-     * @throws \PhilKra\Exception\Transaction\UnknownTransactionException
-     *
      * @param string $name
      *
      * @return Transaction
+     * @throws UnknownTransactionException
+     *
      */
     public function getTransaction(string $name)
     {
@@ -212,13 +235,13 @@ class Agent
      *
      * @link http://php.net/manual/en/class.throwable.php
      *
-     * @param \Throwable  $thrown
-     * @param array       $context, Def: []
-     * @param Transaction $parent, Def: null
+     * @param Throwable $thrown
+     * @param array $context , Def: []
+     * @param Transaction $parent , Def: null
      *
      * @return void
      */
-    public function captureThrowable(\Throwable $thrown, array $context = [], ?Transaction $parent = null)
+    public function captureThrowable(Throwable $thrown, array $context = [], ?Transaction $parent = null)
     {
         $this->putEvent($this->factory()->newError($thrown, array_replace_recursive($this->sharedContext, $context), $parent));
     }
@@ -234,11 +257,21 @@ class Agent
     /**
      * Get the Agent Config
      *
-     * @return \PhilKra\Helper\Config
+     * @return Config
      */
-    public function getConfig() : \PhilKra\Helper\Config
+    public function getConfig(): Config
     {
         return $this->config;
+    }
+
+    /**
+     * Flush the Queue Payload
+     *
+     * @link https://www.php.net/manual/en/language.oop5.decon.php#object.destruct
+     */
+    function __destruct()
+    {
+        $this->send();
     }
 
     /**
@@ -249,35 +282,27 @@ class Agent
      *
      * @return bool
      */
-    public function send() : bool
+    public function send(): bool
     {
         // Is the Agent enabled ?
         if ($this->config->get('active') === false) {
             $this->transactionsStore->reset();
+
             return true;
         }
 
         // Put the preceding Metadata
         // TODO -- add context ?
-        if($this->connector->isPayloadSet() === false) {
+        if ($this->connector->isPayloadSet() === false) {
             $this->putEvent(new Metadata([], $this->config));
         }
 
         // Start Payload commitment
-        foreach($this->transactionsStore->list() as $event) {
+        foreach ($this->transactionsStore->list() as $event) {
             $this->connector->putEvent($event);
         }
         $this->transactionsStore->reset();
+
         return $this->connector->commit();
     }
-
-    /**
-     * Flush the Queue Payload
-     *
-     * @link https://www.php.net/manual/en/language.oop5.decon.php#object.destruct
-     */
-    function __destruct() {
-        $this->send();
-    }
-
 }

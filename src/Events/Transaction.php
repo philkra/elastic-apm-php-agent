@@ -2,8 +2,9 @@
 
 namespace PhilKra\Events;
 
-use PhilKra\Helper\Timer;
+use JsonSerializable;
 use PhilKra\Helper\Encoding;
+use PhilKra\Helper\Timer;
 
 /**
  *
@@ -12,7 +13,7 @@ use PhilKra\Helper\Encoding;
  * @link https://www.elastic.co/guide/en/apm/server/master/transaction-api.html
  *
  */
-class Transaction extends TraceableEvent implements \JsonSerializable
+class Transaction extends TraceableEvent implements JsonSerializable
 {
     /**
      * Transaction Name
@@ -22,7 +23,7 @@ class Transaction extends TraceableEvent implements \JsonSerializable
     private $name;
 
     /**
-     * @var \PhilKra\Helper\Timer
+     * @var Timer
      */
     private $timer;
 
@@ -32,9 +33,9 @@ class Transaction extends TraceableEvent implements \JsonSerializable
      * @var array
      */
     private $summary = [
-        'duration'  => 0.0,
+        'duration' => 0.0,
         'backtrace' => null,
-        'headers'   => []
+        'headers' => [],
     ];
 
     /**
@@ -43,11 +44,11 @@ class Transaction extends TraceableEvent implements \JsonSerializable
     private $backtraceLimit = 0;
 
     /**
-    * Create the Transaction
-    *
-    * @param string $name
-    * @param array $contexts
-    */
+     * Create the Transaction
+     *
+     * @param string $name
+     * @param array $contexts
+     */
     public function __construct(string $name, array $contexts, $start = null)
     {
         parent::__construct($contexts);
@@ -56,10 +57,22 @@ class Transaction extends TraceableEvent implements \JsonSerializable
     }
 
     /**
-    * Start the Transaction
-    *
-    * @return void
-    */
+     * Set the Transaction Name
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function setTransactionName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Start the Transaction
+     *
+     * @return void
+     */
     public function start()
     {
         $this->timer->start();
@@ -78,39 +91,17 @@ class Transaction extends TraceableEvent implements \JsonSerializable
         $this->timer->stop();
 
         // Store Summary
-        $this->summary['duration']  = $duration ?? round($this->timer->getDurationInMilliseconds(), 3);
-        $this->summary['headers']   = (function_exists('xdebug_get_headers') === true) ? xdebug_get_headers() : [];
+        $this->summary['duration'] = $duration ?? round($this->timer->getDurationInMilliseconds(), 3);
+        $this->summary['headers'] = (function_exists('xdebug_get_headers') === true) ? xdebug_get_headers() : [];
         $this->summary['backtrace'] = debug_backtrace($this->backtraceLimit);
     }
 
     /**
-    * Set the Transaction Name
-    *
-    * @param string $name
-    *
-    * @return void
-    */
-    public function setTransactionName(string $name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-    * Get the Transaction Name
-    *
-    * @return string
-    */
-    public function getTransactionName() : string
-    {
-        return $this->name;
-    }
-
-    /**
-    * Get the Summary of this Transaction
-    *
-    * @return array
-    */
-    public function getSummary() : array
+     * Get the Summary of this Transaction
+     *
+     * @return array
+     */
+    public function getSummary(): array
     {
         return $this->summary;
     }
@@ -133,25 +124,35 @@ class Transaction extends TraceableEvent implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize(): array
     {
         return [
             'transaction' => [
-                'trace_id'   => $this->getTraceId(),
-                'id'         => $this->getId(),
-                'parent_id'  => $this->getParentId(),
-                'type'       => Encoding::keywordField($this->getMetaType()),
-                'duration'   => $this->summary['duration'],
-                'timestamp'  => $this->getTimestamp(),
-                'result'     => $this->getMetaResult(),
-                'name'       => Encoding::keywordField($this->getTransactionName()),
-                'context'    => $this->getContext(),
-                'sampled'    => null,
+                'trace_id' => $this->getTraceId(),
+                'id' => $this->getId(),
+                'parent_id' => $this->getParentId(),
+                'type' => Encoding::keywordField($this->getMetaType()),
+                'duration' => $this->summary['duration'],
+                'timestamp' => $this->getTimestamp(),
+                'result' => $this->getMetaResult(),
+                'name' => Encoding::keywordField($this->getTransactionName()),
+                'context' => $this->getContext(),
+                'sampled' => null,
                 'span_count' => [
                     'started' => 0,
                     'dropped' => 0,
                 ],
-            ]
+            ],
         ];
+    }
+
+    /**
+     * Get the Transaction Name
+     *
+     * @return string
+     */
+    public function getTransactionName(): string
+    {
+        return $this->name;
     }
 }
