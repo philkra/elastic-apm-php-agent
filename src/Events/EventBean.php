@@ -271,7 +271,6 @@ class EventBean
                 'remote_address' => $remote_address,
                 'encrypted'      => isset($_SERVER['HTTPS'])
             ],
-            'response' => $this->contexts['response'],
             'url'          => [
                 'protocol' => $http_or_https,
                 'hostname' => Encoding::keywordField($_SERVER['SERVER_NAME'] ?? ''),
@@ -381,7 +380,8 @@ class EventBean
     final protected function getContext() : array
     {
         $context = [
-            'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request']
+            'request' => empty($this->contexts['request']) ? $this->generateRequest() : $this->contexts['request'],
+            'response' => $this->contexts['response']
         ];
 
         // Add User Context
