@@ -32,7 +32,7 @@ class TraceableEvent extends EventBean
      */
     public function getDistributedTracing() : string
     {
-        return (new DistributedTracing($this->getTraceId(), $this->getParentId()))->__toString();
+        return (new DistributedTracing($this->getTraceId(), $this->getParentId(), $this->getTraceFlags()))->__toString();
     }
 
     /**
@@ -50,14 +50,12 @@ class TraceableEvent extends EventBean
 
                 $this->setTraceId($traceParent->getTraceId());
                 $this->setParentId($traceParent->getParentId());
-            }
-            catch (InvalidTraceContextHeaderException $e) {
+                $this->setTraceFlags($traceParent->getTraceFlags());
+            } catch (InvalidTraceContextHeaderException $e) {
                 $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
             }
-        }
-        else {
+        } else {
             $this->setTraceId(self::generateRandomBitsInHex(self::TRACE_ID_BITS));
         }
     }
-
 }
