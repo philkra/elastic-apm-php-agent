@@ -7,6 +7,7 @@ appName       : Name of this application, Required
 appVersion    : Application version, Default: ''
 serverUrl     : APM Server Endpoint, Default: 'http://127.0.0.1:8200'
 secretToken   : Secret token for APM Server, Default: null
+apiKey        : API key for APM Server, Default: null
 hostname      : Hostname to transmit to the APM Server, Default: gethostname()
 active        : Activate the APM Agent, Default: true
 timeout       : Guzzle Client timeout, Default: 5
