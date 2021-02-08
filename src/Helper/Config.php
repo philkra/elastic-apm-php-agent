@@ -67,6 +67,7 @@ class Config
         return [
             'serverUrl'      => 'http://127.0.0.1:8200',
             'secretToken'    => null,
+            'apiKey'         => null,
             'hostname'       => gethostname(),
             'appVersion'     => '',
             'active'         => true,

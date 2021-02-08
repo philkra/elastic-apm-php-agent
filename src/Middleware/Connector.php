@@ -139,6 +139,11 @@ class Connector
             $headers['Authorization'] = sprintf('Bearer %s', $this->config->get('secretToken'));
         }
 
+        // Add Api key to Header
+        if ($this->config->get('apiKey') !== null) {
+            $headers['Authorization'] = sprintf('ApiKey %s', $this->config->get('apiKey'));
+        }
+
         return $headers;
     }
 

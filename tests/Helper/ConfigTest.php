@@ -24,6 +24,7 @@ final class ConfigTest extends TestCase {
 
     $this->assertArrayHasKey( 'appName', $config );
     $this->assertArrayHasKey( 'secretToken', $config );
+    $this->assertArrayHasKey( 'apiKey', $config );
     $this->assertArrayHasKey( 'serverUrl', $config );
     $this->assertArrayHasKey( 'hostname', $config );
     $this->assertArrayHasKey( 'active', $config );
@@ -37,6 +38,7 @@ final class ConfigTest extends TestCase {
 
     $this->assertEquals( $config['appName'], $appName );
     $this->assertNull( $config['secretToken'] );
+    $this->assertNull( $config['apiKey'] );
     $this->assertEquals( $config['serverUrl'], 'http://127.0.0.1:8200' );
     $this->assertEquals( $config['hostname'], gethostname() );
     $this->assertFalse( $config['active'] );
@@ -60,6 +62,7 @@ final class ConfigTest extends TestCase {
     $init = [
       'appName'       => sprintf( 'app_name_%d', rand( 10, 99 ) ),
       'secretToken'   => hash( 'tiger128,3', time() ),
+      'apiKey'        => 'fooBar123',
       'serverUrl'     => sprintf( 'https://node%d.domain.tld:%d', rand( 10, 99 ), rand( 1000, 9999 ) ),
       'appVersion'    => sprintf( '%d.%d.42', rand( 0, 3 ), rand( 0, 10 ) ),
       'frameworkName' => uniqid(),
