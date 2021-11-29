@@ -8,8 +8,6 @@
 
 ---
 
-```
-
 ## Contributors
 A big, big thank you goes out to every contributor of this repo, special thanks goes out to:
 * [dstepe](https://github.com/dstepe)
